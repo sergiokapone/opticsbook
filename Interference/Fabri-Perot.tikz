@@ -1,0 +1,84 @@
+\begin{tikzpicture}[
+		raysig/.style={font=\scriptsize, text=black},
+		declare function={
+				f = 5;
+                d = 2;
+				L = 6;
+                E=L+f; % Y положення екрану (x вісь графіка)
+                R = 1e-3;
+        intensity(\wl,\x) = 3/(1+4*R/(1-R^2)*(sin(pi/\wl*d*sqrt(1-(\x^2/(f^2+\x^2)))) r)^2);
+			},
+	]
+
+%	    \draw (-5,-7) to[grid with coordinates] (5,4);
+	%    \pgfmathsetmacro\N{5}
+
+	\pgfmathsetmacro\n{1.5} % показник заломлення
+	\pgfmathsetmacro\d{d} % товщина пластинки
+	\pgfmathsetmacro\xn{-3.5} % x - координата входу променя в пластинку
+	\def\NumRays{4} % число променів
+	\pgfmathsetmacro\i{20}
+	\pgfmathsetmacro\r{asin(1/\n*sin(\i))} % Кут падіння на другу поверхню
+	\pgfmathsetmacro\rayoutshift{\d*tan(\i))}
+
+
+
+	%% ------------------------------ Пластини ---------------------------------
+	\foreach \i in {-1,1}{
+			\pgfmathsetmacro\yshift{-0.5*\d*(\i+1)}
+
+   			\fill[glass] (-5,\yshift) --  (5,\yshift) -- ++(0,-\i*0.25)
+            decorate [decoration={{random steps,segment length=2mm}}] { arc(0:{-\i*180}:5 and 0.35)   } ++(0,\i*0.25) --  cycle;
+
+  			\fill[pattern=north west lines, pattern color=black!50]
+            (-5,\yshift) rectangle (5,{\yshift - \i*0.1});
+		}
+	%% -------------------------------------------------------------------------
+	\draw[<->] (-4.5, 0) -- node[left] {$d$} ++(0,-\d);
+	%% ------------------------------- Промені ---------------------------------
+
+
+	\foreach[count=\k] \i/\clr in {25/red}
+		{
+			\foreach
+			[count=\j from 0,
+                evaluate=\j as \jo using int(\j+1),
+				evaluate=\j as \jj using int(2*\j+1),
+				evaluate=\j as \jp using int(2*\j),
+			] \c in {0,...,\NumRays} % Number or rays
+				{
+					\pgfmathsetmacro\r{asin(1/\n*sin(\i))}
+                	\pgfmathsetmacro\rayshift{\d*tan(\r)}
+                   	\draw[ray, \clr] ({\xn-2*sin(\i)},{2*cos(\i)}) --
+                    node[right,
+                    text=black,
+                    ]
+                    {$I_0$}
+                    (\xn,0); % Самий перший падаючий
+					\draw[ray, \clr] (\xn+2*\c*\rayshift,0) --
+					     node[sloped, above, text=black!50, font=\tiny] {$R^{\jp} I_0$}
+					++(\rayshift, -\d); % Падаючий промінь
+					\ifnum\c=\NumRays
+						\relax
+					\else
+						\draw[ray, \clr] ({\xn+(2*\c+1)*\rayshift},-\d) --
+						        node[sloped, below, text=black!50, font=\tiny] {$R^{\jj}I_0$}
+						++(\rayshift, \d); % Відбитий промінь
+					\fi
+					\draw[ray, \clr] ({\xn+(2*\c+1)*\rayshift},-\d) --
+					    node[sloped, above, text=black!50, font=\tiny] {$(1-R)^2 R^{\jp} I_0$}
+                         node[left, text=black!100, font=\tiny, pos=0.8] {$\jo'$}
+					++(-90+\i:{(L-d)/cos(\i)}) coordinate (OnLens\k\c); % Вишли промені
+
+					\draw[ray, \clr] (OnLens\k\c) -- ({f*sin(\i)}, -E); % Заломлені лінзою промені
+				}
+		}
+
+
+\draw[] (-5,{-E}) -- (5,{-E})node [right] {Екран}; % Вісь OX
+%\draw[->] (0,-E) -- ++(0,{2+0.5}) node [right] {\contour{white}{$I$}}; % Вісь OY
+
+\draw[blue, glass] (-5, -L) arc(180:0:5 and 0.25)  arc(0:-180:5 and 0.25); % Лінза
+
+\end{tikzpicture}
+

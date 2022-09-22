@@ -1,0 +1,140 @@
+\tikzset{
+    pics/.cd,
+    disc/.style = {
+        code = {
+            \path [top color = yellow, bottom color = yellow!10]
+            (0,0) ellipse [x radius = 3, y radius = 2/3];
+            \path [left color = yellow, right color = yellow,
+            middle color = yellow!50] (-3,0) -- (-3,-0.15) arc (180:360:3 and 2/3)
+            -- (3,0) arc (360:180:3 and 2/3);
+        }
+    },
+}
+\begin{tikzpicture}
+
+    \pgfmathsetmacro\sxa{-5}
+    \pgfmathsetmacro\sxb{5}
+
+    \pgfmathsetmacro\sya{-2}
+    \pgfmathsetmacro\syb{5}
+
+%   	\draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+%   	\draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+%   	\draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+%   	\foreach \i in {\sxa,...,\sxb}
+%   		{
+%       			\node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+%       		}
+%   	\foreach \j in {\sya,...,\syb}
+%   		{
+%       			\node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+%       	}
+
+    % Задані параметри
+
+    \pgfmathsetmacro\H{6}
+    \pgfmathsetmacro\dta{20}
+    \pgfmathsetmacro\a{5}
+
+    \pgfmathsetmacro\xt{0}
+
+    % Параметр вздовж висоти
+    \pgfmathsetmacro\l{0.5}
+
+    % Радіус кола для тілесного кута
+
+    \pgfmathsetmacro\r{\l*\H*sin(\a)/cos(\dta - \a)}
+
+    % Радіус основи
+
+    \pgfmathsetmacro\Ro{\H*sin(\a)/cos(\dta - \a)}
+
+    % Радіус плями
+
+    \pgfmathsetmacro\R{\Ro*cos(\a)/cos(\dta + \a)}
+
+    % Координата центра плями
+
+    \pgfmathsetmacro\xC{\H*tan(\dta - \a) + \xt + \R}
+
+    % ------ Побудови -------
+
+    % --- Координати ---
+
+    % Вершина конуса
+    \coordinate (T) at (\xt, \H);
+
+    % Точка проекції основи конуса на площину
+    \coordinate (B) at ({\H*tan(\dta) + \xt}, 0);
+
+    % Нога 1
+
+    \coordinate (B1) at ({\H*tan(\dta - \a) + \xt}, 0);
+
+    % Нога 2
+
+    \coordinate (B2) at ({\H*tan(\dta + \a) + \xt}, 0);
+
+    % Точка кола на конусі
+
+    \coordinate (C) at ({\l*\H*tan(\dta) + \xt}, {(1 - \l)*\H});
+
+    % Координата центра плями
+
+    \coordinate (C1) at (\xC, 0);
+
+    % Побудова конуса
+    \fill[top color = yellow!50, bottom color=yellow!10] (T) -- (B2) arc(0:-180:{\R} and 0.25) -- cycle;
+    \fill[yellow!25, opacity=0.5] (C1)  circle({\R} and 0.25) ;
+    \draw[dashed, opacity=0.5] (T) --node[left=0.25 cm] {$r$}  (B);
+
+
+    \coordinate (D) at (\xC, \H); % Координата центра диска
+    \path[opacity=0.5] (D) pic {disc} ;
+    \draw[dash dot] (C1) -- node[right] {$h$} (D);
+
+    % Побудова кільця
+    \pgfmathsetmacro\d{0.5} % Товщина кільця
+    \pgfmathsetmacro\ph{3} % Кут d\phi
+
+    \fill[yellow, opacity=0.5, even odd rule, name path=circles] let \p1=(D) in (D) circle[x radius={\x1 - \d cm /2}, y radius={\d*0.4 cm}] circle[x radius={\x1 + \d cm /2}, y radius={\d*0.6 cm}];
+
+    \path[name path=line1, thin] (D)--  ++(\ph:-5);
+    \path[name path=line2, thin] (D) -- ++(-\ph:-5);
+    \draw[name intersections={of=circles and line1}] (D) --  node[above=0.2cm] {$d\phi$}  (intersection-2) ;
+    \draw[name intersections={of=circles and line2}] (D) -- (intersection-2);
+
+    \begin{scope}
+        \clip  (D) -- +(-\ph:-5) -- +(\ph:-5) -- cycle;
+        \fill[pattern=crosshatch, opacity=0.5, even odd rule] let \p1=(D) in (D) circle[x radius={\x1 - \d cm /2}, y radius={\d*0.4 cm} ] circle[x radius={\x1 + \d cm /2}, y radius={\d*0.6 cm}];
+    \end{scope}
+
+    \draw let \p1=(D) in (C1) -- ({\xt -\d/2}, \y1) coordinate (theta1);
+    \draw let \p1=(D) in (C1) -- ({\xt + \d/2}, \y1) coordinate (theta2);
+
+    \begin{pgfonlayer}{bg}
+        \node[trapezium, trapezium left angle={180-30}, trapezium right angle=30, minimum size=2.5cm, shade,shading=axis,shading angle=120, inner color=yellow!30, outer color=white, draw] at (C1) {};
+    \end{pgfonlayer}
+
+    \draw (D) --node[above] {$R$} ++(0:3) coordinate (E);
+    \draw[dash dot] (C1) -- (E);
+%    \draw[dash dot] (theta1) -  ++(-180:1.5) coordinate (N1);
+%    \draw[dash dot] let \p1=(T), \p2=(D) in (theta2) --  ++({atan(veclen(\y2 - \y1,\x2 - \x1)/\H cm) + 180 -\a/2}:2) coordinate (N2);
+
+    \point{C1}{$A$}{below=0.25cm}{}
+
+    \node (dS) at ([shift={(-1.125,1)}]T) {
+        $\underset{\text{елемент поверхні диска}}{dS = \frac{d\sigma}{\cos\theta}}$
+    };
+
+    \draw[-to] (dS) to [out=-90, in=90] (T);
+
+    \shorthandoff{"}
+    \pic[ draw,"\theta", angle eccentricity=1.2, angle radius=2.6cm] {angle=D--C1--theta2};
+    \pic[fill=gray!50, opacity=0.5, draw, "d\theta", angle eccentricity=1, angle radius=2.5cm, pic text options={shift={(-0.5cm,0)}}] {angle=theta2--C1--theta1};
+
+        \pic[draw, "$\theta_0$", angle eccentricity=1.25, angle radius=1.5cm] {angle=E--C1--D};
+    \shorthandon{"}
+
+
+\end{tikzpicture}

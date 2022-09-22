@@ -1,0 +1,43 @@
+	\begin{tikzpicture}
+    \coordinate (Q) at (0,3.5);
+    \coordinate (O1) at (0.25,3.5);
+    %		\foreach \i in {1,...,3} {\fill[cyan, draw=black] (0,{5/2*(\i-1)}) coordinate (LC\i) rectangle +(0.25,2);}
+    %		\foreach \i in {0,...,2} {\draw[thick, green!70!blue] (-2-0.5*\i,0) -- +(0,7);}
+    %		\foreach \i in {0,...,6} {\draw[-latex, orange!80!black] (-3.1,{\i + 0.5}) -- +(1.15,0);}
+    \draw[thick] (8,-1) -- coordinate (O) coordinate[pos=0.945] (P) +(0,9); % Ecran
+    \fill (P) circle(0.05) node[above left] {$P$};
+    \draw (Q) -- (O) node [below left] {$O$};
+    %		\draw[dashed]  (O1) -- (P);
+    %		\draw ([xshift=1.5cm]O1)  let \p{PO1}=( $(P) - (O1)$) in arc (0:atan(\y{PO1}/\x{PO1}):1.5) node[pos=0.5, right] {$\theta$};
+    \draw[red!80!black, decoration={
+        markings,
+        mark=at position 0.5 with {\arrow{latex}}}, postaction={decorate}] (0.25, 3.5) coordinate (S2R) -- node[above, black] {$r_{2}$}(P);
+    \fill[red] (S2R) circle(0.1);
+    \draw[red!80!black, decoration={
+        markings,
+        mark=at position 0.5 with {\arrow{latex}}}, postaction={decorate}] (2.25, 3.5 ) coordinate (S1R) -- node[below right, black] {$r_{1}$}  (P);
+    \fill[red] (S1R) circle(0.1);
+    \draw (S2R) -- (S2R|- 8,-1);
+    %		\draw [dashed] (S2R) -- ($(S1R)!(S2R)!(P)$) coordinate (RA);
+    \draw ([xshift=0.7cm]S2R) let \p{PR}=( $(S2R) - (P)$) in arc (0:{atan(\y{PR}/\x{PR})}:0.7) node[anchor = west, pos=0.7] {$\theta$};
+
+    \draw ([xshift=0.7cm]S1R) let \p{PR}=( $(S1R) - (P)$) in arc (0:{atan(\y{PR}/\x{PR})}:0.7) node[anchor = west, pos=0.7] {$\theta$};
+
+    \draw[decorate,decoration={brace,amplitude=5pt, raise=0.5ex}] (S2R) -- node[pos=0.5, above=1ex] {$\Delta$} ($(S2R)!(S1R)!(P)$);
+
+    \draw (S1R) -- ($(S2R)!(S1R)!(P)$);
+
+    \draw ([yshift=-0.1cm]S2R)  -- coordinate[pos = 0.8] (d2) ([yshift=-1.5cm]S2R) ;
+    \draw ([yshift=-0.1cm]S1R)  -- coordinate[pos = 0.8] (d1) ([yshift=-1.5cm]S1R) ;
+    \draw[latex-latex] (d2) -- node[fill=white] {$d$} (d1);
+
+    \draw ([xshift=0.1cm]P)  -- coordinate[pos = 0.8] (y1) ([xshift=1cm]P) ;
+    \draw ([xshift=0.1cm]O)  -- coordinate[pos = 0.8] (y0) ([xshift=1cm]O) ;
+    \draw (y1) -- node[fill=white] {$y$} (y0);
+    \node at ([shift={(-0.5,-0.3)}]S2R) {$S_2$};
+    \node at ([shift={(-0.5,-0.3)}]S1R) {$S_1$};
+
+    \draw[latex-latex] (0.25,0.5) -- node[fill=white] {$L$}({P|-0.5,0.5});
+    \foreach \i in {1,...,10} {\draw[red, line width = {10- \i}] ($(y0)-(-3.5,0)$) circle ({sqrt(\i)});}
+    %		\foreach \i in {-8,...,8} { \path[bottom color=white,  top color=white, middle color = red] (9,{0.5*\i+3.25}) rectangle +(1,0.5); }
+\end{tikzpicture}

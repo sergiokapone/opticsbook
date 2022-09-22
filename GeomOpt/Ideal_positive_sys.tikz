@@ -1,0 +1,119 @@
+\begingroup
+\pgfmathsetmacro\fd{2}
+\pgfmathsetmacro\sxa{-3}
+\pgfmathsetmacro\sxb{3}
+\pgfmathsetmacro\sy{3}
+\pgfmathsetmacro\xhs{0.5}
+\pgfmathsetmacro\xh{-0.5}
+\pgfmathsetmacro\scale{1.25}
+
+\begin{tikzpicture}[scale=\scale,
+    insert node/.style args={#1 at #2}{
+        postaction=decorate,
+        decoration={
+            markings,
+            mark= at position #2
+            with
+            {
+                #1
+            }
+        }
+    }
+    ]
+
+    % Координати кардинальних елементів
+    \pgfmathsetmacro\xfs{\fd}
+    \pgfmathsetmacro\xf{-\fd}
+    \coordinate (H) at (\xh,0);
+    \coordinate (H') at (\xhs,0);
+    \coordinate (F) at (\xf,0);
+    \coordinate (F') at (\xfs,0);
+
+    % Оптична вісь
+
+    \draw (\sxa,0) -- (\sxb,0);
+
+    % Площини H і H'
+    \draw[name path=H, thick] let \p1=(H), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=H', thick] let \p1=(H'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+    % Фокальні площини
+    \draw[name path=F, dashed] let \p1=(F), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=F', dashed] let \p1=(F'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+
+    \pgfmathsetmacro\yf{0.75}
+
+    \foreach[] \yn/\c/\r in{1.5/red/{},  0/green!50!black/3, \yf/blue/1}
+    {
+
+        \pgfmathsetmacro\ka{(\yn - \yf) / (\xh - \xf )};
+        \pgfmathsetmacro\kb{((\ka*(\xh - \xf) - \yn)/(\xfs - \xhs))};
+        \draw[ray, thick, \c, name path=ray, domain=\sxa:\xh,
+        insert node={\node[above=-2pt, font=\scriptsize]{\(\r\)};} at 0.8,]
+        plot (\x, {\ka*(\x-\xh) + \yn});
+        \draw[ray, thick, \c, name path=ray', domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yn});
+        \draw[dashed] (\xh,\yn) -- (\xhs,\yn);
+    }
+
+    \point{F}{$F$}{below}{red}
+    \point{F'}{$F'$}{below}{red}
+    \point{H}{$H$}{below}{red}
+    \point{H'}{$H'$}{below}{red}
+
+\end{tikzpicture}
+\quad
+\begin{tikzpicture}[scale=\scale,
+    insert node/.style args={#1 at #2}{
+        postaction=decorate,
+        decoration={
+            markings,
+            mark= at position #2
+            with
+            {
+                #1
+            }
+        }
+    }
+    ]
+
+    % Координати кардинальних елементів
+    \pgfmathsetmacro\xfs{\fd}
+    \pgfmathsetmacro\xf{-\fd}
+    \coordinate (H) at (\xh,0);
+    \coordinate (H') at (\xhs,0);
+    \coordinate (F) at (\xf,0);
+    \coordinate (F') at (\xfs,0);
+
+    % Оптична вісь
+
+    \draw (\sxa,0) -- (\sxb,0);
+
+    % Площини H і H'
+    \draw[name path=H, thick] let \p1=(H), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=H', thick] let \p1=(H'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+    % Фокальні площини
+    \draw[name path=F, dashed] let \p1=(F), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=F', dashed] let \p1=(F'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+
+    \pgfmathsetmacro\a{27}
+    \pgfmathsetmacro\ynf{tan(\a)*(\xh - \xf)}
+
+    \foreach[] \yn/\c/\r in{1.5/red/{},  0/green!50!black/4, \ynf/blue/2}
+    {
+        \pgfmathsetmacro\kb{((tan(\a)*(\xh - \xf) - \yn)/(\xfs - \xhs))};
+        \draw[ray, thick, \c, name path=ray, domain=\sxa:\xh,
+        insert node={\node[above=-2pt, font=\scriptsize]{\(\r\)};} at 0.8,]
+        plot (\x, {tan(\a)*(\x-\xh) + \yn});
+        \draw[ray, thick, \c, name path=ray', domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yn});
+        \draw[dashed] (\xh,\yn) -- (\xhs,\yn);
+    }
+
+    \point{F}{$F$}{below}{red}
+    \point{F'}{$F'$}{below}{red}
+    \point{H}{$H$}{below}{red}
+    \point{H'}{$H'$}{below}{red}
+\end{tikzpicture}
+\endgroup

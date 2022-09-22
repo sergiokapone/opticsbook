@@ -1,0 +1,79 @@
+\begin{tikzpicture}[line join=bevel,
+    baseline,
+    pp-polarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[<->, black!50] (0,-0.2)--(-0.25,0.2);
+             }
+         },
+        postaction={decorate},
+    },
+]
+%    \draw (-2,-1) to[grid with coordinates] (4,4);
+    \coordinate (B) at ({-0.25/2.5},-0.25);
+    \coordinate (T) at ({2.75/2.5},2.75);
+        \coordinate (B') at (-1.7,-0.25);
+        \coordinate (T') at (0,2.75);
+
+\begin{scope}[]
+    \draw[fill=black!30] (-0.5,0) rectangle (0,2);
+    \draw[fill=black!30] (-0.5,2) -- ++(1,0.5) -- ++(0.5,0) --++(-1,-0.5) --cycle;
+    \draw[fill=black!20, yslant=0.5] (0,0) rectangle (1,2);
+\end{scope}
+
+    \draw[] (B) -- (T) ;
+
+        \draw[fill=red!30, opacity=0.5] (B') -- ++(2,0) -- ++(1.5,3) -- (T') -- cycle;
+
+    \path[dashed] (T) -- (B) coordinate[pos=0.45] (A) coordinate[pos=0.58] (B);
+    \draw[unpolarized, red, ->] (-3.2, 1) -- (-0.5,1) coordinate (In);
+    \draw[dashed] (In) -- (A);
+\begin{scope}
+    \clip ($(In) - (0,0.5)$) rectangle ++(0.5,1);
+    \draw[ball color=red, opacity=0.5] (In) circle (0.3);
+    \draw[rotate around={60:(In)}, ball color=cyan, opacity=0.5] (In) circle (0.3 and 0.2);
+\end{scope}
+    \draw[dashed] (In) -- (B);
+    \draw[sp-polarized, red, ->] (A) -- ++(3,0) node[right, text=black] {$e$};
+    \draw[pp-polarized, red, ->] (B) -- ++(3,0)  node[right, text=black] {$o$};
+    \draw[dashed] (In) -- ++(60:1.85) node[above, pos=1] {$O'$};
+    \draw[dashed] (In) -- ++(60:-1.45) node[below, pos=1] {$O$};
+    \point{A}{}{}{red}
+    \point{B}{}{}{red}
+\end{tikzpicture}
+%----------------------
+%\begin{tikzpicture}[line join=bevel,
+%    baseline,
+%]
+%%    \draw (-2,-1) to[grid with coordinates] (4,4);
+%    \coordinate (O') at (0.5,3);
+%    \coordinate (O) at (0.5,-0.5);
+%
+%\begin{scope}[]
+%    \draw[fill=black!30] (-0.5,0) rectangle (0,2);
+%    \draw[fill=black!30] (-0.5,2) -- ++(1,0.5) -- ++(0.5,0) --++(-1,-0.5) --cycle;
+%    \draw[fill=black!20, yslant=0.5] (0,0) rectangle (1,2);
+%\end{scope}
+%
+%%    \draw[fill=red!30, opacity=0.5] (-2,3) -- ++(2,0) -- ([xshift=1cm]O') -- (0.5,-2)-- cycle;
+%    \path[dashed] (O') -- (O) coordinate[pos=0.4] (A) coordinate[pos=0.55] (B);
+%    \draw[unpolarized, red, ->] (-3.2, 1) -- (-0.5,1) coordinate (In);
+%    \draw[dashed] (In) -- (A);
+%    \draw[dashed] (In) -- (B);
+%    \draw[p-polarized, red, ->] (A) -- ++(3,0) node[right, text=black] {$e$};
+%    \draw[s-polarized, red, ->] (B) -- ++(3,0)  node[right, text=black] {$o$};
+%    \;
+%%    \node[below] at (O) {$O$};
+%
+%    \begin{scope}
+%        \clip ($(In) - (0,0.5)$) rectangle ++(0.5,1);
+%        \draw[ball color=red, opacity=0.5] (In) circle (0.3);
+%        \draw[rotate around={60:(In)}, ball color=cyan, opacity=0.5] (In) circle (0.3 and 0.2);
+%%        \draw[dashed] (In) -- ++(60:4);
+%    \end{scope}
+%    \draw[dashed] (In) -- ++(60:1.5) node[above, pos=1] {$O'$};
+%    \draw[dashed] (In) -- ++(60:-1.5) node[below, pos=1] {$O$};
+%
+%    \point{A}{}{}{red}
+%    \point{B}{}{}{red}
+%\end{tikzpicture}

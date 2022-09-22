@@ -1,0 +1,41 @@
+\begin{tikzpicture}
+
+%\grid[0](-5,-5)--(5,5);
+
+\fill[gray!50, opacity=0.2] (-3,-1) rectangle (3,1);
+\foreach \i in {-1,...,1}
+{
+
+    \draw[dash dot] (-3,\i) -- ++(6,0);
+    \foreach \j in {-3,...,3}
+    {
+        \draw[dash dot] (\j,1) -- ++(0,-2);
+
+    }
+}
+\foreach \i in {-1,...,1}
+{
+
+        \foreach \j in {-3,...,3}
+        {
+            \node[fill=gray, circle, draw=black, inner sep=0cm, minimum size=0.2cm] (A\i\j) at (\j,\i) {};
+
+        }
+}
+\draw[ray] (-3, 2) -- (A00);
+\draw[ray] (A00) -- (3, 2);
+
+\draw[ray] (-3, 3) -- (A10);
+\draw[ray] (A10) -- (3, 3);
+
+\pgfmathsetmacro\ph{atan(2/3)}
+\draw[<->] (A1-3) -- node[left] {$d$} (A0-3);
+
+\draw (0,1) [partial ellipse={180:180-\ph:1}] node[pos=0.5, left] {$\alpha$};
+
+\draw (0,1) [partial ellipse={0:\ph:1}] node[pos=0.5, right] {$\alpha$};
+
+\draw (A10) -- ++({270-\ph}:{cos(\ph)});
+\draw (A10) -- ++({270+\ph}:{cos(\ph)});
+
+\end{tikzpicture}

@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+    %\draw (-1,0) to[grid with coordinates] (9,6);
+    \pgfmathsetmacro\do{0.4}
+    \pgfmathsetmacro\dt{0.7}
+    \foreach \i in {0,...,3}
+    {
+    \draw[blue, glass] ({(\do+\dt)*\i},0) rectangle ++(\do,5);
+
+    \node[above, font=\scriptsize] at ({(\do+\dt)*\i+\do/2},0) {$n_1$};
+
+    \draw ({(\do+\dt)*\i},5) -- ++(0,0.5);
+    \draw ({(\do+\dt)*\i + \do},5) -- ++(0,0.5);
+
+    \draw[to-to] ({(\do+\dt)*\i +\do},5.5) -- node[above] {$l_2$} ++(\dt,0);
+    \ifnum\i=3
+        \draw ({(\do+\dt)*(\i+1)},5) -- ++(0,0.5);
+    \fi
+    \draw[to-to] ({(\do+\dt)*\i},5.5) -- node[above] {$l_1$} ++(\do,0);
+
+
+    \draw[left color=green, right color=green, middle color=white, shade, shading angle=45] ({(\do+\dt)*\i + \do},0) rectangle ++(\dt,5);
+
+    \node[above, font=\scriptsize] at ({(\do+\dt)*\i+\do + \dt/2},0) {$n_2$};
+    }
+
+        \draw[blue, glass] ({(\do+\dt)*4}, 0) -- ++(1,0)
+        decorate [decoration={{random steps,segment length=6mm}}] {
+ -- ++(0,5)
+ }
+ -- ++(-1,0) -- cycle
+        ;
+\end{tikzpicture}

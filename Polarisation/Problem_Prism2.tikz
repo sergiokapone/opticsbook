@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+    \fill[watercol!20,opacity=0.8, decoration={random steps, segment length=3pt}, decorate] (-2,-1) rectangle (4,4);
+    \fill[glass, shading angle=60, draw=blue] (0,0) --++(3,0) -- ++(0,2) -- cycle;
+    \draw (0,0) ++(1,0) arc(0:{atan(2/3)}:1) node[pos=0.7, right] {$30^\circ$};
+    \draw[unpolarized, red, ->] (-1.5,1) -- (1.5,1) coordinate (A);
+    \draw[dashed] (A) -- ++({90+atan(2/3)}:0.5) (A) -- ++({90+atan(2/3)}:-0.5);
+    \draw[s-polarized, red, ->] (A) -- ++({90-30}:3);
+
+    \node at (2.5,0.5) {$n_2$};
+    \node at (-1,0.5) {$n_1$};
+%    \draw (-2,-1) to[grid with coordinates] (4,4);
+\end{tikzpicture}

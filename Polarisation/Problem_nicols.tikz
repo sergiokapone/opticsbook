@@ -1,0 +1,22 @@
+\begingroup
+\captionsetup{type=figure}
+\begin{subfigure}{0.45\linewidth}\hspace*{0.5cm}
+\begin{tikzpicture}[baseline]
+    \draw [unpolarized, ray] (-2,1.5) -- ++(2,0);
+    \draw[pattern={vertical lines},pattern color=red] (0,0) -- ++(0,3) -- ++(2,0) -- cycle;
+    \draw (0,0) ++(0,1) arc(90:{atan(3/2)}:1) node[pos=0.5, fill=white, inner sep=0.6pt, above=2pt, circle] {$\alpha$};
+    \draw[pattern={dots},pattern color=blue] (0.2,0) -- ++(2,3) -- ++(0,-3) -- cycle;
+\end{tikzpicture}
+\caption{}
+\end{subfigure}
+%-----------
+\begin{subfigure}{0.45\linewidth}\hspace*{0.5cm}
+\begin{tikzpicture}[baseline]
+    \draw [unpolarized, ray] (-2,1.5) -- ++(2,0);
+    \draw[pattern={vertical lines},pattern color=red] (0,0) -- ++(0,3) -- ++(2,0) -- cycle;
+    \draw (0,0) ++(0,1) arc(90:{atan(3/2)}:1) node[pos=0.5, fill=white, inner sep=0.6pt, above=2pt, circle] {$\alpha$};
+    \draw[pattern={vertical lines},pattern color=blue] (0.2,0) -- ++(2,3) -- ++(0,-3) -- cycle;
+\end{tikzpicture}
+\caption{}
+\end{subfigure}
+\endgroup

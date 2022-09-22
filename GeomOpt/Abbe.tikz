@@ -1,0 +1,36 @@
+\begin{tikzpicture}[scale=1.5]
+
+    \def\s{5}
+    % Координати
+    \coordinate (O) at (2,0);
+    \coordinate (A) at (-2,0);
+    \coordinate (A') at (4,0);
+    % Побудови
+    \draw [name path=circle, thick, domain={90+30}:{270-30}, glasscol!88!black, left color=glasscol!88!black, middle color=glasscol, right color=white] plot ({2*cos(\x) + 2}, {2*sin(\x)});
+    \draw (-3,0) -- (\s,0);
+    \coordinate (R) at ({2*cos(90 + 40) + 2}, {2*sin(90 + 40)});
+    \draw[ray] (A) -- (R);
+    \draw[ray] (R) -- (A');
+    \draw (R) -- node[below] {$R$} (O);
+    \draw (R) -- ($(R) + (90+40:1)$) coordinate (N);
+    \draw[thick, ->] (A) -- node[left] {$y$} ++(0, 1) coordinate (T);
+    \draw (T) -- (O) -- ++({-atan(1/3)}:{2/cos(atan(1/3))}) coordinate (T');
+    \draw[thick, ->] (A') -- node[right] {$-y'$} (T');
+    \draw (A) -- ++(0,-2) (0,0) -- ++(0,-2) (A') -- ++(0,-2);
+    \draw[to-to] ($(A) - (0,1.5)$) -- node[below] {$-S$} ++(2,0);
+    \draw[to-to] ($(0,0) - (0,1.5)$) -- node[below] {$S'$} ++(4,0);
+    % Кути
+    \shorthandoff{"}
+    \pic[-to, draw, line width=1, "$-\sigma$", angle eccentricity=1.5, angle radius=1cm] {angle = O--A--R};
+    \pic[to-, draw, line width=1, "$\sigma'$", angle eccentricity=1.5, angle radius=1cm] {angle = R--A'--O};
+    \pic[-to, draw, line width=1, "$-\epsilon'$", angle eccentricity=1.5, angle radius=1cm, pic text options={shift={(0ex,3ex)}}] {angle = O--R--A'};
+    \pic[-to, draw, line width=1, "$-\epsilon$", angle eccentricity=1.75, angle radius=0.5cm] {angle = N--R--A};
+    \shorthandon{"}
+    % Підписи
+    \node at (-2, 1.5) {$n$};
+    \node at (4, 1.5) {$n'$};
+    \point{O}{$O$}{below}{red}
+    \point{A}{$A$}{below right}{red}
+    \point{A'}{$A'$}{above}{red}
+
+\end{tikzpicture}

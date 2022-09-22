@@ -1,0 +1,143 @@
+\def\rays#1{
+	\begingroup
+	\colorlet{greenr}{green!50!black} % колір зеленого променя
+	\pgfmathsetmacro\scale{1.25} % Масштаб рисунків
+	\def\sign{#1} % Знак системи
+	\pgfmathsetmacro\fd{2} % Фокусна відстнань
+	\pgfmathsetmacro\sxa{-3} % Початкова x координата оптичної осі
+	\pgfmathsetmacro\sxb{3} % Кінцева x координата оптичної осі
+	\pgfmathsetmacro\sy{3}  % Координата y  оптичної осі
+	\pgfmathsetmacro\xhs{0.5} % Положення H'
+	\pgfmathsetmacro\xh{-0.5} % Положення H
+	\pgfmathsetmacro\xfs{\sign*\fd} % Положення F'
+	\pgfmathsetmacro\xf{\sign*(-\fd)} % Положення F
+	\pgfmathsetmacro\l{4.5} % Довжина кардинальних плошин на рисунку
+
+	% Координати кардинальних елементів
+
+	\ifnum\sign=-1
+		\pgfmathsetmacro\yn{2} % y координата входження основного променя
+		\pgfmathsetmacro\yo{\yn/2} % y координата входження синього допоміжного променя
+	\else
+		\pgfmathsetmacro\yn{2} % y координата входження основного променя
+		\pgfmathsetmacro\yo{\yn/2} % y координата входження синього допоміжного променя
+	\fi
+
+	\def\grid{
+		% Рисування сітки
+		\draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+		\draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+		\draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+		\draw[red!40, ->] (0, -\sy) -- (0, \sy) node[above] {$y$};
+		\foreach \i in {\sxa,...,\sxb}
+			{
+				\node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+			}
+		\foreach \j in {-\sy,...,\sy}
+			{
+				\node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+			}
+	}
+
+	\def\cardinal{
+		% Рисування кардинальних елементів
+
+		% Оптична вісь
+		\draw (\sxa,0) -- (\sxb,0);
+
+		% Положення кардинальних точок
+		\coordinate (H) at (\xh,0);
+		\coordinate (H') at (\xhs,0);
+		\coordinate (F) at (\xf,0);
+		\coordinate (F') at (\xfs,0);
+
+		% Площини H і H'
+		\draw[name path=H, thick] let \p1=(H) in (\x1, {\l/2}) -- ++(0,-\l);
+		\draw[name path=H', thick] let \p1=(H') in (\x1, {\l/2}) -- ++(0,-\l);
+
+		% Фокальні площини
+		\draw[name path=F, dashed] let \p1=(F) in (\x1, {\l/2}) -- ++(0,-\l);
+		\draw[name path=F', dashed] let \p1=(F') in (\x1, {\l/2}) -- ++(0,-\l);
+
+		% РИсування точок
+
+		\point{F}{$F$}{below}{red}
+		\point{F'}{$F'$}{below}{red}
+		\point{H}{$H$}{below}{red}
+		\point{H'}{$H'$}{below}{red}
+
+	}
+
+	% Положення напису відносно точки F
+	\pgfmathsetmacro\ynodeshift{-1.75}
+	\pgfmathsetmacro\xnodeshift{0.75}
+	\def\textnode##1##2
+	{
+		% Напис, який пояснює положення точок сходження променів
+		% для від'ємної системи
+		\coordinate (X) at ({##2*\xfs},0);
+		\ifnum\sign=-1
+			\path[name intersections={of=rayd1 and rayd2}] (intersection-1) coordinate (C);
+			\node[font=\tiny, text width=3cm, align=left, inner sep=2pt, fill=white, drop shadow] (text) at ([shift={({##2*\xnodeshift},\ynodeshift)}]X) {##1};
+			\draw[<-, ultra thin] (C) to[out={270-##2*45}, in={90-##2*45}] (text.north);
+			\point{C}{}{}{red}
+		\fi
+	}
+
+	\begin{tikzpicture}[scale=\scale]
+
+		% \rg - Номер зеленого променя
+		%        \pgfmathsetmacro\rg{int(1/2*\sign+7/2)}
+		% \c - колір променя
+		% \yn - y координата входження променя в H
+
+		\pgfmathsetmacro\kan{(\yo - \yn)/(\xf - \xh)};
+		\foreach[count=\i] \yh/\c/\r in{\yn/red/0,  0/greenr/3, \yo/blue/1}
+			{
+				\pgfmathsetmacro\kb{-(\yh - \kan*(\xfs-\xhs) )/(\xfs - \xhs)};
+				\draw[ray, thick, \c, name path global=ray\i, domain=\sxa:\xh,
+					insert node={\node[above=-2pt, font=\scriptsize]{\ifnum\r>0\(\r\)\fi};} at 0.8]
+				plot (\x, {\kan*(\x-\xh) + \yh});
+				\draw[ray, thick, \c, name path global=rays\i, domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yh});
+				\draw[dashed] (\xh,\yh) -- (\xhs,\yh);
+				\ifnum\sign=-1
+					\draw[dashed, \c, name path global=rayd\i, domain=\xhs:\xfs] plot (\x, {\kb*(\x - \xhs) + \yh});
+					\ifnum\r=1
+						\draw[dotted, thick, \c, name path global=raydd\i, domain=\xh:\xf] plot (\x, {\kan*(\x-\xh) + \yh});
+					\fi
+				\fi
+			}
+
+		\cardinal
+		\textnode{Шуканий і допоміжні промені сходяться в одній точці задньої фокальної площини.}{1}
+	\end{tikzpicture}
+	\quad
+	\begin{tikzpicture}[scale=\scale]
+
+		% \rg - Номер зеленого променя
+		% \pgfmathsetmacro\rg{int(-1/2*\sign+7/2)}
+		% \c - колір променя
+		% \yn - y координата входження променя в H
+
+		\foreach[count=\i] \yh/\c/\r in{\yn/red/0,  0/greenr/4, \yo/blue/2}
+			{
+				\pgfmathsetmacro\ka{(\yo - \yh)/(\xf - \xh)};
+				\pgfmathsetmacro\kb{(\yo )/(\xhs - \xfs)};
+				\draw[ray, thick, \c, name path global=ray\i, domain=\sxa:\xh, insert node={\node[above=-2pt, font=\scriptsize]{\ifnum\r>0\(\r\)\fi};} at 0.8,]
+				plot (\x, {\ka*(\x-\xh) + \yh});
+				\draw[ray, thick, \c, name path global=rays\i, domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yh});
+				\draw[dashed] (\xh,\yh) -- (\xhs,\yh);
+				\ifnum\sign=-1
+					\draw[dashed, \c, name path global=rayd\i, domain=\xh:\xf] plot (\x, {\ka*(\x-\xh) + \yh});
+					\ifnum\r=2
+						\draw[dotted, thick, \c, name path global=raydd\i, domain=\xfs:\xhs] plot (\x, {\kb*(\x - \xhs) + \yh});
+					\fi
+				\fi
+			}
+
+		\cardinal
+		\textnode{Шуканий і допоміжні виходять з однієї точки передньої фокальної площини.}{-1}
+
+	\end{tikzpicture}
+	\endgroup
+}

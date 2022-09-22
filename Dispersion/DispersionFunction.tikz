@@ -1,0 +1,50 @@
+\begin{tikzpicture}
+    \def\ymax{2.1}
+    \def\xmax{2.5}
+    \def\ymin{0}
+    \def\xextremaF{0.8269}
+    \def\xextremaS{1.18}
+    \begin{axis}[trim axis left, %trim axis right,
+        height=0.5\linewidth,
+        width=0.9\linewidth,
+        /pgf/number format/.cd,
+        use comma,
+        1000 sep={\,},
+        xlabel = {$\omega/\omega_0$},
+%        ylabel style={text width=4.5cm},
+        ylabel = \empty,
+        %        grid=both,
+        %        grid style={line width=.1pt, draw=blue!10},
+        %        major grid style={line width=.2pt,draw=blue!50},
+        minor tick num = 4,
+        xtick distance=0.5,
+        %        ytick distance=0.2,
+        xmin=0,
+        xmax=\xmax,
+        ymax=\ymax,
+        ymin=\ymin,
+        %        ytick={1},
+        extra x ticks={\xextremaF, 1, \xextremaS},
+        extra x tick labels={$1 - \frac{\gamma}{\omega_0}$, 1, $1 +\frac{\gamma}{\omega_0}$},
+        extra tick style={grid=major, grid style={dashed, black}},
+        ]
+        \addplot[mark=none, samples=500, domain=0:\xmax, red, thick] {1 + 0.5*(1-x^2)/((1-x^2)^2 + 0.4^2)};
+        \addlegendentry{$n$ --- показник заломлення}
+        \addplot[mark=none, samples=500, domain=0:\xmax, blue, thick] {0.3/((1-x^2)^2 + 0.4^2)};
+         \addlegendentry{$\chi$ ---  коефіцієнт екстинкції}
+        \addplot[mark=none, black, samples=2, dashed] {1};
+        \path[name path=A] (\xextremaF, \ymin) -- (\xextremaF,\ymax);
+        \path[name path=B] (\xextremaS, \ymin) -- (\xextremaS,\ymax);
+%
+        \addplot [red!30, opacity=0.5] fill between [of = A and B];
+
+
+        \node[text width=4cm, align=center, font=\footnotesize, text=black] at (0.4, 1.8) {Область \\ нормальної дисперсії \\ $\frac{dn}{d\omega}  > 1$, $n > 1$};
+
+        \node[text width=4cm, align=center, font=\footnotesize\itshape, text=red!90!black] (ADsignature) at (1.8, 1.4)  {Область \\ аномальної дисперсії\\ $\frac{dn}{d\omega}  < 1$};
+
+        \node[text width=4cm, align=center, font=\footnotesize, text=black]  at (2, 0.5) {Область \\ нормальної дисперсії \\ $\frac{dn}{d\omega}  > 1$, $n < 1$};
+        \coordinate (AD) at (\xextremaS,1.9);
+        \draw[->] (ADsignature.west) to[in=0, out=180] (AD);
+    \end{axis}
+\end{tikzpicture}

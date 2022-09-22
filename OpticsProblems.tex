@@ -1,0 +1,209 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+% !BIB program = biber
+
+\documentclass[%
+biblatex,%
+]{ProblemBook}
+
+%https://tikz.net/category/physics/optics/
+
+
+%%% --------------------------------------------------------
+%%> \section{Вихідні дані докумета}
+%%% --------------------------------------------------------
+
+
+\title{Оптика}
+\subtitle{Практичний курс}
+\edition{}
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Бібліографія}
+%%% --------------------------------------------------------
+
+
+\addbibresource{d:/Projects/LaTeX/MyPackage/MyBase.bib}
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Титульна сторінка}
+%%% --------------------------------------------------------
+
+
+\input{CoverPage}
+
+
+
+
+
+\begin{document}
+\pagestyle{empty}
+%\ifelectronic\CoverPage\setcounter{page}{0}\fi
+\CoverPage
+\pagenumbering{arabic}
+\maketitle
+\makeinfopage
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Зміст}
+%%% --------------------------------------------------------
+
+
+\clearpage\pagestyle{plain}
+\tableofcontents
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Вступ та передмова}
+%%% --------------------------------------------------------
+
+
+\include{intro}%
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Вставка файлів розділів}
+%%% --------------------------------------------------------
+
+
+\newcommand{\ChaptersOne}{
+	GeomOpt,
+	Photometry,
+}
+\newcommand{\ChaptersTwo}{
+	Dispersion,
+    Interference,
+    Difraction,
+    Polarisation,
+}
+
+\pagestyle{main}
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Частина 1}
+%%% --------------------------------------------------------
+
+
+\part{Геометрична оптика та фотометрія}
+\epigraph{\Annabelle  Наукова грамотність --- це світогляд. Це скоріше лінза, через яку ви спостерігаєте за тим, що відбувається навколо вас.}{Neil DeGrasse Tyson}
+
+%\input{Additions/MaxwellEquation}
+\multiinclude{\ChaptersOne}[]
+
+
+
+
+%% --------------------------------------------------------
+%> \section{Частина 2}
+%% --------------------------------------------------------
+
+\part{Фізична оптика}
+\epigraph{\Annabelle  Вважаю, що більш приземлені та матеріальні науки аж ніяк не можуть бути зневажені у порівнянні з піднесеним вивченням розуму і духу \ldots}{James Clerk Maxwell}
+%\input{Additions/MaxwellEquationMacro}
+\multiinclude{\ChaptersTwo}[]
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Всавка відповідей}
+%%% --------------------------------------------------------
+
+
+\bookmarksetup{startatroot}
+\answers
+\multiinclude{\ChaptersOne}[-Answers]
+\multiinclude{\ChaptersTwo}[-Answers]
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Вставка додатків}
+%%% --------------------------------------------------------
+
+
+\appendix
+%\input{Additions/Vanaliz}
+\input{Additions/Spectra}
+\input{Additions/Mathematics}
+\input{Additions/Photometry}
+\input{Additions/PhysConstants}
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Вставка бібліографії}
+%%% --------------------------------------------------------
+
+
+\clearpage\pagestyle{bibliography}
+
+\nocite{%
+	% Підручники та посібники
+	BornWolfEng,
+%	Siv4,
+%	LandsbergOptics,
+	Chizh,
+	Kolobrodov1,
+    Kolobrodov2,
+	% задачники
+	Ivanova,
+%	Ovchinkin2,
+%	ChertovProblems,
+%	Kozel,
+%	SivP4,
+}
+
+
+
+\printbibheading[heading=bibintoc]
+
+\defbibheading{subheading}[\bibname]{%
+	\section*{#1\label{BibPage}}
+}
+
+\printbibliography[category=Textbooks, heading=subheading, title={Підручники та посібники}]
+\addtocategory{Textbooks}{%
+	BornWolfEng,
+%	Siv4,
+%	LandsbergOptics,
+	Chizh,
+	Kolobrodov1,
+    Kolobrodov2,
+}
+
+
+\printbibliography[category=Problems, heading=subheading, title={Задачники}]
+\addtocategory{Problems}{%
+	Ivanova,
+%	Ovchinkin2,
+%	ChertovProblems,
+%	Kozel,
+%	SivP4,
+}
+
+\makelastpage
+\end{document}

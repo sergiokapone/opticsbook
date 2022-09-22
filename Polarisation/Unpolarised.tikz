@@ -1,0 +1,30 @@
+\begin{tikzpicture}[x={(1cm,0.4cm)}, y={(8mm, -3mm)}, z={(0cm,1cm)}, line cap=round, line join=round]
+
+    % Main Axes
+%	\draw[->] (0,0,0) -- (6,0,0) node[right] {$x$};
+%	\draw[->] (0,0,0) -- (0,2,0) node[below left] {$y$};
+%	\draw[->] (0,0,0) -- (0,0,2) node[above] {$z$};
+
+	% Propagation Direction
+	\draw[very thick, ->] (1,0,0) -- (6,0,0) node[right, black] {$\vect{k}$};
+
+	% Viewing Screen
+	\rect{4}
+
+	% Refinements to Look 3D
+	\draw[very thick] (1,0,0) -- (4,0,0);
+
+	\begin{scope}[canvas is yz plane at x=2.5]
+		\cdraw{0.65}{0}
+		\cdraw{0.65}{45}
+		\cdraw{0.65}{90}
+		\cdraw{0.65}{135}
+		\cdraw{0.65}{180}
+		\cdraw{0.65}{225}
+		\cdraw{0.65}{270}
+		\cdraw{0.65}{315}
+	\end{scope}
+
+	% Nodes
+%	\node at (2.5,-1,1) {\small{Unpolarized}\\\small{Light}};
+\end{tikzpicture}

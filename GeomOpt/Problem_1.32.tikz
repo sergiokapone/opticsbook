@@ -1,0 +1,94 @@
+\begingroup
+\captionsetup{type=figure}
+\begin{subfigure}{0.45\linewidth}\centering
+    \begin{tikzpicture}[
+        scale=0.75,
+        declare function =
+        {%
+            % \f - Фокусна відстань
+            % \yn - y-входження променя
+            % \xl - положення лінзи
+            % \a - Кутнахилу падаючого променя
+            yp(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+            ym(\f,\yn,\xl,\a,\x) =  (tan(\a) + \yn/(\f + \xl))*(\x - \xl) + \yn;
+        },
+        ]
+        \def\sxa{-3}
+        \def\sxb{3}
+        \def\sya{-5}
+        \def\syb{5}
+
+        \path (\sxa,-3) rectangle (\sxb,3);
+        \draw (\sxa, 0) -- (\sxb, 0);
+        \draw[thick, angle 90-angle 90] (0,2) -- coordinate[] (O) ++(0,-4);
+
+        \draw[ray] (-2, 2) -- node[above, text=black] {$1$} (0,1); % Промінь 1
+        \draw[ray, domain=0:2.5] plot (\x, {yp(2, 1, 0, -atan(0.5), \x) } ); % Промінь 2
+
+        \draw[ray] (2,-3) -- node[above, text=black] {$2$} (0, -1); % Промінь 1
+        \coordinate (F) at (-2, 0);
+        \coordinate (F') at (2, 0);
+        %    \point{F}{$F$}{below left}{red}
+        %    \point{F'}{$F$}{below right}{red}
+        \point{O}{$O$}{below right}{red}
+
+        \node[below] at (\sxa, 0) {$M$};
+        \node[below] at (\sxb, 0) {$N$};
+    \end{tikzpicture}
+    \caption{}
+\end{subfigure}
+\begin{subfigure}{0.45\linewidth}\centering
+    \begin{tikzpicture}[
+        scale=0.75,
+        declare function =
+        {%
+            % \f - Фокусна відстань
+            % \yn - y-входження променя
+            % \xl - положення лінзи
+            % \a - Кутнахилу падаючого променя
+            yp(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+            ym(\f,\yn,\xl,\a,\x) =  (tan(\a) + \yn/(\f + \xl))*(\x - \xl) + \yn;
+        },
+        ]
+        \def\sxa{-3}
+        \def\sxb{3}
+        \def\sya{-5}
+        \def\syb{5}
+
+        % \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+        % \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+        % \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+        % \foreach \i in {\sxa,...,\sxb}
+        %  \{
+            %  \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+            %                }
+        % \foreach \j in {\sya,...,\syb}
+        % {
+            % \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        % }
+
+        \path (\sxa,-3) rectangle (\sxb,3);
+        \draw (\sxa, 0) -- (\sxb, 0);
+        \draw[thick, angle 90-angle 90] (0,2) -- coordinate[] (O) ++(0,-4);
+
+        \pgfmathsetmacro\yn{1}
+        \pgfmathsetmacro\xin{-2}
+        \pgfmathsetmacro\yin{3}
+        \pgfmathsetmacro\a{atan((\yin - \yn)/\xin)}
+        \coordinate (I) at (\xin,\yin);
+        \draw[ray] (I) -- node[above, text=black] {$1$} (0,\yn); % Промінь 1
+        \draw[ray, domain=0:2.5] plot (\x, {ym(2, \yn, 0, \a, \x) } ); % Промінь 1'
+
+        \draw[ray] (2,-2) -- node[above, text=black] {$2$} (0, -1); % Промінь 2
+        \coordinate (F) at (-2, 0);
+        \coordinate (F') at (2, 0);
+        %    \point{F}{$F$}{below left}{red}
+        %    \point{F'}{$F$}{below right}{red}
+        \point{O}{$O$}{below right}{red}
+
+        \node[below] at (\sxa, 0) {$M$};
+        \node[below] at (\sxb, 0) {$N$};
+    \end{tikzpicture}
+    \caption{}
+\end{subfigure}
+\endgroup

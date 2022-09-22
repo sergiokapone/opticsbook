@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+    \pgfmathsetmacro\sxa{-3} % Початкова x координата оптичної осі
+    \pgfmathsetmacro\sxb{3} % Кінцева x координата оптичної осі
+    \pgfmathsetmacro\sy{3}  % Координата y  оптичної осі
+    \pgfmathsetmacro\sf{1}  % Координата y  оптичної осі
+    \def\grid{
+        % Рисування сітки
+        \draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+        \draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+        \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+        \draw[red!40, ->] (0, -\sy) -- (0, \sy) node[above] {$y$};
+        \foreach \i in {\sxa,...,\sxb}
+        {
+            \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        }
+        \foreach \j in {-\sy,...,\sy}
+        {
+            \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        }
+    }
+    \draw[->] (0,0) -- (0,2.5*\sf) node[above] {$\vect{n}$};
+    \fill[yellow] (\sxa, -0.125) rectangle (\sxb,0);
+    \draw[domain=0:180,samples=500, blue] plot (\x:{2*\sf*(sin(\x))});
+    \draw[domain=0:180,samples=500, red] plot (\x:{2*\sf});
+    \foreach[] \i in {30,45, 65, 90, 105, ...,150} {
+        \draw[->] (0,0) -- ++(\i:{2*\sf*(sin(\i))}) coordinate (I\i);
+        %        \draw[->, red] (0,0) -- ++(\i:{4});
+    }
+    \node[above right] at (I90) {$I_0$};
+    \node[right] at (I65) {\contour{white}{$I = I_0\cos\alpha$}};
+    \node[left] at (150:{2*\sf}) {$B = B_0$};
+    \draw (0,0) ++(0,1) node[above right] {$\alpha$} arc(90:65:1);
+\end{tikzpicture}

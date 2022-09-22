@@ -1,0 +1,79 @@
+\begin{tikzpicture}[
+    raysig/.style={font=\scriptsize, text=black},
+    ]
+
+    \def\sxa{-5}
+    \def\sxb{5}
+    \def\sya{-5}
+    \def\syb{5}
+
+    %    \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %    \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %    \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %    \foreach \i in {\sxa,...,\sxb}
+    %    {
+        %        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %    }
+    %    \foreach \j in {\sya,...,\syb}
+    %    {
+        %        \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %    }
+    \pgfmathsetmacro\i{50} % кут падіння
+    \pgfmathsetmacro\n{1.5} % показник заломлення
+    \pgfmathsetmacro\d{1.5} % товщина пластинки
+    \pgfmathsetmacro\r{atan(1/\n*sin(\i))} % Закон заломлення
+
+    \pgfmathsetmacro\a{90 + \i} % кут нахилу початкового променя
+    \pgfmathsetmacro\as{\a - 2*\i} % кут нахилу відвитого променя
+    \pgfmathsetmacro\b{90 + \r} % кут нахилу заломленого променя
+    \pgfmathsetmacro\bs{\b - 2*\r} % кут нахилу відбитого в склі променя
+    \pgfmathsetmacro\xpad{\d*tan(\r)} % Відстані вздовж x
+    \pgfmathsetmacro\xP{\xpad} % обрізка падаючого
+
+
+    % Пластина
+    %	\draw (\sxa, 0) -- (\sxb, 0);
+    %    \draw (\sxa, -\d) -- (\sxb, -\d);
+    \draw[blue, glass] ({-\xP-2*\xpad},0) rectangle  ({+\xP+2*\N*\xpad},-\d);
+    \draw[<->] ({-\xP-2*\xpad +0.25}, 0) -- node[right] {$d$} ++(0,-\d);
+
+    % Промені
+    \coordinate (S) at ({-\xP-2*\xpad}, {tan(\a)*(-\xP-2*\xpad)}); % Точка старту падаючого променя
+    \coordinate (O) at (0, 0); % Точка падіння падаючого променя
+    \coordinate (R) at (\xpad, -\d); % Точка падіння заломленого променя
+
+    \draw[ray, domain={-\xP-2*\xpad}:0] plot (\x, {tan(\a)*\x}); % Падаючий промінь
+    \foreach[count=\j] \i in {0,...,\numexpr\N-1\relax}
+    {
+        \draw[ray, domain=2*\i*\xpad:{2*(\i+1)*\xpad + \xP}] plot (\x, {tan(\as)*(\x - 2*\i*\xpad)}) node[above, raysig] {$\j$}; % Відбитий 1 промінь
+
+        % Промені в середині
+
+        \draw[ray, domain=2*\i*\xpad:{(2*\i+1)*\xpad}] plot (\x, {tan(\b)*(\x - 2*\i*\xpad)});% Заломлений промінь
+
+        \ifnum\i=\numexpr\N-1\relax
+        \relax
+        \else
+        \draw[ray,  domain={(2*\i+1)*\xpad}:{(2*\i+2)*\xpad}] plot (\x, {tan(\bs)*(\x - 2*\i*\xpad) - 2*\d}); % Відбитий промінь
+        \fi
+
+        % Промені зовні
+
+        \draw[ray, domain={(2*\i+1)*\xpad}:{(2*\i+1)*\xpad + 3*\xP}] plot (\x, {tan(\a)*(\x - (2*\i+1)*\xpad) - \d}) node[below, raysig] {$\j'$};;
+    }
+
+
+
+    % Перпендикуляри і кути
+
+    \draw (0,-1) coordinate (mN) -- ++ (0,2) coordinate (N);
+    \node[above] at ({+\xP+2*\N*\xpad -0.5},0) {$n_1$};
+    \node[] at ({+\xP+2*\N*\xpad -0.5},-\d/2) {$n_2$};
+    \node[below] at ({+\xP+2*\N*\xpad - 0.5},-\d) {$n_3$};
+
+    \shorthandoff{"}
+    \pic[draw, line width = 1, "$\epsilon_1$", angle eccentricity=1.5, angle radius=0.5cm] {angle = N--O--S};
+    \pic[draw, line width = 1, "$\epsilon'_2$", angle eccentricity=1.5, angle radius=0.5cm, pic text options={shift={(-2ex,0)}}] {angle = mN--O--R};
+    \shorthandon{"}
+
+\end{tikzpicture}

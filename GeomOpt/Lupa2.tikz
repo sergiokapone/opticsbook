@@ -1,0 +1,49 @@
+\begin{tikzpicture}[scale=1]
+
+	\fill[line join=round, glass, draw=blue, ultra thin, name path=lens] (0.25,-2) arc (-30:30:4 and 4) -- ++(-0.5, 0) arc (150:210:4 and 4) -- cycle;
+
+	\draw[name path=optaxis] (-8,0) -- (8,0);
+
+	\coordinate (F) at (-4,0); \point{F}{$F$}{below left}{red}
+	\coordinate (F') at (4,0); \point{F'}{$F'$}{below left}{red}
+
+	\draw[thick, fill=black] (-0.5, 2) rectangle ++(1,0.05) (-0.5, -2) rectangle ++(1,-0.05);
+	\draw (0.5, 2) -- ++(0.5, 0) (0.5, -2) -- ++(0.5, 0);
+	\draw[<->] (0.75, 2) -- node[right, pos=0.8] {$D_\text{св}$} ++(0, -4);
+
+	\def\xzin{5}
+	\draw[thick, fill=black] ({\xzin-0.05}, 0.5) rectangle ++(0.05, 1) ({\xzin-0.05}, -0.5) rectangle ++(0.05, -1);
+	\draw (\xzin, 0.5) -- ++(0.5, 0) (\xzin, -0.5) -- ++(0.5, 0);
+	\draw[<->] ({\xzin+0.25}, 0.5) -- node[right] {$D_\text{зін}$}++(0, -1);
+
+
+	\def\d{2.5}
+	\def\l{1.5}
+	\def\f{4}
+	\coordinate (A) at (-\d, 0);
+	\coordinate (T) at (-\d, \l);
+	\draw[thick, ->] (A) --  node[left] {$l$} (T); % об'єкт
+
+	\foreach[count=\i] \xa in {1.97, 1.72, 1.45} {
+			\draw[ray] (T) -- (0, \xa) coordinate (R\i); % Промінь 1
+			\draw[ray, domain=0:7, name path=ray\i] plot (\x, { ((\xa-\l)/\d - \xa/\f)*\x + \xa } );
+			\draw[dashed, domain={\d*\f/(\d-\f)}:0] plot (\x, { ((\xa-\l)/\d - \xa/\f)*\x + \xa } );
+		}
+
+	\draw[->, dashed, thick] ({\d*\f/(\d-\f)}, 0) coordinate (A') -- node[left] {$l'$} ++(0,{\l*\f/(\f - \d)});
+	\draw (F) -- ++(0,-2) (F') -- ++(0,-3) (A') -- ++(0,-3) (A) -- ++(0,-1);
+	\draw[<->] (-4, -1.5) -- node[below] {$-f$} ++(4,0);
+	\draw[<->] (0, -1.5) -- node[below] {$f'$} ++(4,0);
+
+	\draw (0, 2) -- ++(0, -4);
+	\path[name intersections={of=optaxis and ray2}] (intersection-1) coordinate (Z);
+	%    % angles
+	\shorthandoff{"}
+	\pic[draw, line width=1, "$w'$", angle eccentricity=1.25, angle radius=2cm] {angle = R2--Z--F};
+	\shorthandon{"}
+
+	\draw[<->] let \p1=(A'), \p2=(F'), \n1={-2.75} in (\x1, \n1) -- node[below] {$-z'$} (\x2, \n1);
+	\draw[<->] let \p1=(F), \p2=(A), \n1={-0.95} in (\x1, \n1) -- node[above] {$z$} (\x2, \n1);
+	\draw[<->] let \p1=(F'), \n1={-0.95} in (\x1, \n1) -- node[above] {$z'_0$} (\xzin, \n1);
+
+\end{tikzpicture}

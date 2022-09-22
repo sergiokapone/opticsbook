@@ -1,0 +1,69 @@
+\begin{tikzpicture}[scale=0.85]
+
+
+    \def\H{6}
+    \def\Xa{3}
+    \def\Xb{3}
+
+    \def\ys{1.5}
+    \def\xs{-2}
+    \def\xe{8}
+
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (\Xa,\H);
+    \coordinate (C) at ({\Xa + \Xb},0);
+
+    \coordinate (S) at (\xs,\ys);
+
+    % Рисування призми
+    \fill[glass, draw=blue, ultra thin] (A) -- (B) -- (C) -- cycle;
+
+    % \node[circle, fill=red, inner sep=0pt, minimum size=4pt] at (S) {};
+
+    \pgfmathsetmacro\glassIndex{1.5}
+    \foreach[count=\i] \l in {0.4} {
+        \ifnum\Xa=0
+        \pgfmathsetmacro{\betaAnglea}{90}
+        \else
+        \pgfmathsetmacro{\betaAnglea}{atan(\H/\Xa)}
+        \fi
+        \pgfmathsetmacro{\betaAngleb}{atan(\H/\Xb)}
+        \pgfmathsetmacro{\gammaAngle}{atan((\l*\H - \ys)/(\l*\Xa - \xs))}
+        \pgfmathsetmacro{\inAngle}{90 - \betaAnglea + \gammaAngle} % i
+        \pgfmathsetmacro\midAngle{asin((1/\glassIndex)*sin(\inAngle))} % r
+        \pgfmathsetmacro{\yp}{\l*\H}
+        \pgfmathsetmacro{\xp}{\l*\Xa}
+        \coordinate (I\i) at (\xp, \yp);
+        \pgfmathsetmacro\gammaPrime{\betaAnglea + \midAngle - 90}
+        \pgfmathsetmacro\appex1angle{\betaAnglea + \midAngle - 90}
+        \pgfmathsetmacro\gammaDPrime{asin( \glassIndex*sin(180- \betaAngleb - \betaAnglea - \midAngle) ) + \betaAngleb - 90}
+        \pgfmathsetmacro\lp{(\yp + tan(\gammaPrime)*(\Xa + \Xb-\xp))/(\H + tan(\gammaPrime)*\Xb)} % lambda2
+        \pgfmathsetmacro{\ypb}{\lp*\H}
+        \pgfmathsetmacro{\xpb}{(1-\lp)*\Xb + \Xa}
+        \coordinate (R\i) at (\xpb, \ypb);
+        \pgfmathsetmacro\ye{-tan(\gammaDPrime)*(\xe - \xpb) + \ypb}
+        \coordinate (E\i) at (\xe, \ye);
+        \draw[ray, thin] (\xp, \yp) -- (\xpb,\ypb);
+        \draw[ray, thin] (\xpb,\ypb) -- (\xe, \ye);
+        \draw[ray, thin] (S) -- (\xp, \yp) ;
+        \draw[blue] ({\xp}, {\yp}) -- +({-atan(\Xa/\H)}:-1) coordinate (Tni\i) -- +({-atan(\Xa/\H)}:3) coordinate (Bni\i);
+        \draw[blue] ({\xpb}, {\ypb}) -- +({atan(\Xb/\H)}:-3) coordinate (Bno\i) -- +({atan(\Xb/\H)}:1) coordinate (Tno\i);
+        \draw[dashed, domain=\xp:8, name path global=In\i]  plot (\x, {tan(\gammaAngle)*(\x - \xp) + \yp}) coordinate (In\i);
+        \draw[dashed, domain=\xpb:1, name path global=Out\i]  plot (\x, {-tan(\gammaDPrime)*(\x - \xpb) + \ypb});
+
+        % angles
+        \rightAngle{A}{I\i}{Tni\i}{0.25};
+        \rightAngle{C}{R\i}{Tno\i}{0.25};
+    }
+    \path[name intersections={of=In1 and Out1}] (intersection-1) coordinate (IO);
+    \coordinate (Theta) at (intersection of {Tni1}--{Bni1} and {Tno1}--{Bno1});
+    \shorthandoff{"}
+    \pic[-to, draw, line width = 1, "$-\epsilon_1$", angle eccentricity=2, angle radius=0.5cm] {angle = {Tni1}--{I1}--S};
+    \pic[-to, draw, line width = 1, "$-\epsilon_2$", angle eccentricity=2, angle radius=0.5cm] {angle = {Bni1}--{I1}--R1};
+    \pic[to-, draw, line width = 1, "$\epsilon_3$", angle eccentricity=2, angle radius=0.5cm] {angle = I1--{R1}--Bno1};
+    \pic[to-, draw, line width = 1, "$\epsilon_4$", angle eccentricity=2, angle radius=0.5cm] {angle = E1--{R1}--Tno1};
+    \pic[draw, line width = 1, "$\theta$", angle eccentricity=2, angle radius=0.5cm] {angle = I1--{Theta}--Bno1};
+    \pic[draw, line width = 1, "$\theta$", angle eccentricity=2, angle radius=0.5cm] {angle = A--{B}--C};
+    \pic[draw, line width = 1, "$\sigma_0$", angle eccentricity=2, angle radius=0.5cm] {angle = R1--{IO}--In1};
+    \shorthandon{"}
+\end{tikzpicture}

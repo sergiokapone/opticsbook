@@ -1,0 +1,68 @@
+\begin{tikzpicture}[scale=0.7]
+
+	% Задаємо перше дзеркало
+	\pgfmathsetmacro\intx{3}
+	\pgfmathsetmacro\inty{2}
+	\pgfmathsetmacro\a{-atan(\inty/\intx)}
+	\draw[domain=0:\intx, name path=mirror1] plot(\x, {tan(\a)*\x+\inty});
+
+	% Задаємо друге дзеркало
+	\pgfmathsetmacro\g{180-2*\a}
+	\pgfmathsetmacro\b{\g+\a}
+	\pgfmathsetmacro\xc{\intx}
+	\pgfmathsetmacro\yc{0}
+	\draw[domain=0:\xc, name path=mirror2] plot(\x, {tan(\b)*(\x - \xc) + \yc});
+
+	% Будуємо дзеркала
+
+	\fill[glass, rotate around={\a:(0, \inty)}] (0, \inty) rectangle ++({\intx/cos(\a)}, +0.1);
+	\fill[glass, shading angle=\a, rotate around={-\a:(0, -\inty)}] (0, -\inty) rectangle ++({\intx/cos(\a)}, -0.1);
+
+	% Задаємо кут падаючого променя
+
+	\pgfmathsetmacro\ar{20}
+	\foreach[count=\i] \l in {0.53}{
+
+			% Шукаю координату перетину променя і першого дзкркала
+			\pgfmathsetmacro\xp{-\inty*\l/tan(\a)}
+			\pgfmathsetmacro\yp{\inty*(1-\l)}
+
+			% Будую падаючий промінь
+			\draw[ray, domain=-2:\xp, name path=rayin\i] plot(\x, {tan(\ar)*(\x-\xp) + \yp});
+			\coordinate (S\i) at (-2,{tan(\ar)*(-2-\xp) + \yp});
+
+
+			% Задаю перп пряму в точці падіння
+			%    \draw[domain=0:5, blue, dashed] plot(\x, {1/tan(\a)*(\xp -\x ) + \yp});
+
+			% Шукаю кут відбитого променя
+			\pgfmathsetmacro\arr{180-\ar+2*\a}
+
+			% Шукаю кут другого відбитого променя
+			\pgfmathsetmacro\arrr{180-\arr+2*(\b)}
+
+			% Шукаю координату перетину першого відбитого променя і другого дзкркала
+			\pgfmathsetmacro\xpr{(\xc*tan(\b) - \xp*tan(\arr)  + \yp - \yc)/ (tan(\b) - tan(\arr)) }
+			\pgfmathsetmacro\ypr{tan(\arr) * (\xpr - \xp) + \yp}
+
+			\coordinate (R\i) at (\xpr, \ypr);
+
+			% Будую перший відбитий промінь і другий відбитий промінь
+			\draw[ray, domain=\xp:\xpr, name path=raymid\i] plot(\x, {tan(\arr)*(\x - \xp)+\yp}); % 1'
+			\draw[ray, domain=\xpr:-2, name path=rayout\i] plot(\x, {tan(\arrr)*(\x - \xpr)+\ypr}); % 2'
+			%    \draw[domain=0:5, blue, dashed] plot(\x, {1/tan(\b)*(\xpr -\x ) + \ypr});
+		}
+
+	% Коодинати
+
+	\coordinate (C) at (\xc, \yc);
+	\coordinate (T1) at (0, \inty);
+	\coordinate (T2) at (0, -\inty);
+
+	\path[name intersections={of=rayin1 and rayout1}] (intersection-1) coordinate (Int);
+	\shorthandoff{"}
+	\pic[draw,black,angle radius=0.5cm,angle eccentricity=1.5, "$\alpha$"] {angle = T1--C--T2};
+	\pic[draw,black,angle radius=0.5cm,angle eccentricity=1.5, "$\delta$"] {angle = S1--Int--R1};
+	\shorthandon{"}
+
+\end{tikzpicture}

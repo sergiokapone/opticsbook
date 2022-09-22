@@ -1,0 +1,37 @@
+\begin{tikzpicture}[
+    /pgf/foreach/parse=true,
+    declare function={
+        intensity(\R,\x)= (1-\R)^2 / ((1-\R)^2 + 4*\R*(sin(deg(\x/2*(2*pi))))^2);
+    },
+    ]
+    \begin{axis}[
+        width=0.8\linewidth,
+        height=0.5\linewidth,
+        xlabel={${\delta}/{2\pi}$},
+        ylabel={$I/I_0$},
+        grid=both,
+        grid style={line width=.1pt, draw=blue!10},
+        major grid style={line width=.2pt,draw=blue!50},
+        minor tick num = 4,
+        ymin=0,
+        xmin=-3.5, xmax=3.5,
+        xtick distance=1,
+        xtick={-3,-2, ...,3},
+        xticklabels={
+            $-3$,
+            $-2$,
+            $- 1$,
+            0,
+            $+1$,
+            $+2$,
+            $+3$,
+        },
+        ]
+        \addplot[domain=-3.5:3.5, samples=700, red, smooth, thick, name path=B] {intensity(0.9,x)};
+        \addlegendentry{$R = 0.8$}
+        \addplot[domain=-3.5:3.5, samples=500, green!50!black, smooth, thick, name path=B] {intensity(0.4,x)};
+        \addlegendentry{$R = 0.4$}
+        \addplot[domain=-3.5:3.5, samples=500, blue, smooth, thick, name path=B] {intensity(0.1,x)};
+        \addlegendentry{$R = 0.1$}
+    \end{axis}
+\end{tikzpicture}

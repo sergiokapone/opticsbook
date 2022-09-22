@@ -1,0 +1,93 @@
+\begin{tikzpicture}[
+    reflector/.style={
+        draw, glass,
+        inner sep =0pt,
+        minimum height=0.125cm,
+        minimum width=2cm,
+        rotate = -45},
+    ]
+    \def\sxa{-5}
+    \def\sxb{5}
+    \def\sya{-5}
+    \def\syb{5}
+
+    %        \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %                \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %                \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %        \foreach \i in {\sxa,...,\sxb}
+    %        {
+        %                \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %            }
+    %        \foreach \j in {\sya,...,\syb}
+    %        {
+        %                \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %            }
+
+    \node[
+    draw, fill,
+    inner sep =0pt,
+    minimum height=0.1cm,
+    minimum width=1.75cm]
+    at (-2.25,-2) {};
+    \node[
+    draw, fill,
+    inner sep =0pt,
+    minimum height=0.1cm,
+    minimum width=1.75cm]
+    at (2.25,-2) {};
+    \node[
+    draw, fill,
+    inner sep =0pt,
+    minimum height=0.1cm,
+    minimum width=1.25cm]
+    at (0,-2) {};
+
+    \node[
+    draw, fill,
+    inner sep =0pt,
+    minimum height=0.1cm,
+    minimum width=1cm]
+    at (0,-5.05) {};
+
+    \node[reflector, anchor=north] (M1) at (-4,0) {};
+    \node[reflector,  rotate = -90, shading angle=-45, anchor=south] (M2) at (4,0) {};
+
+    \node[reflector, anchor=south] (M3) at (-1,0) {};
+    \node[reflector,  rotate = -90, shading angle=-45, anchor=north] (M4) at (1,0) {};
+
+    \coordinate (P) at (0,-5);
+
+    % \draw[blue, glass] (-2,-3) arc(180:0:2 and 0.25)arc(0:-180:2 and 0.25) -- cycle;
+
+    \foreach[count=\c, count=\d from 3, evaluate=\i as \j using int(-1*\i)]  \i in {-1, 1}
+    {
+
+        \draw[ray] (\i*4,4) -- (M\c.180+90*\i);
+        \draw[ray] (M\c.180+90*\i) -- (M\d.180+90*\j);
+        \draw[ray] (M\d.180+90*\j) -- ++(0,-3) coordinate (O\c);
+
+        \draw[ray, densely dashed] ({\i*4-0.25},4) -- (M\c.180+90*\i);
+        \draw[ray, densely dashed] (M\c.180+90*\i) -- (M\d.{90*(\i+1)-20});
+        \draw[ray, densely dashed] (M\d.{90*(\i+1)-20}) -- ([xshift=0.25cm]O\c) coordinate (I\c);
+
+        \draw[ray, densely dotted] ({\i*4+0.25},4) -- (M\c.180+90*\i);
+        \draw[ray, densely dotted] (M\c.180+90*\i) -- (M\d.{90*(-\i+1)+20});
+        \draw[ray, densely dotted] (M\d.{90*(-\i+1)+20}) -- ([xshift=-0.25cm]O\c) coordinate (J\c);
+
+    }
+
+    \draw[ray] (O1) -- (P);
+    \draw[ray] (O2) -- (P);
+
+    \draw[ray, densely dashed] (I1) -- ([xshift=0.25cm]P);
+    \draw[ray, densely dashed] (I2) -- ([xshift=0.25cm]P);
+
+    \draw[ray, densely dotted] (J1) -- ([xshift=-0.25cm]P);
+    \draw[ray, densely dotted] (J2) -- ([xshift=-0.25cm]P);
+
+    \node[draw=blue, ellipse, minimum height=0.25cm, minimum width=4cm, glass, inner sep=0pt] (Lens) at (0, -3) {};
+
+
+    \draw[<->] (-4,3) -- node[above] {$B$} (4,3);
+
+\end{tikzpicture}

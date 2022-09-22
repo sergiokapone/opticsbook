@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+%\draw (-5,-5) to[grid with coordinates] (5,5);
+
+\node[red] (S) at (-5,0) {\ding{90}};
+\node[below] at (S) {$S$};
+
+\draw[thick] (0,3)  node[right] {$B$} -- ++(0,-2);
+\draw[thick] (0,-3)  node[right] {$A$} -- ++(0,2);
+\draw[thick] (-0.25,-1)  node[left] {$C$} -- ++(0,2) node[left] {$D$};
+
+\draw[dash dot] (S) -- (-0.25,0);
+\end{tikzpicture}

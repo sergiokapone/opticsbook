@@ -1,0 +1,111 @@
+\colorlet{darkgreen}{green!50!black}
+\begin{tikzpicture}[
+		declare function={
+				b=0.6; % ширина щілини
+				a=1.2; % ширина непрозорої частини
+				d=a+b;% Період решітки
+				N=5;% Число штрихів
+				lambda = 0.5; % довжина хвилі
+				L=4; % Y Положення лінзи
+				f=6; % фокусна відстань лінзи
+				E=L+f; % Y положення екрану (x вісь графіка)
+				diap = lambda/b*f; % Y_min - положення першого мінімумів
+				ddiap = lambda/d*f; % Y_max - положення головних максимумів
+				adiap = lambda/b; % sin кута першого мінімуму
+				addiap = lambda/d; % sin кута першого головного максимуму
+				difraction(\wl,\x) = 5*( sin(pi*b/\wl/f*\x r)/(pi*b/\wl/f*\x) )^2; %тут  x -координата вздовж екрану
+				lattice(\wl,\x) = (sin(N*pi*d/\wl/f*\x r)/sin(pi*d/\wl/f*\x r)/N )^2;
+			},
+	]
+
+	% ------------------- Побудова отвору шириною b ---------------------------
+
+	%    \grid[1](-3,-3)--(3,3);
+
+	\foreach[count=\c] \i in {-3,...,2}
+		{
+			\fill[black]  ({\i*d+b/2}, -0.1) rectangle ++(a,0.2);
+			%			({-\i*d-b/2}, -0.1) coordinate (L\c) rectangle ++(-b,0.2) ;
+		}
+
+
+	% ------------------ Падаючі на щілину промені -----------------------------
+
+
+	\foreach \i in {-2.5,-2.4,...,2.5}
+		{
+			\draw[ray, green!50!blue] (\i*d, 1) -- ++(0,-0.9);
+		}
+
+	% --------------- Побудова заломлених лінзою променів ----------------
+
+	\foreach \wl/\cl in {0.5/darkgreen!20,0.4/blue!20}
+	{
+
+	\pgfmathsetmacro\ph{asin(-1*\wl/d)} % Кут дифракції
+
+	\foreach \j in {-2,...,2}
+	{
+
+	\foreach[count=\c] \i in {0,0.2,...,1}
+	{
+
+	\draw[ray, \cl]  ({b*(\i-1/2)+\j*d}, -0.1) coordinate (Out\c)  --++({-90+\ph}:{L/cos(\ph)}) coordinate (In\c); % Падаючі на лінзу промені
+
+	\draw[\cl] (In\c) -- ({f*sin(\ph)}, -E)
+	; % Заломлені лінзою промені
+
+	\draw[dash dot] (0,-L) -- ({\wl/d*f},{-E});  % Кутові ширини максимумів
+	}
+	}
+	}
+
+	% ----------------------------------------------------------------------
+
+
+	\draw[blue, glass] (-6, -L) arc(180:0:6 and 0.25)  arc(0:-180:6 and 0.25); % Лінза
+
+
+	% ----------------------------------------------------------------------
+
+	\foreach \wl/\c in {0.5/darkgreen,0.4/blue}{
+			\draw[domain=-1*diap:1*diap, samples=700, smooth, thin] plot (\x, {-E + difraction(\wl,\x)}); % Графік
+
+			\draw[domain=-1*diap:1*diap, \c, samples=600, smooth, thick] plot (\x, {-E + difraction(\wl,\x)*lattice(\wl,\x)}); % Графік
+
+		}
+
+	\draw[->] (-1*diap-0.5,{-E}) -- (1*diap+0.5,{-E})node [right] {$x$}; % Вісь OX
+	\draw[->] (0,-E) -- ++(0,{5+0.5}) node [right] {\contour{white}{$I$}}; % Вісь OY
+
+	% --------------------------- Підписи -------------------------------------
+
+	\def\side#1{%
+		\ifnum#1=1%
+			south east%
+		\else%
+			south west%
+		\fi%
+	}
+	\draw[] (-6, -L) -- ++(-1,0) coordinate (f1) (-6, {-E}) -- ++(-1,0) coordinate (f2); % Видвижки для f
+
+	\draw[<->] ([xshift=+0.25cm]f1) -- node[left] {$f'$} ([xshift=+0.25cm]f2); %Стрілки дистанції для f
+
+
+	\foreach[count=\c] \wl in {0.4,0.5}
+	{
+	\pgfmathsetmacro\ph{asin(-1*\wl/d)} % Кут дифракції
+	\draw[] (0,-L) [partial ellipse={-90}:{-90-\ph}:{\c+0.7}] node[pos=0, font=\scriptsize, anchor=north west] {
+			\contour{white}{$\phi\ifnum\c=2\relax+\delta\phi\fi$}
+		};
+
+	\node[anchor=\side{\c}, font=\scriptsize, inner sep=1pt, rectangle] at ({\wl/d*f},{-E+difraction(\wl, \wl/d*f)})
+	{\contour{white}{\ifnum\c=2\relax$\lambda+\delta\lambda$\else$\lambda$\fi}};
+
+	\draw ({\wl/d*f}, -E+0.1) -- ++(0,-0.2) coordinate (tiks\c); % Штрихи на осі OX
+
+	}
+
+     \draw [decorate, decoration = {brace, mirror, raise=1pt}] (tiks1) -- node[below, font=\scriptsize] {$f'\delta\phi$} (tiks2);
+
+\end{tikzpicture}

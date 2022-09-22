@@ -1,0 +1,36 @@
+\begin{tikzpicture}[scale=0.95]
+    \def\sxa{-5}
+    \def\sxb{5}
+    \def\sya{-5}
+    \def\syb{5}
+
+    \draw (\sxa, 0) -- (\sxb, 0);
+
+    \def\xone{-4}
+    \def\xtwoa{-1}
+    \def\xtwob{1}
+    \def\xthree{-\xone}
+
+    \coordinate (H1) at (\xone, 0);
+    \coordinate (H2) at (\xtwoa, 0);
+    \coordinate (H'2) at (\xtwob, 0);
+    \coordinate (H3) at (\xthree, 0);
+
+    \draw (\xone, 2) node[above]   {$1$} -- ++(0, -4);
+    \draw (\xtwoa, 2) -- ++(0, -4);
+    \draw (\xtwob, 2) -- ++(0, -4);
+    \node[above] at (0, 2) {$2$};
+    \draw (\xthree, 2) node[above] {$3$} -- ++(0, -4);
+
+    \draw[<->] let \n1 = {-1.75} in (\xone, \n1) -- node[below] {$d_1$} (\xtwoa, \n1);
+
+    \draw[<->] let \n1 = {-1.75} in (\xtwoa, \n1) -- node[below] {$\Delta H_2$} (\xtwob, \n1);
+
+    \draw[<->] let \n1 = {-1.75} in (\xtwob, \n1) -- node[below] {$d_2$} (\xthree, \n1);
+
+    \point{H1}{$H_1$}{below left}{red}
+    \point{H2}{$H_2$}{below left}{red}
+    \point{H'2}{$H'_2$}{below right}{red}
+    \point{H3}{$H_3$}{below left}{red}
+
+\end{tikzpicture}

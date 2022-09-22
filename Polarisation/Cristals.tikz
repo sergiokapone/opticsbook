@@ -1,0 +1,30 @@
+\begingroup
+\pgfmathsetmacro\say{-3.25}
+\pgfmathsetmacro\sby{2.25}
+\begin{subfigure}{0.45\linewidth}\centering
+\begin{tikzpicture}[scale=0.75]
+    \draw (\say,-\sby) to[crosslines] (-\say,\sby);
+    \node[above] at (0,\sby) {$O$};
+    \node[below] at (0,-\sby) {$O'$};
+    \draw[red] (0,0) circle (2) ;
+    \draw[blue] (0,0) ellipse (1 and 2);
+    \node[above right] at (1,0) {$v_e$};
+    \node[above right] at (2,0) {$v_o$};
+\end{tikzpicture}
+\caption{Кварц (додатній кристал)\\$n_e = 1.55$, $ n_o = 1.54 $, $b = 0.01 >0$}
+\label{pic:positive}
+\end{subfigure}
+\begin{subfigure}{0.45\linewidth}\centering
+\begin{tikzpicture}[scale=0.75]
+    \draw (\say,-\sby) to[crosslines] (-\say,\sby);
+    \node[above] at (0,\sby) {$O$};
+    \node[below] at (0,-\sby) {$O'$};
+    \draw[red] (0,0) circle (2);
+    \draw[blue] (0,0) ellipse (3 and 2);
+    \node[above right] at (3,0) {$v_e$};
+    \node[above right] at (1,0) {$v_o$};
+\end{tikzpicture}
+\caption{Ісландський шпат (від'ємний кристал)\\$n_e = 1.486$, $ n_o = 1.558 $, $b = -0.172 < 0$}
+\label{pic:negative}
+\end{subfigure}
+\endgroup

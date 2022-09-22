@@ -1,0 +1,125 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+
+%\usepackage{ifthen}
+%\usepackage{xcolor}
+%\usepackage{physics}
+%\usepackage{siunitx}
+
+\section{Шкала електромагнітних хвиль}
+
+\colorlet{wavecol}{orange!35!black}
+\colorlet{freqcol}{green!25!black}
+\colorlet{enercol}{blue!35!black}
+\pgfdeclareverticalshading{rainbow}{100bp}{
+    color(0bp)=(red); color(25bp)=(red); color(35bp)=(yellow);
+    color(45bp)=(green); color(55bp)=(cyan); color(65bp)=(blue);
+    color(75bp)=(violet); color(100bp)=(violet)
+}
+
+    % ELECTROMAGNETIC SPECTRUM
+\begin{tikzpicture}[scale=0.8, xscale=-1, every node/.style={scale=0.8}]
+    \def\h{1}
+    \def\radio{-4}
+    \def\micro{0}
+    \def\IR{3}
+    \def\red{6.10}  % log(700e-9) = -6.15490196
+    \def\blue{6.40} % log(400e-9) = -6.39794001
+    \def\UV{6.40}
+    \def\Xray{8}
+    \def\gamm{11}
+    \def\last{12}
+    \def\radiof{-5}
+    \def\dx{0.6}
+    \def\yE{-1.2*\h}
+
+    \def\tick#1#2#3{\draw[thick,#2] (#1+.08) --++ (0,-.16) node[below=-2pt,scale=1] {\strut #3};}
+    \def\ticka#1#2#3{\draw[thick,#2] (#1+.08) --++ (0,-.16) node[above=2pt,scale=1] {\strut #3};}
+
+    % MIDDLE
+    \fill[green!60!black!10] (\radio-0.82*\dx,0) rectangle (\IR,\h);
+    \fill[yellow!60!black!10] (\micro,0.18*\h) rectangle (\IR,0.8*\h);
+    \fill[red!60!black!10] (\IR,0) rectangle (\red,\h);
+    \fill[blue!60!violet!80!black!10] (\UV,0) rectangle (\Xray,\h);
+    \fill[blue!50!black!15] (\Xray,0) rectangle (\gamm,\h);
+    \fill[blue!40!black!25] (\gamm,0) rectangle (\last+0.8*\dx,\h);
+    \shade[shading=rainbow,shading angle=-90] (\red,0) rectangle (\blue,\h);
+    \node at ({(\radio+\micro)/2},\h/2) {\strut радіо};
+    \node at ({(\micro+\IR)/2},   \h/2) {\strut мікро};
+    \node at ({(\IR+\red)/2},     \h/2) {\strut ІЧ};
+    %\node at (\red,  \h/2) {red};
+    %\node at (\red,  \h/2) {blue};
+    \node at ({(\UV+\Xray)/2},    \h/2) {\strut УФ};
+    \node at ({(\Xray+\gamm)/2},  \h/2) {\strut рентген};
+    \node at ({(\gamm+\last+0.8*\dx)/2},  \h/2) {\strut гамма};
+
+    % WAVELENGTH
+    \draw[->,thick,wavecol] (\last+\dx,\h) -- (\radio-1.5*\dx,\h) node[right] {$\lambda$, м};
+    \foreach \x [evaluate={\i=int(-\x)}] in {\radio,...,\last}{
+        \ifthenelse{\i=0}{ \ticka{\x,\h}{wavecol}{$1$} }
+        { \ticka{\x,\h}{wavecol}{$10^{\i}$} }
+    }
+    \node[wavecol,scale=1] at (-3,1.9*\h) {\strut км};
+    \node[wavecol,scale=1] at ( 0,1.9*\h) {\strut м};
+    \node[wavecol,scale=1] at ( 3,1.9*\h) {\strut мм};
+    \node[wavecol,scale=1] at ( 6,1.9*\h) {\strut мкм};
+    \node[wavecol,scale=1] at ( 9,1.9*\h) {\strut пм};
+    \node[wavecol,scale=1] at (12,1.9*\h) {\strut фм};
+    %\node[wavecol,scale=1] at (15,1.71*\h) {\strut am};
+
+    % FREQUENCY
+    % log(f) = log(c) - log(lambda)
+    % log(c) = log(2.997e8) = 8.4766867429
+    \draw[->,thick,freqcol] (\radio-\dx,0) -- (\last+1.5*\dx,0) node[below left] {$f$, Гц};
+    \foreach \x [evaluate={\i=int(\x+9);\X=\x+0.53}] in {\radiof,...,\last}{
+        \tick{\X,0}{freqcol}{$10^{\i}$}
+    }
+    %\node[freqcol,scale=1] at (-8.47+ 3,-0.65*\h) {\strut kHz};
+    \node[freqcol,scale=1] at (-8.47+ 6,-0.8*\h) {\strut МГц};
+    \node[freqcol,scale=1] at (-8.47+ 9,-0.8*\h) {\strut ГГц};
+    \node[freqcol,scale=1] at (-8.47+12,-0.8*\h) {\strut ТГц};
+    \node[freqcol,scale=1] at (-8.47+15,-0.8*\h) {\strut ПГц};
+    \node[freqcol,scale=1] at (-8.47+18,-0.8*\h) {\strut ЕГц};
+
+%    % ENERGY
+%    % log(E) = log(hc) - log(lambda)
+%    % log(hc) = log(2.997e8*4.135e-15) = -5.9068377432
+%    \draw[->,thick,enercol] (\radio-\dx,\yE) -- (\last+1.5*\dx,\yE) node[below right] {$E$, еВ};
+%    \foreach \x [evaluate={\i=int(\x-6);\X=\x-0.09}] in {\radio,...,\last}{
+%        \ifthenelse{\i=0}{ \tick{\X,\yE}{enercol}{$1$} }
+%        { \tick{\X,\yE}{enercol}{$10^{\i}$} }
+%    }
+%    %\node[enercol,scale=1] at (5.91-15,\yE-0.69*\h) {\strut feV};
+%    %\node[enercol,scale=1] at (5.91-12,\yE-0.69*\h) {\strut peV};
+%    \node[enercol,scale=1] at (5.91- 9,\yE-0.8*\h) {\strut н\ eV};
+%    \node[enercol,scale=1] at (5.91- 6,\yE-0.8*\h) {\strut мк\ eV};
+%    \node[enercol,scale=1] at (5.91- 3,\yE-0.8*\h) {\strut м\ еВ};
+%    \node[enercol,scale=1] at (5.91+ 0,\yE-0.8*\h) {\strut  еВ};
+%    \node[enercol,scale=1] at (5.91+ 3,\yE-0.8*\h) {\strut кеВ};
+%    \node[enercol,scale=1] at (5.91+ 6,\yE-0.8*\h) {\strut МеВ};
+    %\node[enercol,scale=1] at (5.91+9,\yE-0.69*\h) {\strut GeV};
+
+\end{tikzpicture}
+
+\begin{table}[h!]\small
+\caption{Довжини хвиль кольорів, які сприймає око людини}
+\begin{tblr}
+		{
+		colspec={Q[l,m]X[c,m]},
+        rowspec={Q[]Q[red!20]Q[orange!20]Q[yellow!20]Q[yellow!50!green!20]Q[green!20]Q[blue!50!green!20]Q[blue!20]Q[violet!20]},
+        hlines={white},
+        row{1} = {themecolordark!80, fg=white, font=\bfseries},
+        cell{1}{1} = {c},
+		}
+Колір & Діапазон довжин хвиль, мкм\\
+Червоний       & $ 0,647  < \lambda < 0,780 $ \\
+Помаранчевий   & $ 0,585  < \lambda < 0,647 $ \\
+Жовтий         & $ 0,575  < \lambda < 0,585 $ \\
+Жовто-зелений  & $ 0,527  < \lambda < 0,575 $ \\
+Зелений        & $ 0,517  < \lambda < 0,527$  \\
+Синьо-зелений  & $ 0,486  < \lambda < 0,527 $ \\
+Синій          & $ 0,424  < \lambda < 0,486 $ \\
+Фіолетовий     & $ 0,380  < \lambda < 0,424 $ \\
+\end{tblr}
+\end{table}

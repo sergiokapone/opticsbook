@@ -1,0 +1,54 @@
+\begin{tikzpicture}[
+    mirror/.style={
+        shade, left color=glasscol, right color=glasscol, middle color=white, shading angle=45,
+    },
+    ]
+    \def\sxa{-5}
+    \def\sxb{5}
+    \def\sya{-5}
+    \def\syb{5}
+
+    %        \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %        \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %        \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %        \foreach \i in {\sxa,...,\sxb}
+    %        {
+        %                \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %            }
+    %        \foreach \j in {\sya,...,\syb}
+    %        {
+        %                            \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %                }
+
+
+    \draw[dash dot] (\sxa, 0) -- (\sxb, 0);
+
+    \node[red, inner sep=0.1pt] (S) at (-4,0) {\ding{90}};
+
+    \node[draw, minimum width = 2cm, minimum height=0.25cm,  inner sep=0pt, mirror] (M1) at (0,1) {};
+
+    \node[draw, minimum width = 2cm, minimum height=0.25cm, inner sep=0pt, mirror] (M2) at (0,-1) {};
+
+    \node[ground, minimum width = 0.25cm, minimum height=4cm, inner sep=0pt] (E) at (4,0) {};
+    \draw[->] ($(E.south west) - (0,0.25)$) --  ($(E.north west) + (0,0.5)$) node[left] {$y$};
+    \node[above right=0.15cm] at (E) {$E$};
+
+    \draw[ray] (S) -- (M1.south);
+    \draw[ray] (M1.south) -- (E.west);
+    \draw[ray] (S) -- (M2.north);
+    \draw[ray] (M2.north) -- (E.west);
+
+    \draw (M1.south west) -- ++(-1,0);
+    \draw (M2.north west) -- ++(-1,0);
+    \draw[<->] let \p1=(M1.south west), \p2=(M2.north west) in (-1.5,\y1) -- node[right] {$2d$} (-1.5, \y2);
+
+    \draw let \p1=(M1.north west), \p2=(M1.north east) in (\x1, \y1) -- ++(0, 0.5) (\x2, \y2) -- ++(0, 0.5);
+
+    \draw[<->] let \p1=([yshift=0.25cm]M1.north west), \p2=([yshift=0.25cm]M1.north east) in (\x1, \y1) -- node[above] {$D$} (\x2, \y2) ;
+
+    \draw (S) -- ++(0,-2.25);
+
+    \draw[ultra thick] (0,-0.5) -- (0,0.5);
+
+    \draw[<->] let \p1=(S), \p2=(E) in (\x1, -1.75) -- node[below] {$L$} ({\x2-0.15cm},-1.75);
+\end{tikzpicture}

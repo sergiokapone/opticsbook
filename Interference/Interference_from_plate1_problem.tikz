@@ -1,0 +1,38 @@
+\begin{tikzpicture}
+    \fill[glass, draw=blue, ultra thin] (-4,-1) rectangle (4,0);
+    \node[red, inner sep=0.1pt] (I1) at (-3,3) {\ding{90}};
+    \node[above left] at (I1) {$S$};
+    \node[draw, fill=black!30, inner sep=0.1pt, rectangle, rotate=135, minimum height=0.125cm, minimum width=1.125cm] (R1) at (3,3) {};
+    \draw[<->] (I1) -- node[left] {$L$} ++(0,-3);
+    \node[above right] at (R1) {$E$};
+%    \coordinate (R1) at (3$$,3);
+    \coordinate (I4) at (4,-4);
+    \coordinate (I2) at (intersection of (-4,0) -- (4,0) and I1--I4);
+%    \coordinate (I3) at (intersection of (-4,-2) -- (4,-2) and I1--I4);
+%    \coordinate (R) at ($(I3) - (1.25,0)$);
+    \coordinate (N1) at ($(I2)+(0, 3)$);
+%    \coordinate (N2) at ($(I2) - (0, 4)$);
+%    \coordinate (N3) at (intersection of (-4,-2) -- (4,-2) and N1--N2);
+    \draw[ray] (I1) -- (I2);
+    \draw[ray] (I2) -- (R1);
+%    \draw[dashed] (I2) -- (I4);
+%    \draw[ray] (I2) -- (R);
+%    \draw[ray] (R) -- ($(I4) - (1.25,0)$);
+    \draw[] (I2) -- (N1);
+%    \draw (R) -- ($(R) + (45:{1.25*cos(45)})$) coordinate (D);
+    \shorthandoff{"}
+    \pic[draw, line width = 1, "$\phi$", angle eccentricity=1.5, angle radius=1cm] {angle = N1--I2--I1};
+%    \pic[draw, line width = 1, "$\epsilon'_2$", angle eccentricity=1.5, angle radius=1cm] {angle = N3--I2--R};
+%    \pic[draw, line width = 1, "$\epsilon_1 - \epsilon'_2$", angle eccentricity=1.5, angle radius=1cm, double, pic text options={shift={(3ex,3ex)}}] {angle = R--I2--D};
+    \shorthandon{"}
+
+%    \point{I2}{$O$}{below left}{blue}
+%    \point{N3}{$A$}{below left}{blue}
+%    \point{R}{$B$}{below}{blue}
+
+    \draw [<->] (-3.5, 0) -- node[right] {$h$} ++(0,-1);
+
+%    \node[above] at (3.5, 0) {$n_1$};
+%    \node[below] at (3.5, 0) {$n_2$};
+%    \node[below] at (3.5, -2) {$n_3$};
+\end{tikzpicture}

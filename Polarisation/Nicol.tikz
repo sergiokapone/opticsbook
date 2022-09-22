@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+    \fill[glass] (0,0) -- ++(1,2) coordinate (A) -- ++(3, -2) coordinate (B) -- cycle;
+    \fill[glass,xshift=1mm] (0,0) ++(1,2) -- ++(3, -2) -- ++(1,2) -- cycle;
+    \draw[pattern=north east lines, pattern color=blue, ultra thin] (A) --++(1mm,0) --++(3,-2) -- ++(-1mm,0) -- ++(-3,2) --cycle;
+
+    \draw[unpolarized, red, ->] (-2.5,1) -- (0.5,1);
+    \draw[p-polarized, red, ->] (0.5,1) -- ++(6,0) node[below, text=black] {$e$};
+    \draw[s-polarized, ray] (0.5,1) -- (3.25,0.5);
+    \draw[s-polarized, ray, ->] (3.25,0.5) -- ++(-45:2) node[below,  text=black] {$o$};
+%        \draw (0,0) to[grid with coordinates] (5,3);
+\end{tikzpicture}

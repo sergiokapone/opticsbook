@@ -1,0 +1,24 @@
+\begin{tikzpicture}[scale=0.75]
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens1] (-2.25,-2) arc (-30:30:2 and 4) -- ++(-0.5, 0) arc (150:210:2 and 4) -- cycle;
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens2] (-2.25,-2) arc (-30:30:2 and 4) -- ++(0.5,0) -- ++ (0,-4) --cycle;
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens3] (0.25,-1) arc (-30:30:2 and 2) -- ++(1, 0) arc (150:210:2 and 2) -- cycle;
+
+    \draw[name path=optaxis] (-4,0) -- (3,0);
+
+    %    \coordinate (F) at (-4,0); \point{F}{$F$}{below left}{red}
+    \coordinate (F'1) at (2,0); \point{F'1}{$F'_1$}{below left}{red} \point{F'1}{$F_2$}{below right}{red}
+    \draw[name path=L2] (0.75, 1) -- ++(0,-3);
+    \draw[ray] (-4, 1.5) -- (-2.5, 1.5);
+    \draw[dashed, name path=ray1] (-2.5, 1.5) -- (F'1);
+    \draw[name intersections={of=L2 and ray1}, ray] (-2.5, 1.5) -- (intersection-1) coordinate (Out);
+    \draw[ray] (Out) -- ++(2,0);
+    \draw (-2.5, 2) -- ++(0,-5) ;
+    \draw (F'1) -- ++(0,-3);
+    \draw[<->] (-2.5, -2.85) -- node[below] {$L$} ++(4.5,0);
+    \draw[<->] (-2.5, -1.75) -- node[below] {$f'_\text{об}$} ++(4.5,0);
+    \draw[<->] (0.75, -2) -- node[below] {$f_\text{ок}$} ++(1.25,0);
+
+\end{tikzpicture}

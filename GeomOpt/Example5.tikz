@@ -1,0 +1,43 @@
+\begin{tikzpicture}[
+		scale=0.5,
+		declare function =
+			{%
+				% \f - Фокусна відстань
+				% \yn - y-входження променя
+				% \xl - положення лінзи
+				% \a - Кутнахилу падаючого променя
+				yr(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+			},
+		label/.style 2 args={%
+				postaction={ decorate, font=\scriptsize, transform shape, text=black,
+						decoration={ markings, mark=at position #1 with \node #2;}}}
+	]
+	\def\sx{6}
+	\def\sy{4}
+	\def\f{2}
+	\draw[line join=round, draw=blue, name path=s1, thick] (1,-3) arc (-30:30:4 and 6) ;
+	\draw[line join=round, draw=blue, name path=s2, thick] (-1,3) arc (150:210:4 and 6) ;
+
+	% Оптична вісь
+
+	\draw[name path=optaxis] (-\sx,0) -- (\sx,0);
+	\def\H{-1}
+	\def\at{-atan(3/4)}
+
+	\def\a{0} \def\y{2}
+	\draw[ray, domain=-4:-1.3, name path global/.expanded={I1}, label={0.5}{[above]{$1$}}]  plot (\x, {tan(\a)*(\x - \H) + \y}) ;
+
+	\draw[ray, domain=-0.60:4, thin, name path global/.expanded={R1}, label={0.9}{[above]{$1'$}}] plot({\x + 2}, {yr(\f,\y,\H,\a,\x)});
+
+	\def\a{10} \def\y{1.5}
+	\draw[ray, domain=-4:-1.43, name path global/.expanded={I1}, label={0.5}{[above]{$2$}}]  plot (\x, {tan(\a)*(\x - \H) + \y}) ;
+
+	\draw[ray, domain=-0.55:4, name path global/.expanded={R1}, label={1}{[above]{$2'$}}] plot({\x + 2}, {yr(\f,\y,\H,\a,\x)});
+
+	\def\a{\at} \def\y{-2.5}
+	\draw[ray, domain=-4:-1.24, name path global/.expanded={I1}, label={0.5}{[above]{$3$}}]  plot (\x, {tan(\a)*(\x - \H) + \y}) ;
+
+	\node[above] at (-1, 3) {$1$} ;
+	\node[above] at (1, 3) {$p$} ;
+	\draw[loosely  dotted, thick] (-1,3) -- (1,3);
+\end{tikzpicture}

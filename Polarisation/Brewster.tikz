@@ -1,0 +1,43 @@
+\begin{tikzpicture}[
+    declare function={
+    L=8; % width interface
+    l=3.5;  % length ray
+    t=0.5; % depth glass gradient
+    h=3; % bisector height
+    f=0.4;  % fraction of interface to the left
+    na=1.0; % fraction of interface to the left
+    ng=1.5; % glass
+    anga=atan(ng/na); % angle of incident ray
+    angg=asin(na/ng*sin(anga));
+    },
+    ]
+
+        \coordinate (O) at (0,0);            % point of contact
+        \coordinate (I) at (90+anga:l);    % point incident (top left)
+        \coordinate (M) at (90-anga:l);    % point reflected (top right)
+        \coordinate (F) at ({-90+angg}:l); % point refracted (bottom)
+        \coordinate (L) at (-f*L,0);       % left point interface
+        \coordinate (R) at ({(1-f)*L},0);  % right point interface
+        \coordinate (T) at (0,0.5*h);           % top middle point (bisector)
+        \coordinate (B) at (0,-0.75*h);      % bottom middle point (bisector)
+
+        % MEDIUM
+        \fill[glass] (L) rectangle++ (L,-h); % glass gradient
+        %\fill[glass] (L) rectangle (\L/2,-\h);
+        \node[above left] at (R) {$n_1$};
+        \node[below left] at (R) {$n_2$};
+
+        % LINES
+        \draw[dashed] (T) -- (B); % bisector
+        \draw[unpolarized, red, ->] (I) -- (O); % incoming ray
+        \draw[s-polarized, red,->] (O) -- (M); % reflected ray
+        \draw[semipolarized, red,->] (O) -- (F); % refracted ray
+
+        % ANGLES
+        \shorthandoff{"}
+        \pic[->,draw=black,angle radius=0.5cm,angle eccentricity=1.5, "$\epsilon_B$"] {angle = T--O--I};
+%        \draw pic[->, "$-\epsilon'_2$",draw=black,angle radius=35,angle eccentricity=1.25] {angle = B--O--F};
+%        \rightAngle{B}{O}{L}{0.3}
+        \rightAngle{M}{O}{F}{0.3}
+        \shorthandon{"}
+\end{tikzpicture}

@@ -1,0 +1,26 @@
+% http://www.cvrl.org/lumindex.htm
+% http://www.cvrl.org/database/text/lum/vl.htm
+\begin{tikzpicture}
+    \begin{axis}[trim axis left, %trim axis right,
+        height=0.65\linewidth,
+        width=0.9\linewidth,
+        /pgf/number format/.cd,
+        use comma,
+        1000 sep={\,},
+        xlabel = {$\lambda$, нм},
+        ylabel = {$V$},
+        grid=both,
+        grid style={line width=.1pt, draw=blue!10},
+        major grid style={line width=.2pt,draw=blue!50},
+        minor tick num = 4,
+        xtick distance=50,
+        ytick distance=0.2,
+        %        legend entries={$K_m = 683$~лм/Вт, для $\lambda = 555$~нм},
+        xmin=400,
+        xmax=700,
+        ymin=0,
+        ymax=1,
+        ]
+        \addplot[thick, red] table[x=l,y=V,col sep=comma, mark=none, smooth]{Photometry/LF.csv};
+    \end{axis}
+\end{tikzpicture}

@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+    \pgfmathsetseed{23655}
+%        \draw (-3,-3) to[grid with coordinates] (10,10);
+
+\draw[blue, glass]
+(0,0) --
+++(0,0.5) -- ++(2,-0.5) --
+++(0,0.5) -- ++(2,-0.5) --
+++(0,0.5) -- ++(2,-0.5) --
+++(0,0.5) -- ++(2,-0.5) --
+++(0,0.5) -- ++(2,-0.5)
+decorate [decoration={random steps,segment length=2mm}] { -- ++(0,-1)}
+-- ++(-10,0) -- cycle;
+;
+\draw (0,0) -- ++(-0.5,0);
+\draw (0,0.5) -- ++(-0.5,0);
+\draw[<->] (-0.25,0) -- node[left] {$h$} ++(0,0.5);
+
+\draw[dash dot] (0,0) --  ++(10,0);
+
+\draw (0,0.5) -- ++(0,0.5);
+\draw (2,0.5) -- ++(0,0.5);
+\draw[<->] (0,0.85) -- node[above] {$a$} ++(2,0);
+
+\end{tikzpicture}

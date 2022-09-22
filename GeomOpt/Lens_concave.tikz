@@ -1,0 +1,33 @@
+\begin{tikzpicture}[scale=1]
+
+    \fill[line join=round, glass, draw=blue, ultra thin] (-1,-1.5) arc (-30:30:3.65 and 3) -- (1,1.5) arc (150:210:3.65 and 3) -- cycle;
+    %    \draw[line join=round, draw=blue, fill=blue!15, -to] (0.6,-1.5) arc (-30:30:3 and 3) -- ++(-1.2, 0) arc (150:210:3 and 3) -- cycle;
+
+    \draw (-5,0) -- (5,0);
+    \draw[name path=H] (-0.25, 1.5) -- ++(0,-5);
+    \draw[name path=H'] (0.25, 1.5) -- ++(0,-5);
+    \draw[name path=H] (-0.5, 2) -- ++(0,-4);
+    \draw[name path=H'] (0.5, 2) -- ++(0,-4);
+    \draw[<->] (-0.5, 1.75) -- node[above] {$d$} ++(1,0);
+    \draw[->] (-0.75, -1.85) -- ++(0.25,0) ;
+    \draw[->] (0, -1.85) -- ++(-0.25,0) node[below left] {$S_H$};
+
+    \draw[->] (0, -1.75) -- ++(0.25,0) ;
+    \draw[->] (0.75, -1.75) -- ++(-0.25,0) node[below right] {$-S'_{H'}$};
+
+    \coordinate (F') at (-4,0); \point{F'}{$F'$}{below left}{red}
+    \coordinate (F) at (4,0); \point{F}{$F$}{below right}{red}
+    \coordinate (H) at (-0.25,0); \point{H}{$H$}{below left}{red}
+    \coordinate (H') at (0.25,0); \point{H'}{$H'$}{below right}{red}
+
+    \draw (F) -- ++(0,-3.5);
+    \draw (F') -- ++(0,-3.5);
+    %    \draw (-0.5, -3) -- ++(0, -0.5) (0.5, -3) -- ++(0, -0.5);
+    %    \draw (-0.25, -3) -- ++(0, -0.5) (0.25, -3) -- ++(0, -0.5);
+    \draw[<->] (-4, -1.25) -- node[below] {$-S'_{F'}$} ++(4.5,0);
+    \draw[<->] (-0.5, -1) -- node[below] {$S_{F}$} ++(4.5,0);
+    \draw[<->] (-4, -2.75) -- node[below] {$-f'$} ++(4.25,0);
+    \draw[<->] (-0.25, -3) -- node[below] {$f$} ++(4.25,0);
+    \draw[<->] (-0.25, -3.25) -- node[below] {$\Delta'_{HH'}$} ++(0.5,0);
+
+\end{tikzpicture}

@@ -1,0 +1,109 @@
+\begin{tikzpicture}[
+		declare function={
+				b=1; % ширина щілини
+                a=4; % ширина непрозорої частини
+				lambda = 0.3; % довжина хвилі
+				L=4; % Y Положення лінзи
+                f=6; % фокусна відстань лінзи
+                E=L+f; % Y положення екрану (x вісь графіка)
+				diap = lambda/b*f; % Y_min - положення першого мінімімі
+                adiap = lambda/b; % sin кута першого мінімуму
+				difraction(\x) = 5*( sin(pi*b/lambda/f*\x r)/(pi*b/lambda/f*\x) )^2; %тут  x -координата вздовж екрану
+			},
+	]
+
+	% ------------------- Побудова отвору шириною b ---------------------------
+
+
+	\foreach[count=\c] \i in {0}
+		{
+			\fill[black]  ({\i*a+\i*b+b/2}, -0.1) rectangle ++(a,0.2)
+			({-\i*a-\i*b-b/2}, -0.1) coordinate (L\c) rectangle ++(-a,0.2) ;
+		}
+
+
+	% ------------------ Падаючі на щілину промені -----------------------------
+
+
+	\foreach \i in {-1,-0.9,...,1}
+		{
+			\draw[ray] (\i*a, 1) -- ++(0,-0.9);
+		}
+
+	% --------------- Побудова заломлених лінзою променів ----------------
+
+
+	\pgfmathsetmacro\ph{asin(-2*adiap)} % Кут дифракції
+	\foreach[count=\c] \i in {0,0.3,...,1}
+	{
+
+	\draw[ray]  ({-b/2+\i*b}, -0.1) coordinate (Out\c)  --++({-90+\ph}:{L/cos(\ph)}) coordinate (In\c); % Падаючі на лінзу промені
+
+	\draw[red] (In\c) -- ({f*sin(\ph)}, -E)
+    ; % Заломлені лінзою промені
+	}
+
+	% ----------------------------------------------------------------------
+
+
+	\draw[blue, glass] (-6, -L) arc(180:0:6 and 0.25)  arc(0:-180:6 and 0.25); % Лінза
+
+
+	% ----------------------------------------------------------------------
+	\foreach \i in {1,...,3}
+		{
+			\draw[dash dot] (0,-L) -- (\i*diap,{-E-0.2}) (0,-L) --  (-\i*diap,{-E-0.2});  % Кутові ширини максимумів
+
+		}
+
+         \foreach[count=\c] \i in {-3,...,3} {
+             \draw (\i*diap, -E+0.1) -- ++(0,-0.2) coordinate (tiks\c);
+             \node[below] at (tiks\c) {%
+                 \ifnum\i=0%
+                 $\i$%
+                 \else%
+                     \ifnum\i>0%
+                         $+\i\frac{\lambda}{b}f'$%
+                     \else
+                         $\i\frac{\lambda}{b}f'$%
+                     \fi%
+                 \fi%
+             };
+         } % Штришки і підписи на осі OX
+
+		\draw[domain=-3*diap:3*diap, red, samples=500, smooth, ultra thick] plot (\x, {-E + difraction(\x)}); % Графік
+
+		\draw[->] (-3*diap-0.5,{-E}) -- (3*diap+0.5,{-E})node [right] {$x$}; % Вісь OX
+        \draw[->] (0,-E) -- ++(0,{5+0.5}) node [right] {\contour{white}{$I$}}; % Вісь OX
+
+    % --------------------------- Підписи -------------------------------------
+
+    	\draw[] (-6, -L) -- ++(-1,0) coordinate (f1) (-6, {-E}) -- ++(-1,0) coordinate (f2); % Видвижки для f
+
+         \draw[<->] ([xshift=+0.25cm]f1) -- node[left] {$f'$} ([xshift=+0.25cm]f2); %Стрілки дистанції для f
+
+         \draw (b/2, 0) -- ++(0,-2.5);
+         \draw[<->] (-b/2, -0.5) -- node[below] {\contour{white}{$b$}} ++(b,0);
+         \draw (b/2, 0) ++(0,-2) arc(-90:{-90+\ph}:2) node[below, pos=0.5] {$\phi$};
+
+         \foreach \i in {1,...,3}
+         {
+             \pgfmathsetmacro\ph{atan(\i*adiap)}
+             \draw[] (0,-L) [partial ellipse={-90}:{-90+\ph}:{\i+0.7}] node[pos=0.8, below] {
+                 $\phi_\i$};
+         }
+
+        \coordinate (FirstAddMaximum) at (3/2*diap, {-E+difraction(3/2*diap)});
+        \coordinate (SecondAddMaximum) at (5/2*diap, {-E+difraction(5/2*diap)});
+
+        \node[font=\scriptsize, text width=2.7cm, align=center, inner sep=2pt, % fill=white, drop shadow
+        ] (AddMaximimSignature) at (5/2*diap, -E+3) {Додаткові максимуми};
+
+        \node[font=\scriptsize, text width=2.7cm, align=center, inner sep=2pt, % fill=white, drop shadow
+        ] (MainMaximimSignature) at (5/2*diap, -E+4) {Головний максимум};
+
+        \draw[<-, blue] (0,{-E + 5}) to[out=0, in=180] (MainMaximimSignature);
+
+        \draw[<-, blue] (FirstAddMaximum) to[out=90, in=-90] (AddMaximimSignature.200);
+        \draw[<-, blue] (SecondAddMaximum) to[out=90, in=-90] (AddMaximimSignature.340);
+\end{tikzpicture}

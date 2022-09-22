@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+%\draw (-5,-5) to[grid with coordinates] (5,5);
+\pgfmathsetmacro\E{4}
+\pgfmathsetmacro\Hole{0}
+
+% Draw rays
+
+\foreach \i in {-3,...,3}
+{
+\draw[ray] (-1,2/3*\i) -- (0,2/3*\i);
+}
+
+\draw[thick] (\Hole, -3) -- ++(0,2) coordinate (A);
+\draw[thick] (\Hole, 3) -- ++(0,-2) coordinate (B);
+\draw[thick] (\E, 3) -- ++(0,-6);
+
+\draw[dash dot] (0,0) -- (\E,0) coordinate (P);
+\draw[ray] (A) -- (P);
+\draw[ray] (B) -- (P);
+\node[right] at (P) {$P$};
+
+\draw[<->] (0,-2) -- node[above] {$b$} (\E,-2);
+\end{tikzpicture}

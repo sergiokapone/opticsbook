@@ -1,0 +1,30 @@
+\begin{tikzpicture}[
+    truba/.pic={
+        code={
+            \pgfmathsetmacro\th{0.5} % товщина труби
+            \pgfmathsetmacro\l{0.5} % довжина сегмента
+            \pgfmathsetmacro\sh{0.2} % зсув сегмента по Y
+            \fill[glass, draw=blue, thin] (0,\th/2) arc(90:270:0.07 and {\th/2}) -- cycle;
+            \foreach \i in {0,...,3}
+            {
+                \fill[draw, top color=black!30,bottom color=black!30,middle color=white, shade, shading angle=45] ({\i*\l},{-\th/2*(1-\sh*\i)}) rectangle ({(\i+1)*\l},{\th/2*(1-\sh*\i)});
+            }
+        },
+    },
+    ]
+    \fill[glass, draw=blue, ultra thin] (-4,-1) rectangle (4,0);
+    \node[red, inner sep=0.1pt] (I1) at (-3,3) {\ding{90}};
+    \node[above left] at (I1) {$S$};
+    \node[] (R1) at (2,2) {};
+    \draw  (R1) pic[rotate=45]{truba} ;
+    \coordinate (I4) at (4,-4);
+    \coordinate (I2) at (intersection of (-4,0) -- (4,0) and I1--I4);
+    \coordinate (N1) at ($(I2)+(0, 3)$);
+    \draw[ray] (I1) -- (I2);
+    \draw[ray] (I2) -- (R1);
+    \draw[] (I2) -- (N1);
+    \shorthandoff{"}
+    \pic[draw, line width = 1, "$\phi$", angle eccentricity=1.5, angle radius=1cm] {angle = N1--I2--I1};
+    \shorthandon{"}
+    \draw [<->] (-3.5, 0) -- node[right] {$h$} ++(0,-1);
+\end{tikzpicture}

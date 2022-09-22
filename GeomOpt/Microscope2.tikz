@@ -1,0 +1,76 @@
+	\begin{tikzpicture}[
+    declare function =
+    {%
+        % \f - Фокусна відстань
+        % \yn - y-входження променя
+        % \xl - положення лінзи
+        % \a - Кутнахилу падаючого променя
+        yr(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+    },
+    ]
+
+    \def\s{6}
+    \def\fO{1}
+    \def\fo{3}
+    \def\xO{-3}
+    \def\xo{3}
+    \def\xp{\xO - \fO - 0.29}
+    \def\l{-0.5}
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens1] (\xO,-3) arc (-30:30:4 and 6) arc (150:210:4 and 6) -- cycle;
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens2] (\xo,-3) arc (-30:30:4 and 6) arc (150:210:4 and 6) -- cycle;
+
+    % Оптична вісь
+
+    \draw[name path=optaxis] (-\s,0) -- (10,0);
+
+    \draw (\xO, 3) node[above] {об'єктив} -- ++(0,-6) ; % Об'єктив
+    \coordinate (F) at ({\xO-\fO}, 0); % Передній фокус об'єктива
+    \coordinate (F') at ({\xO+\fO}, 0); % Задній фокус об'єктива
+    \point{F}{$F_1$}{above}{red}
+    \point{F'}{$F'_1$}{above}{red}
+
+    \draw (\xo, 3)  node[above] {окуляр} -- ++(0,-6); % Окуляр
+    \coordinate (Fo) at ({\xo-\fo}, 0); % Передній фокус окуляра
+    \coordinate (Fo') at ({\xo+\fo}, 0); % Задній фокус окуляра
+    \point{Fo}{$F_2$}{below}{red}
+    \point{Fo'}{$F'_2$}{below}{red}
+
+    \draw[thick, ->] (\xp, 0) -- node[left] {$l$} ++(0, \l) coordinate (T); % Предмет
+
+    % Математична логіка побудови
+    \foreach[count=\i] \yn in {-0.5, 1} {
+        \draw[ray] (T) -- (\xO, \yn); % Падаючий на О
+        \draw[ray, domain=\xO:\xo, name path global/.expanded={I\i}] plot (\x, {yr(\fO,\yn,\xO,atan( (\l - \yn) / (\xp-\xO) ),\x)}) ; % Падаючий на о
+        \draw[ray, domain=\xo:8, name path global/.expanded={R\i}] plot (\x, {yr(\fo,
+            {yr(\fO,\yn,\xO,atan( (\l - \yn) / (\xp-\xO) ),\xo)},
+            \xo,
+            {atan( (yr(\fO,\yn,\xO,atan( (\l - \yn) / (\xp-\xO) ),\xo) - \yn) / (\xo-\xO) )},
+            \x)}) ;% з окуляра
+        \draw[dashed, thin, domain={\xo-4}:\xo, name path global/.expanded={D\i}] plot (\x, {yr(\fo,
+            {yr(\fO,\yn,\xO,atan( (\l - \yn) / (\xp-\xO) ),\xo)},
+            \xo,
+            {atan( (yr(\fO,\yn,\xO,atan( (\l - \yn) / (\xp-\xO) ),\xo) - \yn) / (\xo-\xO) )},
+            \x)}) ;% з окуляра штришовані
+    }
+
+    % Перетини
+    \draw[name intersections={of=I1 and I2}, ->, thick] let \p1=(intersection-1) in (\x1, 0) -- node[left] {$l'$} (intersection-1);
+    %     \draw[name intersections={of=R1 and R2}, ->, thick] let \p1=(intersection-1) in (\x1, 0) -- (intersection-1);
+    \draw[name intersections={of=D1 and D2}, ->, thick, dashed] let \p1=(intersection-1) in (\x1, 0) --node[left, pos=0.8] {$l''$}   (intersection-1) coordinate (A''); % Перетин штрихованих
+
+    \draw[] (F) -- ++(0,-3.5) (F') -- ++(0,-3.5) (Fo) -- ++(0,-3.5) (Fo') -- ++(0,-3.5);
+    \draw[<->] let \p1=(F), \n1={-2.75} in (\x1, \n1) -- node[below] {$-f_\text{об}$} ++(\fO,0);
+    \draw[<->] let \p1=(F'), \n1={-2.75} in (\x1, \n1) -- node[below] {$f'_\text{об}$} ++(-\fO,0);
+
+    \draw[<->] let \p1=(F'), \p2=(Fo), \n1={-2.75} in (\x1, \n1) -- node[below] {$\Delta_F$} (\x2,\n1);
+
+    \draw[<->] let \p1=(Fo), \n1={-2.75} in (\x1, \n1) -- node[below] {$-f_\text{ок}$} ++(\fo,0);
+    \draw[<->] let \p1=(Fo'), \n1={-2.75} in (\x1, \n1) -- node[below] {$f'_\text{ок}$} ++(-\fo,0);
+
+    \eye[radius=2,x=9.7, rotation = 180]
+
+    \draw let \p1=(A'') in (\x1, 0) -- ++(0,-4.25);
+    \draw (8.25,0) coordinate (E) -- ++(0,-4.25);
+    \draw[<->] let \p1=(A''), \p2=(E), \n1={-4} in  (\x1, \n1) -- node[above, pos=0.5] {$L$} (\x2,\n1);
+\end{tikzpicture}

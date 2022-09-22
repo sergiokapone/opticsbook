@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+    \newcommand\bonusspiral{} % just for safety
+    \def\bonusspiral[#1](#2)(#3:#4)(#5:#6)[#7]{% \bonusspiral[draw options](placement)(start angle:end angle)(start radius:final radius)[revolutions]
+        \pgfmathsetmacro{\domain}{#4+#7*360}
+        \pgfmathsetmacro{\growth}{180*(#6-#5)/(pi*(\domain-#3))}
+        \draw [#1,
+        shift={(#2)},
+        domain=#3*pi/180:\domain*pi/180,
+        variable=\t,
+        smooth,
+        samples=int(\domain/5)] plot ({\t r}: {#5+\growth*\t-\growth*#3*pi/180})
+    }
+
+    \draw (-3,-3) to[crosslines={dash dot}]
+    (3,3);
+    \bonusspiral[blue, xscale=-1, name path=spiral](0,0)(0:270)(0:3)[5];
+    \path[name path=line] (0,0) node[above] {$C$} -- (-35:5);
+
+    \draw[name intersections={of=spiral and line}, <-] (0,0) -- (intersection-7) coordinate (A);
+
+    \node[right] at (A) {$A$};
+    \node[below] at (0,-3) {$O$};
+    \draw[->] (0,-3) -- (0,0);
+    \draw[->] (0,-3) -- (A);
+    \draw[->] (0,-3) -- ++(-35:3) node[below] {$A'$};
+
+\end{tikzpicture}

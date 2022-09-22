@@ -1,0 +1,20 @@
+\begin{tikzpicture}[line cap=round,line join=round, scale=1]
+    % coordinates
+    \coordinate (A)  at (-2,0);
+    \coordinate (B)  at (2,0);
+    \coordinate (C)  at (0,2);
+    \def\a{45}
+
+    \coordinate (I1) at (-1,2);
+    % prism
+    \draw[thin, dashed] (A) -- (B) -- (C) -- cycle;
+
+    \coordinate (A') at ($(A) + (\a:1.5)$);
+    \coordinate (B') at ($(B) + (180-\a:1.5)$);
+
+    \fill[glass, draw=blue, ultra thin] (A) -- (A') -- (B') -- (B) -- cycle;
+    \draw[ray] let \n1={0.55} in (-4+\n1,\n1) -- (-2+\n1,\n1) coordinate (In);
+    \draw[ray] let \p1=(C) in (In) -- (\x1,0) coordinate (Ref);
+    \draw[ray] let \p1=(In) in (Ref) -- (-\x1,\y1) coordinate (Out);
+    \draw[ray] (Out) -- ++(2,0);
+\end{tikzpicture}

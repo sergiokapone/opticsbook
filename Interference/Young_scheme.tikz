@@ -1,0 +1,66 @@
+\begin{tikzpicture}[
+    scale=0.9,
+    declare function={
+%        intensity(\y,\lam,\a,\L) = cos(180*\a*\y/(2*\lam*sqrt(\L*\L+\y*\y)))^2;
+    intensity(\y,\lam,\a,\L) = cos(2*pi*\a*\y/(\lam*\L) r)^2;
+    },
+    ]
+    \coordinate (Q) at (0,3.5);
+    \coordinate (O1) at (0.25,3.5);
+    %		\foreach \i in {1,...,3} {\fill[cyan, draw=black] (0,{5/2*(\i-1)}) coordinate (LC\i) rectangle +(0.25,2);}
+    %		\foreach \i in {0,...,2} {\draw[thick, green!70!blue] (-2-0.5*\i,0) -- +(0,7);}
+    %		\foreach \i in {0,...,6} {\draw[-latex, orange!80!black] (-3.1,{\i + 0.5}) -- +(1.15,0);}
+    \draw[thick] (8,-1) -- coordinate (O) coordinate[pos=0.8] (P)  +(0,9)  ; % Ecran
+    \fill (P) circle(0.05) node[above left] {$P$};
+    \draw (Q) -- (O) node [below left] {$O$};
+    \draw[dashed]  (O1) -- (P);
+    \draw ([xshift=1.5cm]O1)  let \p{PO1}=( $(P) - (O1)$) in arc (0:atan(\y{PO1}/\x{PO1}):1.5) node[pos=0.5, right] {$\theta$};
+    \draw[ray] (0.25, 2.25 + 2.5) coordinate (S2R) -- node[above, black] {$r_{2}$}(P);
+    \fill[red] (S2R) circle(0.1);
+    \draw[ray] (0.25, 2.25 ) coordinate (S1R) -- node[below right, black] {$r_{1}$}  (P);
+    \fill[red] (S1R) circle(0.1);
+    \draw (S2R) -- (S2R|- 8,-1);
+    \draw [dashed] (S2R) -- ($(S1R)!(S2R)!(P)$) coordinate (RA);
+    \draw ([yshift=-0.7cm]S2R) let \p{PR}=( $(S2R) - (RA)$) in arc (-90:{atan(\y{PR}/\x{PR})}:0.7) coordinate[pos=0.5] (TH);
+    \draw (TH) -- +(60:2) node[above] {$\theta$};
+    \draw[decorate,decoration={brace,amplitude=5pt,mirror, raise=0.5ex}] (S1R) -- node[below right=0.5ex] {$\Delta$} (RA);
+    \begin{pgfonlayer}{bg}
+        \fill[cyan!10] (O1) -- (P) -- (O) -- cycle;
+        \fill[yellow!10] (S2R) -- ($(S1R)!(S2R)!(P)$) -- (S1R);
+    \end{pgfonlayer}
+    \draw ([xshift=-0.1cm]S2R)  -- coordinate[pos = 0.8] (d2) ([xshift=-1.5cm]S2R) ;
+    \draw ([xshift=-0.1cm]S1R)  -- coordinate[pos = 0.8] (d1) ([xshift=-1.5cm]S1R) ;
+    \draw (d2) -- node[fill=white] {$d$} (d1);
+
+%    \draw ([xshift=0.1cm]P)  -- coordinate[pos = 0.8] (y1) ([xshift=1cm]P) ;
+%    \draw ([xshift=0.1cm]O)  -- coordinate[pos = 0.8] (y0) ([xshift=1cm]O) ;
+%    \draw (y1) -- node[fill=white] {$y$} (y0);
+    \node at ([shift={(-0.5,0.3)}]S2R) {$S_2$};
+    \node at ([shift={(-0.5,-0.3)}]S1R) {$S_1$};
+
+    \draw[latex-latex] (0.25,0.5) -- node[fill=white] {$L$}({P|-0.5,0.5});
+
+    \draw[thick,->] (9.2,-1.5) -- +(0,10) node[above] {$y$} ;
+    \draw[->] (9.2, 3.5) -- ++(3,0) node[above] {$I$};
+
+    \foreach \i in {-4,...,4} {
+    \path[bottom color=themecolordark,  top color=themecolordark, middle color = white] (8.1,{3.0 + \i}) rectangle +(1,1);
+
+    \draw (9.2, {3.5 + \i}) -- ++(0.3,0) node[right, font=\scriptsize, fill=white, inner sep=1pt] {$m = \ifnum\i>0\relax+\i\else\i\fi$};
+    }
+    \def\H{9}       % total wall height
+    \def\A{2}       % amplitude
+    \def\lambd{0.20}  % wavelength
+    \def\a{\L*\lambd/1/2}      % slit distance
+    \def\L{3}       % distance between walls
+    \begin{scope}[shift={([xshift=1.2cm]O)}]
+        \draw[myred,thick,variable=\y,samples=1000,smooth,domain=-\H/2:\H/2]
+    plot({\A*intensity(\y,\lambd,\a,\L)},\y);
+    \end{scope}
+
+
+    \pic["$\alpha_\text{сх}$", draw, <->, angle eccentricity=1.2, angle radius=2cm]
+        {angle=S2R--P--S1R};
+
+
+\end{tikzpicture}

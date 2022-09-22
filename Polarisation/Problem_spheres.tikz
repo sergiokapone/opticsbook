@@ -1,0 +1,57 @@
+\begin{center}
+\begin{tikzpicture}[baseline,scale=0.7]
+%\draw (-5,-5) to[grid with coordinates] (5,5);
+\foreach \i in {-1,-0.5,...,1.5}
+    {
+    \draw[ray] (\i,4) -- ++({-90-10}:{4/cos(10)});
+    }
+    \draw[unpolarized, red, , name path=ray] (2,4) -- ++({-90-10}:{4/cos(10)});
+    \fill[water, name path=circle] (0,0) circle (2);
+  \fill[watercol!20,opacity=0.8] (0,0) circle (2);
+\draw[name intersections={of=circle and ray}] (0,0) -- (intersection-1)  coordinate (A);
+\draw[dash dot] (A) --++(90-45:1);
+\node[below] at (A) {$A$};
+\draw[s-polarized, red] (A) -- ++(10:3);
+\draw (A) ++(90-10:1) arc(90-10:10:1) node[pos=0.5, anchor=south west] {$\phi$};
+\node[below=25pt,  inner sep=1pt] at (0,-2) {a)};
+\end{tikzpicture}
+%----------------------------------------
+\begin{tikzpicture}[baseline,scale=0.7]
+%\draw (-5,-5) to[grid with coordinates] (5,5);
+\foreach \i in {-1,-0.5,...,1.5}
+    {
+    \draw[ray] (\i,4) -- ++({-90-10}:{4/cos(10)});
+    }
+    \draw[unpolarized, red, , name path=ray] (2,4) -- ++({-90-10}:{4/cos(10)});
+    \fill[glass, name path=circle] (0,0) circle (2);
+\draw[name intersections={of=circle and ray}] (0,0) -- (intersection-1)  coordinate (A);
+\draw[dash dot] (A) --++(90-45:1);
+\node[below] at (A) {$A$};
+\draw[s-polarized, red] (A) -- ++(10:3);
+%\draw (A) ++(90-10:1) arc(90-10:10:1) node[pos=0.5, anchor=south west] {$\phi$};
+\draw[ray] (A) -- ++(-120:2);
+\draw (A) ++(-120:0.5) arc(-120:{-180-90-10}:0.5) node[pos=0.5, anchor=north east] {$\gamma$};
+\node[below=25pt,  inner sep=1pt] at (0,-2) {б)};
+\end{tikzpicture}
+%----------------------------------------
+\begin{tikzpicture}[baseline,scale=0.7]
+%\draw (-5,-5) to[grid with coordinates] (5,5);
+
+\fill[watercol!20,opacity=0.8, decoration={random steps, segment length=3pt}, decorate] (-3,-3) rectangle (5,5);
+
+\foreach \i in {-1,-0.5,...,1.5}
+    {
+    \draw[ray] (\i,4) -- ++({-90-10}:{4/cos(10)});
+    }
+    \draw[unpolarized, red, , name path=ray] (2,4) -- ++({-90-10}:{4/cos(10)});
+    \fill[glass, name path=circle] (0,0) circle (2);
+\draw[name intersections={of=circle and ray}] (0,0) -- (intersection-1)  coordinate (A);
+\draw[dash dot] (A) --++(90-45:1);
+\draw[s-polarized, red] (A) -- ++(10:3);
+\draw (A) ++(90-10:1) arc(90-10:10:1) node[pos=0.5, anchor=south west] {$\phi$};
+\draw[ray] (A) -- ++(-120:2);
+\node[below] at (A) {$A$};
+%\draw (A) ++(-120:0.5) arc(-120:{-180-90-10}:0.5) node[pos=0.5, anchor=north east] {$\gamma$};
+\node[below=25pt,  inner sep=1pt] at (0,-2) {в)};
+\end{tikzpicture}
+\end{center}

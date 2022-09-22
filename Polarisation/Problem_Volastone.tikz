@@ -1,0 +1,12 @@
+\begin{tikzpicture}[baseline]
+    \draw [unpolarized, ray] (-1.5,1.5) -- ++(1.5,0);
+    \draw [ray] (0,1.5) -- ++(1,0) coordinate (A);
+    \draw [p-polarized, red,->] (A) -- ++( 20:3);
+    \draw [s-polarized, red,->] (A) -- ++(-20:3);
+
+    \draw[pattern={vertical lines},pattern color=red] (0,0) -- ++(0,3) -- ++(2,-3) -- cycle;
+    \draw (0,3) ++(0,-1) arc(-90:{-90+atan(2/3)}:1) node[pos=0.5, fill=white, inner sep=0.6pt, below=2pt, circle] {$\alpha$};
+    \draw[pattern={dots},pattern color=blue] (0,3) -- ++(2,-3) -- ++(0,3) -- cycle;
+
+%\draw (0,0) to[grid with coordinates] (3,3);
+\end{tikzpicture}

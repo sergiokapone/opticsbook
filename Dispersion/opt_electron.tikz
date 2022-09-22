@@ -1,0 +1,14 @@
+\colorlet{myred}{red!65!black}
+\tikzstyle{spring}=[line width=0.8,blue!7!black!80,snake=coil,segment amplitude=5,segment length=5,line cap=round]
+
+\tikzstyle{force}=[->,myred,very thick,line cap=round]
+
+\begin{tikzpicture}
+    \node[circle, ball color=blue, minimum size=1.5cm] (O) at (0,0) {$+$};
+    \node[circle, ball color=red, minimum size=0.2cm] (e) at (4,0) {$e$};
+    \draw[spring,segment length=5] (O) -- (e);
+    \draw[force] (e) --++ (2,0) node[pos=0.9,right=0] {$e\vb{E}$};
+    \draw[force] ([yshift=-0.1cm]e.north) --++ (-2,0) node[pos=0.9,above=0] {$-k\vb{r}$};
+    \draw[force] ([yshift=+0.1cm]e.south) --++ (-1,0) node[pos=0.9,below=0] {$-g\dot{\vb{r}}$};
+    \draw[black,->] ([yshift=+0.1cm]e.south) --++ (+1,0) node[pos=0.9,below=0] {$\dot{\vb{r}}$};
+\end{tikzpicture}

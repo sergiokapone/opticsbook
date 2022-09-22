@@ -1,0 +1,55 @@
+\begin{tikzpicture}[scale=1]
+
+    \draw (-6,0) -- (7,0);
+    \draw[name path=H, thick] (-0.5, 3) -- ++(0,-6);
+    \draw[name path=H', thick] (0.5, 3) -- ++(0,-6);
+    \node[circle, inner sep=3.5pt] at (-3, 2.5) {$n$};
+    \node[circle, inner sep=2pt] at (3, 2.5) {$n'$};
+
+    \coordinate (F) at (-3,0);
+    \coordinate (F') at (3,0);
+    \coordinate (H) at (-0.5,0);
+    \coordinate (H') at (0.5,0);
+
+    \draw[thick, ->] (-5, 0) -- node[left] {$y$} ++(0, 1.5) coordinate (A);
+    \draw[ray] (-5, 1.5) coordinate (A) -- node[above,pos=0.4, font=\scriptsize] {$1$} (-0.5, 1.5);
+    \draw[ray, name path=ray1] (0.5, 1.5) coordinate (I2) -- node[above, font=\scriptsize, pos=0.3] {$1'$} ++({-atan(3/5)}:7);
+
+    \draw[ray] (A) -- node[above, pos=0.7, font=\scriptsize] {$2$} ++({-atan(3/4)}:{4.5/(cos(atan(3/4)))}) coordinate (I1);
+    \draw[ray, name path=ray2] ([xshift=1cm]I1) -- node[above, font=\scriptsize, pos=0.1] {$2'$} ++(6,0);
+    \draw[thick, <-, name intersections={of= ray1 and ray2}] (intersection-1) coordinate (A')-- node[right] {$-y'$} ($(0,0)!(intersection-1)!(7,0)$) coordinate (b');
+
+    \draw[ray] (-5,0) -- node[above, pos=0.6, font=\scriptsize] {$3$} (-0.5, 1.5) coordinate (I1);
+    \draw[ray]  (0.5, 1.5) -- node[above, font=\scriptsize, pos=0.3] {$3'$} (b');
+
+    %    \draw[ray] (A) -- node[above, text=black, font=\scriptsize, pos=0.8] {$4$} (H);
+    %    \draw[ray] (H') -- node[above, text=black, font=\scriptsize, pos=0.3] {$4'$} (A');
+
+    \draw (-5,0)  coordinate (b) -- ++(0, -4);
+    \draw let \p{1}=(A') in (A') -- (\x1, -4);
+    \draw[<->] let \p{1}=(A') in (-5, -3.75) -- node[below] {$L$} (\x1, -3.75);
+
+    \draw[<->] (-5, -2.75) -- node[below] {$-a$}  (-0.5, -2.75);
+    \draw[<->]  let \p{1}=(A') in (0.5, -2.75) -- node[below] {$a'$}  (\x1, -2.75);
+    \draw[<->] (-0.5, -2.75) --  node[below] {$\Delta_{HH'}$} (0.5, -2.75) ;
+
+    \draw (F) -- ++(0,-1.5);
+    \draw (F') -- ++(0,-1.5);
+
+    \draw[<->] (-5, -1.25) -- node[below] {$-z$} ++(2,0);
+    \draw[<->] (-3, -1.25) -- node[below] {$-f$} ++(2.5,0);
+
+    \draw[<->] (0.5, -1.25) -- node[below] {$f'$} ++(2.5,0);
+    \draw[<->] let \p{1}=(A') in (3, -1.25) -- node[below] {$z'$} (\x1,-1.25);
+
+    \point{F}{$F$}{below left}{red}
+    \point{F'}{$F'$}{below}{red}
+    \point{H}{$H$}{below left}{red}
+    \point{H'}{$H'$}{below right}{red}
+
+    \shorthandoff{"}
+    \pic[-to, draw, line width=1, "$-\sigma_1$", angle eccentricity=1.75, angle radius=0.75cm] {angle = F--b--I1};
+    \pic[to-, draw, line width=1, "$\sigma'_p$", angle eccentricity=1.5, angle radius=1.25cm] {angle = I2--b'--F'};
+    \shorthandon{"}
+
+\end{tikzpicture}

@@ -1,0 +1,183 @@
+\begingroup
+\pgfdeclarelayer{layer1}
+\pgfdeclarelayer{layer2}
+\pgfdeclarelayer{layer3}
+\pgfdeclarelayer{layer4}
+\pgfdeclarelayer{layer5}
+\pgfdeclarelayer{layer6}
+\pgfdeclarelayer{layer7}
+%
+\pgfsetlayers{main, layer7, layer6, layer5, layer4, layer3, layer2, layer1}
+
+% Right Angle Mark
+\def\MarkRightAngle[size=#1](#2,#3,#4){\draw[thick, line join=round] ($(#3)!#1!(#2)$) -- ($($(#3)!#1!(#2)$)!#1!90:(#2)$) -- ($(#3)!#1!(#4)$)}
+
+%% Phase Delay Plate
+\newcommand{\pkf}[3]{%
+	\begin{scope}[canvas is xz plane at y=1.2]
+		\draw[line join=round, thick, fill=black!40] (#1,-1.2) rectangle (#1+0.4,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is xy plane at z=1.2]
+		\draw[line join=round, thick, fill=black!25](#1,-1.2) rectangle (#1+0.4,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is yz plane at x=#1]
+		\draw[line join=round, thick, fill=black!10] (-1.2,-1.2) rectangle (1.2,1.2);
+		\draw[line join=round, thick, glass] (0,0) coordinate (B) ellipse (0.8cm and 0.8cm);
+%		\draw[line join=round, thick] (-{0.8*cos(#2)}, -{0.8*sin(#2)}) -- ({0.8*cos(#2)},{0.8*sin(#2)}) coordinate (C');
+		\draw[line join=round, thick] (-{0.8*cos(#3)}, -{0.8*sin(#3)}) coordinate (A') -- ({0.8*cos(#3)},{0.8*sin(#3)}) coordinate (A);
+%		\draw[line join=round, dashed, thick] (0,-0.8) -- (0,0.8) coordinate (C);
+	\end{scope}
+}
+
+%% Polarizer
+\newcommand{\polarizer}[2]{%
+	\begin{scope}[canvas is xz plane at y=1.2]
+		\draw[line join=round, thick, fill=black!40] (#1,-1.2) rectangle (#1+0.2,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is xy plane at z=1.2]
+		\draw[line join=round, thick, fill=black!25](#1,-1.2) rectangle (#1+0.2,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is yz plane at x=#1]
+		\draw[line join=round, thick, fill=black!10] (-1.2,-1.2) rectangle (1.2,1.2);
+		\draw[line join=round, thick, glass] (0,0) coordinate (B) ellipse (0.8cm and 0.8cm);
+		\draw[line join=round, thick] (-{0.8*cos(#2)}, -{0.8*sin(#2)}) -- ({0.8*cos(#2)},{0.8*sin(#2)}) coordinate (A);
+		\draw[line join=round, dashed] (0,-0.8) -- (0,0.8) coordinate (C);
+	\end{scope}
+}
+
+\begin{tikzpicture}[x={(1cm,0.4cm)}, y={(8mm, -3mm)}, z={(0cm,1cm)}, line cap=round, line join=round]
+
+%	% Main Axes
+%	\draw[->] (0,0,0) -- (12,0,0) node[right] {$x$};
+%	\draw[->] (0,0,0) -- (0,2,0) node[below left] {$y$};
+%	\draw[->] (0,0,0) -- (0,0,2) node[above] {$z$};
+
+	% Big Axis
+	\draw[line cap=round, -latex, very thick] (-0.5,0,0) -- (14.5,0,0);
+
+	% Polarizers
+	\begin{pgfonlayer}{layer2}
+		\polarizer{2}{-60}
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{layer4}
+		\pkf{5.5}{0}{90}
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{layer6}
+		\polarizer
+        {10.5}{-45}
+	\end{pgfonlayer}
+
+	% Electric Field
+	%% Unpolarized
+	\begin{pgfonlayer}{layer1}
+		\begin{scope}[canvas is yz plane at x=0.5]
+			\foreach \i in {0,45,...,315}
+			{
+				\cdraw{0.8}{\i}
+			}
+		\end{scope}
+	\end{pgfonlayer}
+	%% Polarized Linearly 1
+	\begin{pgfonlayer}{layer3}
+		\foreach \i in {3,3.5,...,5}
+			{
+				\begin{scope}[canvas is yz plane at x=\i]
+					\cdraw{0.8}{-60}
+					\cdraw{0.8}{180-60}
+				\end{scope}
+			}
+	\end{pgfonlayer}
+	%% Polarized Elliptically
+	\begin{pgfonlayer}{layer5}
+		\draw[very thick, red, variable=\t, domain=5.5:10.5, samples=300] plot (\t, {0.6*sin(deg(\t*4+90))}, {0.8*cos(deg(\t*4+90))});
+
+		\foreach \i [evaluate={\k = \i*4; \ii = \i;}] in {5.5,5.55,...,10.5}
+			{
+				\draw[-{Latex[length=1mm]}] (\ii,0,0) -- +(0, {0.6*sin(deg(\k+90))}, {0.8*cos(deg(\k+90))});
+			}
+	\end{pgfonlayer}
+	%% Polarized Linearly 2
+	\begin{pgfonlayer}{layer7}
+		\begin{scope}[canvas is yz plane at x=13]
+			\cdraw{0.6}{-35}
+			\cdraw{0.6}{180-35}
+			\draw[dashed] (0,-1.5) -- (0,1.5);
+            \draw[black] (0,0) -- ({1.5*cos(180-60)}, {1.5*sin(180-60)});
+            \draw[black] (0,0) -- ({1.5*cos(-60)}, {1.5*sin(-60)});
+            \draw[black] (0,0) -- ({1.5*cos(180-35)}, {1.5*sin(180-35)});
+            \draw[black] (0,0) -- ({1.5*cos(-35)}, {1.5*sin(-35)});
+            \draw[double] (0,0) ++(120:1) arc(120:145:1) node[above] {$\beta$};
+            \draw[] (0,0) ++(90:1) arc(90:120:1) node[above, pos=0.5] {$\alpha$};
+%			\coordinate (A) at ({0.6*cos(60)},{0.6*sin(180+60)});
+			\coordinate (B) at (0,0);
+			\coordinate (C) at (0,0.6);
+%			\MarkRightAngle[size=6pt](A,B,C);
+		\end{scope}
+
+		\foreach \i in {10,10.5,...,13.5}
+			{
+				\begin{scope}[canvas is yz plane at x=\i]
+					\cdraw{0.6}{-35}
+					\cdraw{0.6}{180-35}
+				\end{scope}
+			}
+	\end{pgfonlayer}
+
+	% Nodes
+	%% Upper
+	\begin{scope}[canvas is yz plane at x=1.8]
+		\node[rotate=-20, font=\scriptsize] at (0.7,1.7) {Поляризатор};
+	\end{scope}
+	%
+	\begin{scope}[canvas is yz plane at x=5.5]
+		\node[rotate=-20, font=\scriptsize] at (0.7,1.7) {Платівка $\lambda/4$};
+	\end{scope}
+	%
+	\begin{scope}[canvas is yz plane at x=10.3]
+		\node[rotate=-20, font=\scriptsize] at (0.7,1.7) {Аналізатор};
+	\end{scope}
+	%
+
+	%% Intensities of Light
+	\node at (0.5,0,1.2) {\small{$I_\text{пр}$}};
+%	\node at (3.8,0,1.2) {\small{$I_1$}};
+%	\node at (8,0,1.4) {\small{$I_2$}};
+	\node at (12,0,0.8) {\small{$I$}};
+	%% Propagation Direction
+	\node at (14,0.5,1) {$\vect{k}$};
+
+	% Refinements
+	\begin{pgfonlayer}{layer1}
+		\draw[line cap=round, very thick] (1,0,0) -- (1.99,0,0);
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{layer4}
+		\draw[line cap=round, very thick] (4.5,0,0) -- (5.5,0,0);
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{layer6}
+		\draw[line cap=round, very thick] (9.5,0,0) -- (10.49,0,0);
+	\end{pgfonlayer}
+    \begin{pgfonlayer}{layer1}
+    	\begin{scope}[canvas is yz plane at x=2]
+            \draw[] (0,0) ++(90:0.5) arc(90:120:0.5) node[left, pos=0.5] {\contour{white}{$\alpha$}};
+            \node[anchor=north west, font=\scriptsize, inner sep=0pt] at (-60:1) {$P'$};
+            \node[anchor=south east, font=\scriptsize, inner sep=0pt] at (180-60:1) {$P$};
+    	\end{scope}
+      	\begin{scope}[canvas is yz plane at x=5.5]
+            \node[anchor=north, font=\scriptsize, inner sep=-2pt] at (-90:1) {$O'$};
+            \node[anchor=south, font=\scriptsize, inner sep=-2pt] at (180-90:1) {$O$};
+      	\end{scope}
+        \begin{scope}[canvas is yz plane at x=10.5]
+            \draw[double] (0,0) ++(90:0.5) arc(90:135:0.5) node[right, pos=0.5] {\contour{white}{$\beta$}};
+            \node[anchor=north west, font=\scriptsize, inner sep=0pt] at (-45:1) {$A'$};
+            \node[anchor=south east, font=\scriptsize, inner sep=0pt] at (180-45:1) {$A$};
+        \end{scope}
+    \end{pgfonlayer}
+
+
+\end{tikzpicture}
+
+\endgroup

@@ -1,0 +1,55 @@
+\begin{tikzpicture}[scale=1.5]
+
+    \coordinate (G'1) at ({2*cos(90-40)-0.5}, {2*sin(90-40)});
+    \coordinate (G'2) at ({2*cos(-90+40)-0.5}, {2*sin(-90+40)});
+    \path[domain={-90+40}:{90-40}, left color=glasscol, middle color=glasscol, right color=white]  (G'1) to ++(4,0) to ++(0,-3) |- (G'2) arc({-90+40}:{90-40}:2) -- cycle;
+
+	\draw [name path=circle1, thick, domain={90+40}:{270-40}, glasscol!88!black, left color=glasscol!88!black, middle color=glasscol, right color=white] plot ({2*cos(\x)+0.5}, {2*sin(\x)});
+
+	\draw [name path=circle2, thick, domain={90-40}:{-90+40}, glasscol!88!black, right color=glasscol!88!black, middle color=glasscol, left color=white] plot ({2*cos(\x)-0.5}, {2*sin(\x)});
+
+	\draw (-5,0) -- (5,0);
+	\draw[name path=H] (-0.5, 1.5) node[above] {$H$} -- ++(0,-3);
+	\draw[name path=H'] (0.5, 1.5) node[above] {$H'$} -- ++(0,-3);
+	\coordinate (F) at (-4,0); \point{F}{$F$}{below left}{red}
+	\coordinate (F') at (4,0); \point{F'}{$F'$}{below right}{red}
+	\coordinate (H) at (-0.5,0); \point{H}{$H$}{below left}{red}
+	\coordinate (H') at (0.5,0); \point{H'}{$H'$}{below right}{red}
+	\path[name path = ray1] ($(F) + (0,1.25)$) -- ($(F') + (0,1.25)$);
+	\draw[ray, name intersections={of=ray1 and circle1}] ($(F) + (0,1.25)$) -- node[above, font=\scriptsize] {$1$} (intersection-1) coordinate(C1);
+	\draw[dashed, name intersections={of=ray1 and H'}] (C1) -- (intersection-1) coordinate(C2);
+	\path[name path = ray1refr] (C2) -- (F');
+	\draw[ray, name intersections={of=ray1refr and circle2}] (intersection-1) coordinate(C3) -- node[above, font=\scriptsize] {$1'$}  (F');
+	\draw[dashed] (C2) -- (C3);
+
+	\path[name path = ray2] ($(F') + (0,1.15)$) -- ($(F) + (0,1.15)$);
+	\draw[name intersections={of=ray2 and circle2}, ray] ($(F') + (0,1.15)$) -- node[above, font=\scriptsize] {$2$} (intersection-1) coordinate (D1);
+	\draw[dashed, name intersections={of=ray2 and H}] (D1) -- (intersection-1) coordinate (D2);
+	\path[name path = ray2refr] (D2) -- (F);
+	\draw[dashed, name intersections={of=ray2refr and circle1}] (D2) -- (intersection-1) coordinate (D3);
+	\draw[ray] (D3) -- node[above, font=\scriptsize] {$2'$} (F);
+
+	\shorthandoff{"}
+	\pic[-to, draw, line width=1, "$-\sigma$", angle eccentricity=1.5, angle radius=1cm] {angle = H--F--D3};
+	\pic[to-, draw, line width=1, "$\sigma'_p$", angle eccentricity=1.5, angle radius=1cm] {angle = C2--F'--H'};
+	\shorthandon{"}
+	\node at (-2.5, 2) {$n_1$};
+	\node at (2.5, 2) {$n_{p+1}$};
+
+	\draw (-4, 1.5)
+    %node[above] {$S$}
+    -- (-4,-1.5);
+	\draw (4, 1.5)
+    %node[above] {$S'$}
+    -- (4,-1.5);
+
+	\draw[<->] (-4, -1.25) -- node[below] {$-f$} ++(3.5,0);
+	\draw[<->] (0.5, -1.25) -- node[below] {$f'$} ++(3.5,0);
+\end{tikzpicture}
+\caption{Кардинальні елементи оптичної системи:
+	$F$ ($F'$) --- передній (задній) фокус;
+%	$S$ ($S'$) --- передня (задня) фокальна площина;
+	$H$ ($H'$) --- передня (задня) головна площина;
+	$H$ ($H'$) --- передня (задня) головна точка;
+	$f$ ($f'$) --- передня (задня) фокусна відстань.
+}

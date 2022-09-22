@@ -1,0 +1,91 @@
+\begin{tikzpicture}[
+    declare function =
+    {%
+        % \f - Фокусна відстань
+        % \yn - y-входження променя
+        % \xl - положення лінзи
+        % \a - Кутнахилу падаючого променя
+        yp(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+        ar(\f,\yn,\a) = (tan(\a) - \yn/\f);
+    },
+    ]
+
+    \def\f{2}
+
+    \def\sxa{-3}
+    \def\sxb{13}
+    %    \def\sy{4}
+    %    \draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+    %    \draw[gray!40, step=0.5] (\sxa,-\sy) grid (\sxb,\sy);
+    %    \draw[ ->] (\sxa,0) -- (\sxb,0) node[right] {$z$};
+    %    %    \draw[red!40, ->] (0, -\sy) -- (0, \sy) node[above] {$y$};
+    %    \foreach \i in {\sxa,...,\sxb}
+    %    {
+        %        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %    }
+    %    \foreach \j in {-\sy,...,\sy}
+    %    {
+        %        \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %    }
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens] (0.25,-2) arc (-30:30:2 and 4) -- ++(-0.5, 0) arc (150:210:2 and 4) -- cycle;
+
+    \draw[name path=optaxis] (\sxa,0) -- (\sxb,0);
+
+    %    \coordinate (F) at (-\f,0); \point{F}{$F$}{below left}{red}
+    %    \coordinate (F') at (\f,0); \point{F'}{$F'$}{below left}{red}
+
+    \draw[thick, fill=black] (-0.5, 2) rectangle ++(1,0.05) (-0.5, -2) rectangle ++(1,-0.05);
+    \draw (0.5, 2) -- ++(0.5, 0) (0.5, -2) -- ++(0.5, 0);
+    \draw[<->] (0.75, 2) -- node[right, pos=0.8] {$D_\text{ап}$} ++(0, -4);
+
+    \def\Rap{1.97}
+    \def\da{3}
+    \def\db{2.5}
+    \coordinate (A) at (-\da,0);
+    \coordinate (A') at (-2.5,0);
+    \coordinate (E) at (4,0);
+    \coordinate (d1) at (11, 0.25);
+    \coordinate (d2) at (11, -0.25);
+    \coordinate (Ec) at (11, -2);
+
+    \draw[ray, thin] (A) -- (0, \Rap) coordinate (R1); % Промінь 1
+
+    \draw[ray, thin]  (0, \Rap) -- (d1); % Промінь 1'
+    \draw[ray, thin, dashed]  (d1) -- ++({-atan(1/6)}:{1.5/cos(atan(1/6))}) coordinate (Z); % Промінь штрих
+
+
+    \draw[ray, thin] (-\db,0) -- (0, \Rap) coordinate (R1); % Промінь 1'
+    \draw[ray, thin] let \p1=(Ec) in (0, \Rap) -- (\x1,0);
+    \draw[ray, blue, thin] (d1) -- (E);
+
+    \draw[ray, thin] (-\da,0) -- (0, -\Rap) coordinate (R1); % Промінь 2
+    \draw[ray, thin] (0, -\Rap) -- (d2);
+    \draw[ray, thin, dashed]  (d2) -- ++({atan(1/6)}:{1.5/cos(atan(1/6))}); % Промінь штрих
+
+
+    \draw[ray, thin] (-\db,0) -- (0, -\Rap) coordinate (R1); % Промінь 2'
+    \draw[ray, thin] let \p1=(Ec) in (0, -\Rap) -- (\x1,0);
+    \draw[ray, blue, thin] (d2) -- (E);
+
+    \eye[radius=0.5,x=3.5]
+
+    \draw[thick, fill=black] let \p1=(Ec) in ({\x1-0.05}, 2) node[above] {екран} rectangle ++(0.05, -4) ;
+
+
+    \draw (d1) -- ++(0.5, 0);
+    \draw (d2) -- ++(0.5, 0);
+    \draw[<-] ([xshift=0.25cm]d1) -- ++(0, 1) node[right] {$\delta$};
+    \draw[<-] ([xshift=0.25cm]d2) -- ++(0, -1) ;
+
+    \draw (0, 2) -- ++(0, -5);
+    \draw (Ec) -- ++(0, -1);
+    \draw (A) -- ++(0, -3) (E) -- ++(0, -3) (A') -- ++(0, -3) (Z) -- ++(0,-3);
+    \draw[<-] let \p1=(A) in (\x1,-2.95) -- ++(-0.5,0);
+    \draw[<-] let \p1=(A') in (\x1,-2.95)  -- node[below left] {$dz$} ++(0.5,0);
+
+    \draw[<->] let \p1=(Ec) in (\x1, -2.75) -- node[below, pos=0.4] {$a'$} (0,-2.75);
+    \draw[<->] let \p1=(Ec), \p2=(E) in (\x1, -2.5) -- node[above] {$p$} (\x2,-2.5);
+    \draw[<->] let \p1=(Ec), \p2=(Z) in (\x1, -2.5) -- node[below] {$dz'$} (\x2,-2.5);
+
+\end{tikzpicture}

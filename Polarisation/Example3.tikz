@@ -1,0 +1,59 @@
+\begin{tikzpicture}[
+        scale=1,
+		declare function={
+        H=5;  % total wall height
+        A=1;  % amplitude
+        lambd=0.20; % wavelength
+        L=3; % distance between walls
+        a=L*lambd/2; % slit distance
+        ang=atan(1/H);
+				intensity(\y,\lam,\a,\L) = cos(2*pi*\a*\y/(\lam*\L) r)^2;
+			},
+	]
+    \draw[dash dot] (-12,0) -- (0,0);
+
+    \fill[glass, draw] (-10,{H/2}) rectangle ++(1,-H);
+    \draw (-10,{H/2}) -- ++(1,-H) ;
+
+    \fill[pattern=dots, pattern color=red,  draw] (-7,{H/2}) -- ++(0,-H) -- ++ (1,0) -- cycle;
+
+    \fill[glass, draw] (-4,{H/2}) rectangle ++(1,-H);
+    \draw (-4,{H/2}) -- ++(1,-H);
+
+	\begin{scope}[]
+		\draw[red,thick,variable=\y,samples=1000,smooth,domain=-H/2:H/2, name path global=I]
+		plot({A*intensity(\y,lambd,a,L)},\y);
+		\draw ({A*intensity(1,lambd,a,L)},1) -- ++(0.5,0) coordinate (y1);
+		\draw ({A*intensity(2,lambd,a,L)},2) -- ++(0.5,0) coordinate (y2);
+		\draw[<->] (y1) -- node[right] {$\Delta y$} (y2);
+    	\draw[->] (0,0) -- (A+0.5,0) node[right] {$I$};
+    	\draw[->, name path=y] (0, {-H/2}) -- (0, {H/2}) node[above] {$y$};
+	\end{scope}
+
+    \foreach  \i in {-2.5,-2,...,2.5}{
+    \draw[ray] (-12,\i) -- ++(2,0);
+    \draw[s-polarized, red, ->] (-9,\i) -- ++(2,0);
+    }
+
+    \foreach  \i in {-3,-1.5,...,3}{
+    \draw[p-polarized, red, ->] (-3,{(H/2-0.5)*\i/3}) -- ++(3,0);
+    }
+
+    \foreach[count=\c from 0, evaluate=\c as \cc using isodd(\c)] \i in {2.5,2,...,-2.5}
+    {
+    \ifnum\cc=1%
+        \edef\polarity{p-polarized}%
+    \else%
+        \edef\polarity{s-polarized}%
+    \fi
+    \draw[\polarity, red, ->] ({-7+0.5*\c*tan(ang)},\i) -- (-4,\i);
+%    \draw[red, ->] ({-7+0.5*\c*tan(ang)},\i) -- (-4,\i);
+    }
+    \node[rotate = 90, fill=white] at (-11.9,0) {природне світло};
+
+    \node[below, font=\scriptsize] at (-9.5,-2.5) {Поляризатор};
+    \node[below, font=\scriptsize] at (-6.5,-2.5) {Фазова платівка};
+    \node[below, font=\scriptsize] at (-3.5,-2.5) {Аналізатор};
+
+%    \draw[dash dot] (-12,{-H/2}) to[grid with coordinates] (0,{H/2});
+\end{tikzpicture}

@@ -1,0 +1,50 @@
+\begin{tikzpicture}[
+		declare function={
+                lambda = 0.6;
+                k = 2*pi/lambda;
+                D = 0.6;
+                L1 = 1;
+                L2 = 1;
+                b = 0.3;
+				I(\x) = 2*(1+sin(k*b*D/L1)/(k*b*D/L1)*cos(k*\x*D/L2));
+			},
+]
+\begin{axis}[
+%        set layers = axis on top,
+        xlabel={$y$},
+        ylabel={$I/I_0$},
+        axis y line=middle,
+        axis x line=middle,
+        every axis x label/.style={at={(current axis.right of origin)},anchor=west},
+        every axis y label/.style={at={(current axis.north)}, anchor=south},
+        enlargelimits={abs=0.5},
+        trig format plots=rad,
+        width=1\linewidth,
+        height=0.75\linewidth,
+%        grid=both,
+%        grid style={line width=.1pt, draw=blue!10},
+%        major grid style={line width=.2pt,draw=blue!50},
+%        minor tick num = 4,
+%        ytick=\empty,
+        xtick=\empty,
+        ymin=0, ymax=4,
+        xmin=-3, xmax=3,
+        ytick={1,...,4},
+        y tick label style={
+      				 font=\small,
+      				 fill=white},
+        yticklabels={
+        ,
+        $ 2 $,
+        ,
+        $ 4 $
+        },
+]
+\addplot[samples=500, smooth, red, thick, domain=-3:3] {I(x)};
+%\addplot[samples=2, smooth, dashed] {2};
+%\addplot[samples=2, smooth, dashed] {4};
+\addplot[samples=2, smooth, dashed, domain=-3:3] {2-2*sin(k*b*D/L1)/(k*b*D/L1)} node[pos=0.9, below] {$I_{\min}/I_0$};
+\addplot[samples=2, smooth, dashed, domain=-3:3] {2+2*sin(k*b*D/L1)/(k*b*D/L1)} node[pos=0.9, above] {$I_{\max}/I_0$};
+
+\end{axis}
+\end{tikzpicture}

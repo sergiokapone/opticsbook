@@ -1,0 +1,60 @@
+\begin{tikzpicture}[
+    scale=1,
+    declare function =
+    {
+        yr(\f,\yn,\xn,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xn) + \yn;
+    },
+    ]
+
+    \def\la{30}
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens1] (-1.75,-2) arc (-\la:\la:3.5 and 4) -- ++(-0.5, 0) arc ({180-\la}:{180+\la}:3.5 and 4) -- cycle;
+
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens2] (5.75,-2) arc (-30:30:4 and 4) -- ++(-0.5, 0) arc (150:210:4 and 4) -- cycle;
+
+    \draw[name path=optaxis] (-5,0) -- (11,0);
+    \def\xshift{1}
+    \def\fO{4.5}
+    \def\fo{2}
+
+    \foreach[count=\i] \a in {-10, 0, 10} {
+        \foreach[count=\j] \y in {-1.5, 0, 1.5} {
+            \draw[ray, domain=-4:-2.5, name path global/.expanded={I\i\j}]   plot (\x, {tan(\a)*(\x + 2.5) + \y}) ;
+
+            \coordinate (I\i\j) at (-4, {tan(-\a)*(-4 + 2.5) + \y});
+            \coordinate (Icross\j) at (-2.5, \y);
+
+            \draw[ray, domain=-2.5:{4}, name path global/.expanded={M\i\j}] plot({\x + \xshift}, {yr(\fO,\y,-2.5,\a,\x)});
+
+            \draw[dashed] (-2.5, \y) -- ++({\xshift}, 0);
+
+            \draw[ray, domain={4}:8, name path global/.expanded={O\i\j}] plot({\x+2*\xshift}, {yr(\fo,{yr(\fO,\y,-2.5,\a,4)},4,{atan(tan(\a) - \y/\fO)},{\x})}) coordinate (O\i\j);
+
+            \draw[dashed] (5, {yr(\fO,\y,-2.5,\a,4)}) -- ++({\xshift}, 0);
+        }
+    }
+    \draw (-4, 1.5) -- ++(-1, 0) (-4, -1.5) -- ++(-1, 0) ;
+    \draw[<->] (-4.75, 1.5) -- node[left, pos=0.4] {$D$} ++(0, -3);
+    \draw (-2.5, 2)  node[above] {$H_1$} -- ++(0,-4.75);
+    \draw (-1.5, 2)  node[above] {$H'_1$} -- ++(0,-4.75);
+    \draw (5, 2)  node[above] {$H_2$} -- ++(0,-4.75);
+    \draw (6, 2)  node[above] {$H'_2$} -- ++(0,-4.75);
+    \path[name intersections={of=M31 and M32}] (intersection-1) coordinate (M);
+    \coordinate (F'1) at ({\fo + \xshift},0); \point{F'1}{$F'_1$}{below left}{red}
+    \draw  (-2, 1.75) node[above=1cm] {об'єктив} ++(0,-6)  (5.5, 1.75)  node[above=1cm] {окуляр}  ++(0,-6);
+    \draw (F'1) -- ++(0,-3);
+    \draw[<->] let \p1=(F'1) in (-1.5, -2.5) -- node[below] {$f'_\text{об}$} (\x1,-2.5);
+    \draw[<->] let \p1=(F'1) in (\x1, -2.5) -- node[below] {$-f_\text{ок}$} ++(2,0);
+    \draw[thick, ->] (F'1) -- node[right] {$l'$} (M);
+
+    \path[name intersections={of=O11 and O21}] (intersection-1) coordinate (O);
+    \path[name intersections={of=O13 and O33}] (intersection-1) coordinate (O');
+    \draw[<-] let \p1=(O) in (\x1, \y1) -- node[right] {$D'$} ++(0,1);
+    \draw[<-] let \p1=(O') in (\x1, \y1) -- ++(0,-1);
+
+    \shorthandoff{"}
+    \pic[draw, line width=1, "$w'$", angle eccentricity=2, angle radius=0.5cm] {angle = O21--O--O11};
+    \pic[draw, line width=1, "$w$", angle eccentricity=1.5, angle radius=1.25cm] {angle = I21--Icross1--I11};
+    \shorthandon{"}
+
+\end{tikzpicture}

@@ -1,0 +1,46 @@
+\begin{tikzpicture}[
+    declare function={
+        angle(\dy,\dx) = atan(abs(\dy/\dx));
+    },
+    ]
+    \contourlength{0.1pt}
+    \pgfmathsetmacro\sxa{0}
+    \pgfmathsetmacro\sxb{9}
+
+    \pgfmathsetmacro\sya{-9}
+    \pgfmathsetmacro\syb{9}
+
+    %	\draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %	\draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %	\draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %	\foreach \i in {\sxa,...,\sxb}
+    %		{
+        %    			\node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %    		}
+    %	\foreach \j in {\sya,...,\syb}
+    %		{
+        %    			\node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %    	}
+
+    \begin{scope}[rotate=90]
+        \pgfmathsetmacro\h{6}
+        \coordinate (T) at (0,\h);
+        \def\angle{80}
+        \path[] (T) -- ++(-\angle:{\h/sin(\angle)}) coordinate (B1)  arc(0:-180: {\h/tan(\angle)} and 0.25) coordinate (B2) -- (T);
+        \path[] (T) -- ++(-\angle:{1+\h/sin(\angle)}) coordinate (E1);
+        \draw[] (B2) -- coordinate[pos=0.5] (C1) (E1);
+        \fill[white, top color=yellow!90,bottom color=yellow!20, rotate={-23}] let \p1=(B2), \p2=(E1), \n1={{veclen(\x2-\x1,\y2-\y1)/2}} in (T) -- (E1) arc(0:-180:\n1 and 0.25 cm) -- cycle;
+
+        \fill[white, top color=yellow!90,bottom color=yellow!20, rotate={-23}] let \p1=(B2), \p2=(E1), \n1={{veclen(\x2-\x1,\y2-\y1)/2}} in  (C1) circle (\n1 and 0.25 cm);
+        \fill[themecolordark!20, opacity=0.5] (0, 0) circle({\h/tan(\angle)} and 0.25);
+        \draw[dash dot] (T) -- node[left] {$r$} (C1);
+        \draw (C1) -- ++({90-23}:3) coordinate (N);
+    \end{scope}
+    \node[above right] at (B1) {$d\Omega$};
+    \node[right] at (E1) {$dS$};
+%    \node[yellow!90!black, font=\large] at (T) {{\contour{blue}{\ding{90}}}};
+    \shorthandoff{"}
+    \pic[draw, "\alpha", angle eccentricity=1.25, angle radius=1cm] {angle=N--C1--T};
+    \shorthandon{"}
+
+\end{tikzpicture}

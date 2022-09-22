@@ -1,0 +1,48 @@
+\begin{tikzpicture}
+    \def\sxa{-5}
+    \def\sxb{5}
+    \def\sya{-5}
+    \def\syb{5}
+
+%    \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %            \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %            \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+%    \foreach \i in {\sxa,...,\sxb}
+%    {
+%        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+%    }
+%    \foreach \j in {\sya,...,\syb}
+%    {
+%        \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+%    }
+    \node[inner sep=0pt, red] (S) at (0,0) {\ding{90}}; % Джерело
+    \node[below=0.25cm] at (S) {$S$};
+    \draw[thick] (20:0.5) arc (20:{180-20}:0.5); % Дуга над джерелом
+    \draw[blue, glass] (-4, -3.5) rectangle (4, -2.5); % Пластика
+    \draw[<->] (-3.5, -2.5) -- node[right] {$d$} ++(0,-1);
+
+    \draw (-4,4) --     ++  (8,0); % Екран
+    \draw[dash dot] (0,4) -- (0,-2.5);
+
+    \draw [decorate,
+    decoration = {brace,
+        raise=1pt,
+        amplitude=4pt}] (0,4) --  node[above=3pt] {$r$} (1,4);
+
+    % Променв
+
+    \foreach[count=\c] \i in {-1,1}
+    {
+        \draw[ray] (S) -- (\i*1, -2.5) coordinate (I\c);
+        \draw[ray] (I\c) -- ++(\i*0.25, -1) coordinate (R\c) ;
+        \draw[ray] (R\c) -- ++(\i*0.25, 1) coordinate (O\c) ;
+        \draw[ray] (I\c) -- (\i*2.5,1) coordinate (L1\c);
+        \draw[ray] (O\c) -- (\i*3,1) coordinate (L2\c);
+
+        \draw[ray] (L1\c) -- (-\i*1,4);
+        \draw[ray] (L2\c) -- (-\i*1,4);
+    }
+
+    \node[draw=blue, glass, ellipse, inner sep=0pt, minimum width=8cm, minimum height=0.5cm] (Lens) at (0,1) {}; % Лінза
+    %    \draw[blue, glass] (4,1) arc(0:180:4 and 0.15) arc(180:360:4 and 0.15) --cycle;
+\end{tikzpicture}

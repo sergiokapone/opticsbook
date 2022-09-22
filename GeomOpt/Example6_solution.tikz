@@ -1,0 +1,80 @@
+		\begin{tikzpicture}[
+    declare function =
+    {%
+        % \f - Фокусна відстань
+        % \yn - y-входження променя
+        % \xl - положення лінзи
+        % \a - Кутнахилу падаючого променя
+        yp(\f,\yn,\xl,\a,\x) =  (tan(\a) - \yn/\f)*(\x - \xl) + \yn;
+        ym(\f,\yn,\xl,\a,\x) =  (tan(\a) + \yn/(\f + \xl))*(\x - \xl) + \yn;
+    },
+    ]
+
+    \def\sx{5}
+    \def\sy{4}
+    \def\fO{3}
+    \def\xO{-1}
+    \def\fo{2.5}
+    \def\xo{0.5}
+
+    \def\xp{\xO - \fO - 0.29}
+    \def\l{2.5}
+    \draw[line join=round, draw=blue, fill=blue!5, name path=lens] (\xO,-3) arc (-30:30:2 and 6) arc (150:210:2 and 6) -- cycle;
+    %
+    \draw[line join=round, draw=blue, fill=blue!5, name path=lens] (\xo+0.38,-3) arc (210:150:2 and 6)  -- ++(-0.75, 0) arc (30:-30:2 and 6) -- cycle;
+
+    % Сітка
+
+    \draw[gray!40, step=0.5] (-\sx,-\sy) grid (\sx,\sy);
+    \draw[red!40, ->] (-\sx,0) -- (\sx,0) node[right] {$x$};
+    \draw[red!40, ->] (0, -\sy) -- (0, \sy) node[above] {$y$};
+    \foreach \i in {-\sx,...,\sx}
+    {
+        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+    }
+    \foreach \j in {-\sy,...,\sy}
+    {
+        \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+    }
+
+    % Оптична вісь
+
+    \draw[name path=optaxis] (-\sx,0) -- (\sx,0);
+
+    \draw (\xO, 3) node[above] {$H_1$} -- ++(0,-6) ; % Об'єктив
+    \coordinate (F1) at ({\xO-\fO}, 0); % Передній фокус об'єктива
+    \coordinate (F1') at ({\xO+\fO}, 0); % Задній фокус об'єктива
+    \point{F1}{$F_1$}{below}{red}
+    \point{F1'}{$F'_1$}{below}{red}
+
+    \draw (\xo, 3)  node[above] {$H_2$} -- ++(0,-6); % Окуляр
+    \coordinate (F2') at ({\xo-\fo}, 0); % Передній фокус окуляра
+    \coordinate (F2) at ({\xo+\fo}, 0); % Задній фокус окуляра
+    \point{F2}{$F_2$}{below}{red}
+    \point{F2'}{$F'_2$}{below}{red}
+
+    % Математична логіка побудови
+    \foreach[count=\i] \yn in {2.5, 1, 2} {
+        \draw[ray, name path=ray\i] (-3, \yn) -- (\xO, \yn); % Падаючий на 1
+        \draw[ray, domain=\xO:\xo, name path global/.expanded={I\i}] plot (\x, {yp(\fO,\yn,\xO,0,\x)}) ; % Визодить з 1 на 2
+        \draw[ray, domain=\xo:4, name path global/.expanded={R\i}] plot (\x, {ym(
+            \fo,
+            {yp(\fO,\yn,\xO,0,\xo)},
+            \xo,
+            {atan( (yp(\fO,\yn,\xO,0,\xo) - \yn) / (\xo-\xO) )},
+            \x)}) ;% із 2
+        \draw[dashed, thin, domain={\xo-3}:\xo, name path global/.expanded={D\i}] plot (\x, {ym(\fo,
+            {yp(\fO,\yn,\xO,0,\xo)},
+            \xo,
+            {atan( (yp(\fO,\yn,\xO,0,\xo) - \yn) / (\xo-\xO) )},
+            \x)}) ;% з окуляра штришовані
+    }
+
+    \path[name intersections={of=optaxis and R1}] (intersection-1) coordinate (F');
+    \point{F'}{$F'$}{above}{red}
+
+    \path[name intersections={of=ray1 and D1}] (intersection-1) coordinate (Htop');
+    \draw let \p1=(Htop') in (Htop') -- (\x1, 0) coordinate (H') -- ++(0,-3);
+    \point{H'}{$H'$}{above left}{red}
+
+\end{tikzpicture}

@@ -1,0 +1,9 @@
+\begin{tikzpicture}[scale=1]
+
+    \fill[line join=round, glass, draw=blue, ultra thin] (-0.25,-1.5) arc (210:150:2 and 3) -- ++(0.5,0) arc (30:-30:2 and 3) -- cycle;
+
+    \fill[line join=round, glass, draw=blue, ultra thin] (-2.5,-1.5) arc (210:150:2 and 3) -- ++(0.5,0) --++(0,-3) -- cycle;
+
+    \fill[line join=round, glass, draw=blue, ultra thin] (2.25,-1.5) arc (210:150:3 and 3) -- ++(0.5,0) arc (150:210:1 and 3) -- cycle;
+
+\end{tikzpicture}

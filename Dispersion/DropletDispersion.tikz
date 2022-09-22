@@ -1,0 +1,50 @@
+% DROPLET dispersion & rainbow
+\colorlet{watercol}{blue!70!cyan!50}
+\tikzstyle{water}=[ball color=watercol]
+\tikzset{
+    beam/.style={very thick,line cap=round,line join=round},
+}
+\begin{tikzpicture}
+    \def\L{1.8}            % length of ray outside droplet
+    \def\R{1.6}            % droplet radius
+    \def\na{1.0}           % air
+    \def\N{6}              % number of rays
+    \def\alphI{100}        % A: incident (180-90)
+    \pgfmathsetmacro\thetI{180-\alphI} % theta_1: incident
+
+    % WATER DROPLET
+    \fill[water] (O) circle (\R);
+    \fill[watercol!20,opacity=0.8] (O) circle (\R);
+    \draw[blue] (O) circle (\R);
+
+    % LIGHT RAYS
+    \coordinate (O) at (0,0);
+    \coordinate (A) at (-\L-\R,{\R*sin(\alphI)}); % incident ray
+    \foreach \i [evaluate={
+        \lamb=410+\i*320/\N;              % wavelength (for color)
+        \nw=1.36-0.08*\i/\N;              % refractive index of water
+        \thetII=asin(\na/\nw*sin(\thetI); % theta_2: air -> water & reflection
+        \alphII=\alphI+2*\thetII-180;     % C: reflected
+        \alphIII=\alphI+4*\thetII-360;    % D: exiting
+        \s=0.8+0.45*\i/\N;                % scale
+    }] in {0,...,\N}{
+        \definecolor{tmpcol}{wave}{\lamb}
+        \colorlet{mycol}[rgb]{tmpcol}
+        \coordinate (B) at (\alphI:\R);                     % entry of incident
+        \coordinate (C) at (\alphII:\R);                    % internal reflection
+        \coordinate (D) at (\alphIII:\R);                   % exit of ray
+        \coordinate (E) at ($(D)+(\alphIII-\thetI:\s*\L)$); % final ray to observer
+        \draw[beam,thick,mycol]
+        (B) -- (C) -- (D) -- (E);
+    }
+
+    % WHITE FADE
+    \def\nw{1.30}
+    \pgfmathsetmacro\thetII{asin(\na/\nw*sin(\thetI)}
+    \draw[myblue,line width=1.3] (A) -- (B);
+    \draw[beam,white,line width=1.0] (A) -- (B);
+    %\draw[beam,white,line width=1.0,path fading=east] (B) --++ (-180+\alphI+\thetII:0.01);
+    \draw[beam,white,line width=1.0,path fading=east] (B) --++ (-180+\alphI+\thetII:0.6*\R);
+    %\draw[beam,white,line width=1.2] (B)++(-0.005,0) -- (B) --++ (-180+\alphI+\thetII:0.005);
+
+\end{tikzpicture}

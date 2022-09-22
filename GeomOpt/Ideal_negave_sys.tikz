@@ -1,0 +1,137 @@
+\begingroup
+\pgfmathsetmacro\fd{2}
+\pgfmathsetmacro\sxa{-3}
+\pgfmathsetmacro\sxb{3}
+\pgfmathsetmacro\sy{3}
+\pgfmathsetmacro\xhs{0.5}
+\pgfmathsetmacro\xh{-0.5}
+\pgfmathsetmacro\scale{1.25}
+
+\pgfmathsetmacro\ynodeshift{-1.75}
+\pgfmathsetmacro\xnodeshift{-0.75}
+
+
+\begin{tikzpicture}[scale=\scale,
+    insert node/.style args={#1 at #2}{
+        postaction=decorate,
+        decoration={
+            markings,
+            mark= at position #2
+            with
+            {
+                #1
+            }
+        }
+    }
+    ]
+
+    % Координати кардинальних елементів
+    \pgfmathsetmacro\xfs{-\fd}
+    \pgfmathsetmacro\xf{\fd}
+    \coordinate (H) at (\xh,0);
+    \coordinate (H') at (\xhs,0);
+    \coordinate (F) at (\xf,0);
+    \coordinate (F') at (\xfs,0);
+
+    % Оптична вісь
+
+    \draw (\sxa,0) -- (\sxb,0);
+
+    % Площини H і H'
+    \draw[name path=H, thick] let \p1=(H), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=H', thick] let \p1=(H'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+    % Фокальні площини
+    \draw[name path=F, dashed] let \p1=(F), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=F', dashed] let \p1=(F'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+    \pgfmathsetmacro\yf{1.75}
+
+    \foreach[count=\i] \yn/\c/\r in{{\yf/2}/red/{},  0/green!50!black/4, \yf/blue/2}
+    {
+
+        \pgfmathsetmacro\ka{(\yn - \yf) / (\xh - \xf )};
+        \pgfmathsetmacro\kb{((\ka*(\xh - \xf) - \yn)/(\xfs - \xhs))};
+        \draw[ray, thick, \c, domain=\sxa4:\xh,
+        insert node={\node[above=-2pt, font=\scriptsize]{\(\r\)};} at 0.8,]
+        plot (\x, {\ka*(\x-\xh) + \yn});
+
+        \draw[dashed, \c, name path global=ray\i, domain=\xh:\xf]
+        plot (\x, {\ka*(\x-\xh) + \yn});
+
+        \draw[ray, thick, \c, name path=ray', domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yn});
+        \draw[dashed] (\xh,\yn) -- (\xhs,\yn);
+    }
+
+    \path[name intersections={of=ray1 and ray2}] (intersection-1) coordinate (C);
+    \node[font=\tiny, text width=3cm, align=left, inner sep=2pt, fill=white, drop shadow] (text) at ([shift={(\xnodeshift,\ynodeshift)}]F) {Шуканий і допоміжні промені сходяться в одній точці передньої фокальної площини.};
+    \draw[<-, ultra thin] (C) to[out=-45, in=135] (text.north);
+
+    \point{F}{$F$}{below}{red}
+    \point{F'}{$F'$}{below}{red}
+    \point{H}{$H$}{below}{red}
+    \point{H'}{$H'$}{below}{red}
+    \point{C}{}{right}{red}
+\end{tikzpicture}
+\quad
+\begin{tikzpicture}[scale=\scale,
+    insert node/.style args={#1 at #2}{
+        postaction=decorate,
+        decoration={
+            markings,
+            mark= at position #2
+            with
+            {
+                #1
+            }
+        }
+    }
+    ]
+
+    % Координати кардинальних елементів
+    \pgfmathsetmacro\xfs{-\fd}
+    \pgfmathsetmacro\xf{\fd}
+    \coordinate (H) at (\xh,0);
+    \coordinate (H') at (\xhs,0);
+    \coordinate (F) at (\xf,0);
+    \coordinate (F') at (\xfs,0);
+
+    % Оптична вісь
+
+    \draw (\sxa,0) -- (\sxb,0);
+
+    % Площини H і H'
+    \draw[name path=H, thick] let \p1=(H), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=H', thick] let \p1=(H'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+    % Фокальні площини
+    \draw[name path=F, dashed] let \p1=(F), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+    \draw[name path=F', dashed] let \p1=(F'), \n1={5} in (\x1, {\n1/2}) -- ++(0,-\n1);
+
+
+    \pgfmathsetmacro\a{27}
+    \pgfmathsetmacro\ynf{tan(\a)*(\xh - \xfs)}
+
+    \foreach[count=\i] \yn/\c/\r in{1.5/red/{},  0/green!50!black/4, \ynf/blue/2}
+    {
+        \pgfmathsetmacro\kb{((tan(\a)*(\xh - \xf) - \yn)/(\xfs - \xhs))};
+        \draw[ray, thick, \c, domain=\sxa:\xh,
+        insert node={\node[above=-2pt, font=\scriptsize]{\(\r\)};} at 0.8,]
+        plot (\x, {tan(\a)*(\x-\xh) + \yn});
+        \draw[ray, thick, \c, domain=\xhs:\sxb] plot (\x, {\kb*(\x - \xhs) + \yn});
+        \draw[dashed, \c, name path global=ray\i, domain=\xhs:\xfs] plot (\x, {\kb*(\x - \xhs) + \yn});
+        \draw[dashed] (\xh,\yn) -- (\xhs,\yn);
+    }
+
+    \path[name intersections={of=ray1 and ray2}] (intersection-1) coordinate (C);
+    \node[font=\tiny, text width=3cm, align=left, inner sep=2pt, fill=white, drop shadow] (text) at ([shift={(\xnodeshift,\ynodeshift)}]F) {Шуканий і допоміжні промені сходяться в одній точці задньої фокальної площини.
+    };
+    \draw[<-, ultra thin] (C) to[out=-45, in=135] (text.north);
+
+    \point{C}{}{below}{red}
+    \point{F}{$F$}{below}{red}
+    \point{F'}{$F'$}{below}{red}
+    \point{H}{$H$}{below}{red}
+    \point{H'}{$H'$}{below}{red}
+\end{tikzpicture}
+\endgroup

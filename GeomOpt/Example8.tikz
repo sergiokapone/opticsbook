@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+
+    \fill[line join=round, glass, draw=blue, ultra thin, name path=lens1]
+    (1.5, -2) arc ({180+asin(2/4)}:{180-asin(2/4)}:4) -- ++({-6*cos(asin(2/6)) + 4*cos(asin(2/4))},0) arc({180-asin(2/6)}:{180+asin(2/6)}:6) -- cycle;
+
+    % Оптична вісь
+
+    \draw[name path=optaxis] (-4,0) -- (6,0);
+
+    \coordinate (F') at (-3,0);
+    \coordinate (H) at (1.25,0);
+
+    \draw (F') -- ++(0,-3.5);
+    \draw (1.25, 2) -- ++(0,-5.5) (1,0) -- ++(0,-2.5);
+
+    \point{F'}{$F'$}{below left}{red}
+    \point{H}{$H$}{below right}{red}
+
+    \draw[<->] (-3, -2.5) -- node[above] {$-S'_{F'}$} ++(4,0);
+    \draw[<->] (-3, -3.25) -- node[above] {$-f'$} ++(4.25,0);
+
+    \draw[->] (5,0) -- node[below] {$R_2$} ++(155:4);
+    \draw[->] (5,0) -- node[below] {$R_1$} ++(170:6);
+
+\end{tikzpicture}

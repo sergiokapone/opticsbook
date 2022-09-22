@@ -1,0 +1,53 @@
+\begin{tikzpicture}
+    \def\sxa{-10}
+    \def\sxb{0}
+    \def\sya{-5}
+    \def\syb{5}
+
+    %        \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %            \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %            \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %        \foreach \i in {\sxa,...,\sxb}
+    %        {
+        %                \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %            }
+    %        \foreach \j in {\sya,...,\syb}
+    %        {
+        %                \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %            }
+    \pgfmathsetmacro\tht{5}
+    \pgfmathsetmacro\i{35}
+    %    \clip (-5,0) rectangle (-2,2);
+    \draw[blue, glass] (\sxa,0) -- (0,0) -- ({180-\tht}:{abs(\sxa)/cos(\tht)}) --cycle;
+    \foreach[count=\j] \d in {-9.5, -7.5,-5.5, -3.5}{
+        %    \pgfmathsetmacro\d{-5}
+        \pgfmathsetmacro\xz{\d*cos(\tht)}
+        \pgfmathsetmacro\yz{-\d*sin(\tht)}
+        \pgfmathsetmacro\r{asin(1/1.5*sin(\i))}
+        \pgfmathsetmacro\ki{tan(90-\tht+\i)}
+        \pgfmathsetmacro\kis{tan(90-\tht-\i)}
+        \pgfmathsetmacro\kr{tan(90-\tht+\r)}
+        \pgfmathsetmacro\krs{tan(90+\tht-\r)}
+        \pgfmathsetmacro\o{90 - \tht - asin(1.5*cos(\tht + atan(\krs)))}
+        \pgfmathsetmacro\xs{\xz - \yz/\kr}
+        \pgfmathsetmacro\xt{\krs*\xs/(\krs + tan(\tht))}
+        \pgfmathsetmacro\yt{-tan(\tht)*\xt}
+
+        \draw[ray, domain=\xz-0.5*cos(atan(\ki)):\xz] plot(\x, {\ki*(\x-\xz) + \yz});
+
+        %    \draw[domain=\xz-0.1:\xz+0.1] plot(\x, {1/tan(\tht)*(\x-\xz) + \yz});
+        %    \draw[domain=\xt-0.1:\xt+0.1] plot(\x, {1/tan(\tht)*(\x-\xt) + \yt});
+
+        \path[name path = {O1\j}, domain=\xz:\xz+2*cos(atan(\kis))] plot(\x, {\kis*(\x-\xz) + \yz});
+
+        \draw[red, domain=\xz:\xs] plot(\x, {\kr*(\x-\xz) + \yz});
+        \draw[red, domain=\xs:\xt] plot(\x, {\krs*(\x-\xs)});
+        \path[name path = {O2\j}, domain=\xt:\xt+2*cos(\o)] plot(\x, {tan(\o)*(\x-\xt) + \yt});
+        \path [name intersections={of={O1\j} and {O2\j},by=I\j}];
+        \draw[ray] (\xz,\yz) -- (I\j);
+        \draw[ray] (\xt,\yt) -- (I\j);
+    }
+    \draw[<->] (I1) -- node[above] {$l_k$} (I4);
+    \draw (-2,0) node[below] {$\theta$} arc (180:{180-\tht}:2);
+    %    \draw (0,0) -- ++({180-2.5*\tht}:{abs(\sxa)/cos(\tht)});
+\end{tikzpicture}

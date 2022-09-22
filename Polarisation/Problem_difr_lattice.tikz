@@ -1,0 +1,26 @@
+\begin{tikzpicture}
+
+\foreach \i in {-1,...,2}
+{
+    \ifnum\i<2\relax
+    \draw[pattern=north west lines] (-0.05,\i-0.25) rectangle ++(0.05,0.5);
+    \fi
+    \fill[draw, glass] (0,{\i-0.25-0.5}) rectangle ++(0.075,0.5);
+}
+\draw[dash dot] (-0.25,0) -- ++(6,0) coordinate (E);
+\draw let \p1=(E) in (\x1,-2) -- ++(0,4);
+\fill[pattern=north west lines] let \p1=(E) in (\x1,-2) rectangle ++(0.15,4) node[above] {Екран};
+
+\fill[glass, draw=blue] (3,2) arc(90:270:0.2 and 2) arc(-90:90:0.2 and 2);
+\draw[<->] let \p1=(E) in (3,-2) -- node[below] {$f$} (\x1,-2);
+
+\foreach \i in {-1.5,-1,...,1.5}{
+\draw[ray] (-2, \i) -- ++(2,0);
+}
+
+\draw[->] (-1,2) -- node[left] {$\vect{E}_0$} ++(0,1);
+\draw (0,0.75) -- ++(0.5,0) (0,1.75) -- ++(0.5,0);
+\draw[<->] (0.5,0.75) -- node[right] {$d$} ++(0,1);
+
+%\draw (-2,-4) to[grid with coordinates] (5,4);
+\end{tikzpicture}

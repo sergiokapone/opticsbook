@@ -1,0 +1,143 @@
+\begin{tikzpicture}[
+		raysig/.style={font=\scriptsize, text=black},
+		declare function={
+				f = 2;
+                d = 2;
+				L = 4;
+                E=L+f; % Y положення екрану (x вісь графіка)
+                R = 1e-3;
+        intensity(\wl,\x) = 3/(1+4*R/(1-R^2)*(sin(pi/\wl*d*sqrt(1-(\x^2/(f^2+\x^2)))) r)^2);
+			},
+	]
+
+%	    \draw (-5,-7) to[grid with coordinates] (5,4);
+	%    \pgfmathsetmacro\N{5}
+
+	\pgfmathsetmacro\n{1.5} % показник заломлення
+	\pgfmathsetmacro\d{d} % товщина пластинки
+	\pgfmathsetmacro\xn{-3.5} % x - координата входу променя в пластинку
+	\def\NumRays{4} % число променів
+	\pgfmathsetmacro\in{30}
+	\pgfmathsetmacro\r{asin(1/\n*sin(\in))} % Кут падіння на другу поверхню
+	\pgfmathsetmacro\rayoutshift{\d*tan(\in))}
+
+
+
+	%% ------------------------------ Пластини ---------------------------------
+    \fill[glass, draw=blue]
+    (-5,0) rectangle (5,{-0.5*\d*2});
+	\foreach \i in {-1,1}{
+			\pgfmathsetmacro\yshift{-0.5*\d*(\i+1)}
+  			\fill[pattern=north west lines, pattern color=black!50]
+            (-5,\yshift) rectangle (5,{\yshift + \i*0.1});
+		}
+	%% -------------------------------------------------------------------------
+	\draw[<->] (-4.75, 0) -- node[right] {$d$} ++(0,-\d);
+
+
+    %% --------------------------------- Кути ----------------------------------
+
+    \draw (\xn,-1.1) -- ++(0,2.9);
+    \draw (\xn,0) ++(0,1) arc(90:{90+\in}:1) node[pos=0.5, above] {$\epsilon_1$};
+    \draw (\xn,0) ++(0,-1) arc(-90:{-90+\r}:1) node[pos=0.5, below] {$\epsilon'_2$};
+
+	%% ------------------------------- Промені ---------------------------------
+
+
+
+	\foreach[count=\k] \i/\clr in {30/red}
+		{
+			\foreach
+			[count=\j from 0,
+                evaluate=\j as \jo using int(\j+1),
+				evaluate=\j as \jn using int(2*\j+1), % непарні випередження
+                evaluate=\j as \jnz using int(2*\j+-1), % непарні запізнення
+				evaluate=\j as \jp using int(2*\j),   % парні
+			] \c in {0,...,\NumRays} % Number or rays
+				{
+					\pgfmathsetmacro\r{asin(1/\n*sin(\i))}
+                	\pgfmathsetmacro\rayshift{\d*tan(\r)}
+                   	\draw[ray, \clr] ({\xn-2*sin(\i)},{2*cos(\i)}) --
+                    node[left,
+                    text=black,
+                    ]
+                    {} % E_0
+                    (\xn,0); % Самий перший падаючий
+
+   					\draw[ray, \clr] (\xn+2*\c*\rayshift,0) --
+                    node[right, font=\small, pos=0.9, text=black] {$\jo$}
+                    node[sloped, below, text=black, font=\scriptsize] {
+                        \ifnum\j=0\relax%
+                            $R $% E_0
+                        \else%
+                            $T^2R^{\ifnum\jnz=1\relax\else\jnz\fi}
+                            %E_0e^{
+                            %    \ifnum\j=1\relax\else\j\fi%
+                            %    i\delta}
+                        $%
+                        \fi%
+                    }
+                    ++({2*sin(\i)}, {2*cos(\i)}); % Відбитий простовгору в повітря
+
+					\draw[ray, \clr] (\xn+2*\c*\rayshift,0) --
+					     node[sloped, above, text=black, font=\scriptsize] {
+                             \ifnum\j=0\relax%
+                                 $T $ %E_0
+                             \else%
+                                 $TR^{\jp} $ % E_0
+                             \fi%
+                         }
+					++(\rayshift, -\d); % Падаючий на нижнє дзеркало
+					\ifnum\c=\NumRays
+						\relax
+					\else
+						\draw[ray, \clr] ({\xn+(2*\c+1)*\rayshift},-\d) --
+						        node[sloped, below, text=black, font=\scriptsize] {
+                                         \ifnum\j=0\relax%
+                                            $TR $ % E_0
+                                        \else%
+                                            $TR^{\jn}  $ % E_0
+                                        \fi%
+                                }
+						++(\rayshift, \d); % Відбитий промінь на верхнє дзеркало
+					\fi
+					\draw[ray, \clr] ({\xn+(2*\c+1)*\rayshift},-\d) --
+					    node[sloped, above, text=black, font=\scriptsize] {
+                             \ifnum\j=0\relax%
+                                $T^2 $ % E_0
+                            \else%
+                                $T^2R^{\jp}
+                                %E_0e^{%
+                                %    \ifnum\j=1\relax\else\j\fi%
+                                % i\delta}
+                                $
+                            \fi%
+                        }
+                         node[left, text=black!100, font=\small, pos=0.7] {$\jo'$}
+					++(-90+\i:{(L-d)/cos(\i)}) coordinate (OnLens\k\c); % Вишли промені
+
+					\draw[ray, \clr] (OnLens\k\c) -- ({f*sin(\i)}, -E); % Заломлені лінзою промені
+				}
+		}
+
+
+%\draw[] (-5,{-E}) -- (5,{-E})node [right] {Екран}; % Вісь OX
+
+
+\begin{pgfonlayer}{bg}
+%    \filldraw[black!5] (-3,-3) -- (-3,3) -- (3,3) -- (3,-3) -- cycle;
+     \node (n) at (0,-E) [draw, fill=black!5, minimum width=6cm, minimum height=1.5cm, xslant=1] {};
+     \fill[red] (0,-E) ellipse (0.25 cm and 0.25*0.25 cm);
+    \foreach \r in {0.5,1,...,2.5}
+    {
+        \draw[red] (0,-E) ellipse (\r cm and 0.25*\r cm);
+    }
+\end{pgfonlayer}
+
+%\draw[->] (0,-E) -- ++(0,{2+0.5}) node [right] {\contour{white}{$I$}}; % Вісь OY
+
+\draw[blue, glass] (-5, -L) arc(180:0:5 and 0.25)  arc(0:-180:5 and 0.25); % Лінза
+
+
+\end{tikzpicture}
+

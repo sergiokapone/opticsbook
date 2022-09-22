@@ -1,0 +1,51 @@
+\begin{tikzpicture}[
+    mirror/.style={
+        shade, left color=glasscol, right color=glasscol, middle color=white, shading angle=45,
+    },
+    bilens/.pic={
+    code={
+        \fill [glass] (0,0) -- ++(0,2)  -- ++(0.5,-2);
+        \fill [glass] (0,0) -- ++(0,-2) -- ++(0.5,2);
+        \draw (0,1) arc(270:{270+atan(1/4)}:1) node[right] {$\theta$};
+    },
+},
+    ]
+    \def\sxa{-4}
+    \def\sxb{4}
+    \def\sya{-5}
+    \def\syb{5}
+
+%            \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+%            \draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+%            \draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+%            \foreach \i in {\sxa,...,\sxb}
+%            {
+%                        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+%                    }
+%            \foreach \j in {\sya,...,\syb}
+%            {
+%                                    \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+%                        }
+
+    \draw (-4,0) pic {bilens};
+    \draw[dash dot] (\sxa, 0) -- (\sxb, 0);
+
+    \coordinate (S) at (-4,0) ;
+
+    \node[ground, draw=black, inner sep=0pt, minimum height=1cm, minimum width=0.125cm] (Aa) at (\sxa,2.5) {};
+    \node[ground, draw=black, inner sep=0pt, minimum height=1cm, minimum width=0.125cm] (Ab) at (\sxa,-2.5) {};
+
+    \node[ground, minimum width = 0.25cm, minimum height=6cm, inner sep=0pt] (E) at (\sxb,0) {};
+    \draw[->] ($(E.south west) - (0,0.25)$) --  ($(E.north west) + (0,0.5)$) node[left] {$y$};
+    \node[above right=0.15cm] at (E) {$E$};
+
+    \draw (Ab.south) -- ++(0,-0.25);
+
+    \draw (Aa.south west) -- ++(-0.5, 0);
+    \draw (Ab.north west) -- ++(-0.5, 0);
+    \draw[<->] let \p1=(Aa.south west), \p2=(Ab.north west) in ({\x1-0.25cm}, \y1) -- node[left] {$D$} ({\x1-0.25cm},\y2);
+
+    \draw[<->] let \p1=(Ab.south), \p2=(E) in (\x1, -3.25) -- node[below] {$L$} ({\x2-0.15cm},-3.25);
+
+    \foreach \i in {2,1.5,...,-2}{\draw [ray] (-6, \i) -- ++(1,0);}
+\end{tikzpicture}

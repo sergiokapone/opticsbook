@@ -1,0 +1,42 @@
+\begin{tikzpicture}[
+    declare function={
+        angle(\dy,\dx) = atan(abs(\dy/\dx));
+    },
+    ]
+    \contourlength{0.1pt}
+    \pgfmathsetmacro\sxa{0}
+    \pgfmathsetmacro\sxb{9}
+
+    \pgfmathsetmacro\sya{-9}
+    \pgfmathsetmacro\syb{9}
+
+    %	\draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+    %	\draw[red,  ->] (\sxa,0) -- (\sxb,0) node[right] {$x$};
+    %	\draw[red!40, ->] (0, \sya) -- (0, \syb) node[above] {$y$};
+    %	\foreach \i in {\sxa,...,\sxb}
+    %		{
+        %    			\node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+        %    		}
+    %	\foreach \j in {\sya,...,\syb}
+    %		{
+        %    			\node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+        %    	}
+
+    \begin{scope}[rotate=180]
+        \pgfmathsetmacro\h{4}
+        \coordinate (T) at (0,\h);
+        \coordinate (O) at (0,0);
+        \def\angle{70}
+        %        \draw[dashed] (-1,\h) -- (1, \h);
+        \draw[themecolordark!10, fill=themecolordark!10, yshift=0.35cm, xshift=-0.34cm] (1,\h) -- ++(-45:1) -- ++(0:-2) -- ++(-45:-1) -- cycle;
+        %        \node[right=2pt] at (1,\h) {\contour{white}{$S$}};
+        \path[top color=yellow!80,bottom color=yellow!20] (T) -- ++(-\angle:{\h/sin(\angle)}) coordinate (B1)  arc(0:-180: {\h/tan(\angle)} and 0.25) coordinate (B2) -- (T);
+        \draw[yellow, ultra thick, fill=yellow] (0, 0) circle({\h/tan(\angle)} and 0.25);
+        \draw[dash dot] (T) -- (O);
+        \draw[dash dot] (B2) -- (T);
+        \draw (O) -- node[above] {$R$} ++(0:{-\h/tan(\angle)});
+    \end{scope}
+    \shorthandoff{"}
+    \pic[draw, "\alpha", angle eccentricity=1.25, angle radius=2cm] {angle=B2--T--O};
+    \shorthandon{"}
+\end{tikzpicture}

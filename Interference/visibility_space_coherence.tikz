@@ -1,0 +1,34 @@
+\begin{tikzpicture}[
+		declare function={
+                lambda = 0.6;
+                k = 2*pi/lambda;
+                D = 0.6;
+                L1 = 1;
+                L2 = 1;
+                b = 0.3;
+				V(\x) = abs(sin(k*\x*D/L1)/(k*\x*D/L1));
+			},
+]
+\begin{axis}[
+        xlabel={$b$},
+        ylabel={$V$},
+        axis y line=middle,
+        axis x line=middle,
+        every axis x label/.style={at={(current axis.right of origin)},anchor=west},
+        every axis y label/.style={at={(current axis.north west)}, anchor=south},
+        enlargelimits={abs=0.1},
+        trig format plots=rad,
+        width=1\linewidth,
+        height=0.75\linewidth,
+        xticklabels={
+        , $ b_{\max} $,
+        },
+        ytick distance=0.5,
+        xtick={0,0.5,1},
+        ymin=0, ymax=1,
+        xmin=0, xmax=1,
+]
+\addplot[samples=500, smooth, red, thick, domain=0:3] {V(x)};
+
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,123 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TeX spellcheck = uk_UA
+% !TeX root =../OpticsProblems.tex
+
+\clearpage
+\section{Математичні формули та співвідношення}
+
+\subsection{Тілесний кут}
+
+Тілесний кут --- це відношення площі сфери, що перетинається конусом до квадрату її радіусу.
+
+Елемент тілесного кута визначається як:
+\begin{equation}\label{eq:solid_angle}
+    d\Omega = \frac{dS}{r^2}
+\end{equation}
+де $dS$ --- елемент площі поверхні сфери радіуса $r$ (рис.~\ref{pis:solid_angle}).
+
+%---------------------------------------------------------
+\begin{figure}[h!]\centering
+% 3D AXIS with spherical coordinates, dA
+\tdplotsetmaincoords{60}{103}
+\begin{tikzpicture}[scale=6,tdplot_main_coords]
+
+    \colorlet{veccol}{themecolordark}
+    \colorlet{projcol}{themecolordark}
+    \tikzstyle{proj}=[projcol!80,line width=0.08] %very thin
+    \tikzstyle{area}=[draw=veccol,fill=veccol!80,fill opacity=0.6]
+    \tikzstyle{vector}=[-stealth,myblue,thick,line cap=round]
+    \tikzstyle{unit vector}=[->,veccol,thick,line cap=round]
+    \tikzstyle{dark unit vector}=[unit vector,veccol!70!black]
+    \contourlength{1.3pt}
+
+    % VARIABLE
+    \def\rvec{1.0}
+    \def\thetavec{35}
+    \def\phivec{45}
+    \def\dtheta{10}
+    \def\dphi{16}
+    \def\sphere#1#2#3{plot[domain=#1]({\rvec*sin(#2)*cos(#3)},{\rvec*sin(#2)*sin(#3)},{\rvec*cos(#2)})}
+    \contourlength{0.8pt}
+
+    % AXES
+    \coordinate (O) at (0,0,0);
+    \draw[thick,->] (0,0,0) -- (1.16*\rvec,0,0) node[left,below]{$x$};
+    \draw[thick,->] (0,0,0) -- (0,1.1*\rvec,0) node[below,right]{$y$};
+    \draw[thick,->] (0,0,0) -- (0,0,1.1*\rvec) node[above]{$z$};
+
+    % COORDINATES
+    \tdplotsetcoord{P}{\rvec}{\thetavec}{\phivec}
+    \tdplotsetcoord{PB}{\rvec}{\thetavec+\dtheta}{\phivec}
+    \tdplotsetcoord{PR}{\rvec}{\thetavec}{\phivec+\dphi}
+    \tdplotsetcoord{PBR}{\rvec}{\thetavec+\dtheta}{\phivec+\dphi}
+
+    % CONE
+    \draw[veccol!20,very thin] (O)  -- (PBR);
+    \draw[veccol!20,very thin] (O)  -- (PR);
+    \draw[->,veccol] (O)  -- (P) node[below,left] {$\vb{r}$};
+    \draw[veccol,very thin] (O)  -- (PB);
+
+    % PROJECTIONS
+    \draw[proj] %\thetavec+\dtheta
+    plot[domain=0:90]({\rvec*sin(\x)*cos(\phivec)},{\rvec*sin(\x)*sin(\phivec)},{\rvec*cos(\x)}) coordinate (BL);
+    \draw[proj]
+    plot[domain=0:90]({\rvec*sin(\x)*cos(\phivec+\dphi)},{\rvec*sin(\x)*sin(\phivec+\dphi)},{\rvec*cos(\x)}) coordinate (BR);
+    \draw[proj]
+    plot[domain=0:90]({\rvec*cos(\x)},{\rvec*sin(\x)},0);
+    \draw[proj] (O)  -- (BL); % PBxy
+    \draw[proj] (O)  -- (BR); % PBRxy
+    \draw[proj] (P)  -- (Pz) node[midway, above=1, sloped] {\contour{white}{$r\sin\theta$}};
+    \draw[proj] (PR)  -- (Pz) ;
+    %\draw[proj,projcol!15,dashed] (P) -- (Pxy);
+    %\draw[proj,projcol!15,dashed] (PR) -- (PRxy);
+    %\draw[proj,projcol!15,dashed] (PB) -- (PBxy);
+    %\draw[proj,projcol!15,dashed] (PBR) -- (PBRxy);
+
+    % AREA
+    \draw[area]
+    plot[domain=0:.99*\dphi]({\rvec*sin(\thetavec)*cos(\phivec+\x)},{\rvec*sin(\thetavec)*sin(\phivec+\x)},{\rvec*cos(\thetavec)}) --
+    plot[domain=0:.99*\dtheta]({\rvec*sin(\thetavec+\x)*cos(\phivec+\dphi)},{\rvec*sin(\thetavec+\x)*sin(\phivec+\dphi)},{\rvec*cos(\thetavec+\x)}) --
+    plot[domain=.99*\dphi:0]({\rvec*sin(\thetavec+\dtheta)*cos(\phivec+\x)},{\rvec*sin(\thetavec+\dtheta)*sin(\phivec+\x)},{\rvec*cos(\thetavec+\dtheta)}) --
+    plot[domain=.99*\dtheta:0]({\rvec*sin(\thetavec+\x)*cos(\phivec)},{\rvec*sin(\thetavec+\x)*sin(\phivec)},{\rvec*cos(\thetavec+\x)}) --
+    cycle;
+
+    % MEASURES
+    %\node[right=3,below right=-2] at (PB) {$r\sin\theta\dd{\phi}$};
+    %\node[right=5,below right=-2] at (PR) {$r\dd{\theta}$};
+    \draw[<->,
+    proj,
+    thin,
+    insert node={
+        \node[below, rotate=20]{\contour{white}{$r\sin\theta\dd{\phi}$}};
+    } at 0.5
+    ]
+    plot[domain=0:\dphi]({\rvec*sin(\thetavec+1.11*\dtheta)*cos(\phivec+\x)},{\rvec*sin(\thetavec+1.11*\dtheta)*sin(\phivec+\x)},{\rvec*cos(\thetavec+1.11*\dtheta)});
+    \draw[<->,proj,thin,
+    insert node={
+        \node[above, rotate=-50]{\contour{white}{$r\dd{\theta}$}};
+    } at 0.5
+    ]
+    plot[domain=0:\dtheta]({\rvec*sin(\thetavec+\x)*cos(\phivec+1.15*\dphi)},{\rvec*sin(\thetavec+\x)*sin(\phivec+1.15*\dphi)},{\rvec*cos(\thetavec+\x)}) ;
+
+    % ANGLES
+    \tdplotdrawarc[->]{(O)}{0.35*\rvec}{0}{\phivec}
+    {below}{$\phi$}
+    \tdplotdrawarc[->]{(O)}{0.45*\rvec}{\phivec}{\phivec+\dphi}
+    {anchor=145,inner sep=1}{\contour{white}{$\dd{\phi}$}}
+    \tdplotsetthetaplanecoords{\phivec}
+    \tdplotdrawarc[->,tdplot_rotated_coords]{(0,0,0)}{0.36*\rvec}{0}{\thetavec}
+    {right,above right}{$\theta$}
+    \tdplotdrawarc[->,tdplot_rotated_coords]{(0,0,0)}{0.54*\rvec}{\thetavec}{\thetavec+\dtheta}
+    {left,above right}{\contour{white}{$\dd{\theta}$}}
+
+\end{tikzpicture}
+    \caption{Тілесний кут}
+    \label{pis:solid_angle}
+\end{figure}
+%---------------------------------------------------------
+
+Елемент тілесного кута в сферичній системі координат
+\begin{equation}\label{eq:solid_angle_in_spherical}
+    d\Omega = \sin\theta d\theta d\phi
+\end{equation}

@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+\pgfmathsetseed{23655}
+
+%\draw[pattern=north west lines] (-5,0) -- (-1,0) arc(180:360:1) -- decorate [decoration={{random steps,segment length=2mm}}] {(5,0) arc(0:-180:5 and 1.5)} -- (-5,0) -- cycle;
+%    \draw[] (-1.5,-1.5) to[crosslines={thick}] (1.5,1.5);
+    \draw[pattern=north west lines] (-5,0) coordinate (A) -- (-1,0) arc(180:360:1) -- (5,0) coordinate (B) decorate [decoration={{random steps,segment length=4mm}}] {  arc(0:-180:5 and 2.5) --(-5,0)} -- cycle;
+
+    \node[above] at (A) {$A$};
+    \node[above] at (B) {$B$};
+    \node[above] at (0,0) {$O$}; \point{0,0}{}{red}{}
+    \draw[->] (0,0) -- node[above] {$r$} ++(-45:1);
+\end{tikzpicture}

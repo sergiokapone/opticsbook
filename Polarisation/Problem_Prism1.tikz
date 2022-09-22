@@ -1,0 +1,7 @@
+\begin{tikzpicture}
+    \fill[glass, shading angle=60, draw=blue] (0,0) --++(3,0) -- ++(0,2) -- cycle;
+    \draw (0,0) ++(1,0) arc(0:{atan(2/3)}:1) node[pos=0.7, right] {$\theta$};
+    \draw[unpolarized, red, ->] (-1.5,1) -- (1.5,1) coordinate (A);
+    \draw[dashed] (A) -- ++({90+atan(2/3)}:0.5) (A) -- ++({90+atan(2/3)}:-0.5);
+    \draw[s-polarized, red, ->] (A) -- ++({90-30}:3);
+\end{tikzpicture}

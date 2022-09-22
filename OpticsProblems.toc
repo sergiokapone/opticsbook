@@ -1,0 +1,56 @@
+\babel@toc {ukrainian}{}\relax 
+\contentsline {part}{I\hspace {1em}Геометрична оптика та фотометрія}{6}{part.3}%
+\contentsline {chapter}{\numberline {1}Геометрична оптика}{7}{chapter.4}%
+\contentsline {section}{\numberline {1.1}Застосування основних законів}{7}{section.5}%
+\contentsline {subsection}{\numberline {1.1.1}Приклади розв’язування задач}{10}{subsection.23}%
+\contentsline {subsection}{\numberline {1.1.2}Контрольні запитання і задачі для самостійного розв’язку}{14}{subsection.36}%
+\contentsline {section}{\numberline {1.2}Центровані оптичні системи. Оптичні прилади}{17}{section.63}%
+\contentsline {subsection}{\numberline {1.2.1}Оптика параксіальних променів}{17}{subsection.64}%
+\contentsline {subsection}{\numberline {1.2.2}Кардинальні елементи оптичної системи}{18}{subsection.72}%
+\contentsline {subsection}{\numberline {1.2.3}Лінзи та дзеркала}{19}{subsection.75}%
+\contentsline {subsection}{\numberline {1.2.4}Побудова ходу променів в оптичній системі}{22}{subsection.95}%
+\contentsline {subsection}{\numberline {1.2.5}Властивості ідеальної оптичної системи}{23}{subsection.101}%
+\contentsline {subsection}{\numberline {1.2.6}Оптичні інструменти}{24}{subsection.117}%
+\contentsline {subsection}{\numberline {1.2.7}Приклади розв’язування задач}{29}{subsection.133}%
+\contentsline {section}{\numberline {1.3}Задачі для самостійного розв’язку}{38}{section.152}%
+\contentsline {chapter}{\numberline {2}Фотометрія}{45}{chapter.198}%
+\contentsline {section}{\numberline {2.1}Основні поняття і закони}{45}{section.199}%
+\contentsline {section}{\numberline {2.2}Приклади розв’язування задач}{50}{section.222}%
+\contentsline {section}{\numberline {2.3}Задачі для самостійного розв’язку}{54}{section.238}%
+\contentsline {part}{II\hspace {1em}Фізична оптика}{57}{part.262}%
+\contentsline {chapter}{\numberline {3}Дисперсія}{58}{chapter.263}%
+\contentsline {section}{\numberline {3.1}Основні поняття і закони}{58}{section.264}%
+\contentsline {subsection}{\numberline {3.1.1}Фазова та групова швидкості}{61}{subsection.280}%
+\contentsline {section}{\numberline {3.2}Приклади розв’язування задач}{62}{section.285}%
+\contentsline {section}{\numberline {3.3}Задачі для самостійного розв’язку }{65}{section.296}%
+\contentsline {chapter}{\numberline {4}Інтерференція}{68}{chapter.312}%
+\contentsline {section}{\numberline {4.1}Основні поняття і закони}{68}{section.313}%
+\contentsline {section}{\numberline {4.2}Приклади розв'язку задач}{81}{section.364}%
+\contentsline {section}{\numberline {4.3}Задачі для самостійного розв’язку}{88}{section.379}%
+\contentsline {chapter}{\numberline {5}Дифракція}{97}{chapter.419}%
+\contentsline {section}{\numberline {5.1}Основні поняття і закони}{97}{section.420}%
+\contentsline {section}{\numberline {5.2}Приклади розв’язування задач}{107}{section.454}%
+\contentsline {section}{\numberline {5.3}Задачі для самостійного розв’язку }{114}{section.467}%
+\contentsline {chapter}{\numberline {6}Поляризація}{123}{chapter.508}%
+\contentsline {section}{\numberline {6.1}Основні поняття і закони}{123}{section.509}%
+\contentsline {section}{\numberline {6.2}Приклади розв’язування задач}{134}{section.549}%
+\contentsline {section}{\numberline {6.3}Задачі для самостійного розв’язку }{138}{section.556}%
+\contentsline {chapter}{Відповіді}{149}{chapter*.614}%
+\contentsline {chapter}{Додатки}{164}{appendix*.618}%
+\contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{164}{section.619}%
+\contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{165}{section.621}%
+\contentsline {subsection}{\numberline {Б.1}Тілесний кут}{165}{subsection.622}%
+\contentsline {section}{\numberline {В}Фотометричні дані}{166}{section.626}%
+\contentsline {section}{\numberline {Г}Фізичні константи}{169}{section.630}%
+\contentsline {chapter}{Література}{170}{appendix*.636}%
+\babel@toc {english}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\babel@toc {ukrainian}{}\relax 
+\contentsfinish 

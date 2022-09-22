@@ -1,0 +1,116 @@
+\begin{tikzpicture}[
+		declare function={
+				b=0.6; % ширина щілини
+                a=1.2; % ширина непрозорої частини
+                d=a+b;% Період решітки
+                N=5;% Число штрихів
+				lambda = 0.5; % довжина хвилі
+				L=4; % Y Положення лінзи
+                f=6; % фокусна відстань лінзи
+                E=L+f; % Y положення екрану (x вісь графіка)
+				diap = lambda/b*f; % Y_min - положення першого мінімумів
+                ddiap = lambda/d*f; % Y_max - положення головних максимумів
+                adiap = lambda/b; % sin кута першого мінімуму
+                addiap = lambda/d; % sin кута першого головного максимуму
+				difraction(\x) = 5*( sin(pi*b/lambda/f*\x r)/(pi*b/lambda/f*\x) )^2; %тут  x -координата вздовж екрану
+                lattice(\x) = (sin(N*pi*d/lambda/f*\x r)/sin(pi*d/lambda/f*\x r)/N )^2;
+			},
+	]
+
+	% ------------------- Побудова отвору шириною b ---------------------------
+
+%    \grid[1](-3,-3)--(3,3);
+
+	\foreach[count=\c] \i in {-3,...,2}
+		{
+			\fill[black]  ({\i*d+b/2}, -0.1) rectangle ++(a,0.2);
+%			({-\i*d-b/2}, -0.1) coordinate (L\c) rectangle ++(-b,0.2) ;
+		}
+
+
+	% ------------------ Падаючі на щілину промені -----------------------------
+
+
+	\foreach \i in {-2.5,-2.4,...,2.5}
+		{
+			\draw[ray] (\i*d, 1) -- ++(0,-0.9);
+		}
+
+	% --------------- Побудова заломлених лінзою променів ----------------
+
+
+	\pgfmathsetmacro\ph{asin(-1*addiap)} % Кут дифракції
+    \foreach \j in {-2,...,2}{
+	\foreach[count=\c] \i in {0,0.2,...,1}
+	{
+
+	\draw[ray, red!30]  ({b*(\i-1/2)+\j*d}, -0.1) coordinate (Out\c)  --++({-90+\ph}:{L/cos(\ph)}) coordinate (In\c); % Падаючі на лінзу промені
+
+	\draw[red!30] (In\c) -- ({f*sin(\ph)}, -E)
+    ; % Заломлені лінзою промені
+	}
+    }
+
+	% ----------------------------------------------------------------------
+
+
+	\draw[blue, glass] (-6, -L) arc(180:0:6 and 0.25)  arc(0:-180:6 and 0.25); % Лінза
+
+
+	% ----------------------------------------------------------------------
+
+
+         \foreach[count=\c] \i in {-2,...,2} {
+             \draw (\i*ddiap, -E+0.1) -- ++(0,-0.2) coordinate (tiks\c);
+             \node[below] at (tiks\c) {%
+                 \ifnum\i=0%
+                 $\i$%
+                 \else%
+                     \ifnum\i>0%
+                         $+\i\frac{\lambda}{d}f'$%
+                     \else
+                         $\i\frac{\lambda}{d}f'$%
+                     \fi%
+                 \fi%
+             };
+         \ifnum\i=0
+             \node[above, left] at ({\i*ddiap},{-E+5}) {$m = \i$};
+         \else
+             \node[above] at ({\i*ddiap},{-E+difraction(\i*ddiap)})
+             {$m = \ifnum\i>0\relax+\fi\i$};
+         \fi
+         } % Штришки і підписи на осі OX
+
+        \draw[domain=-1*diap:1*diap, samples=700, smooth, thin] plot (\x, {-E + difraction(\x)}); % Графік
+
+		\draw[domain=-1*diap:1*diap, red, samples=700, smooth, ultra thick] plot (\x, {-E + difraction(\x)*lattice(\x)}); % Графік
+
+		\draw[->] (-1*diap-0.5,{-E}) -- (1*diap+0.5,{-E})node [right] {$x$}; % Вісь OX
+        \draw[->] (0,-E) -- ++(0,{5+0.5}) node [right] {\contour{white}{$I$}}; % Вісь OY
+
+    % --------------------------- Підписи -------------------------------------
+
+    	\draw[] (-6, -L) -- ++(-1,0) coordinate (f1) (-6, {-E}) -- ++(-1,0) coordinate (f2); % Видвижки для f
+
+         \draw[<->] ([xshift=+0.25cm]f1) -- node[left] {$f'$} ([xshift=+0.25cm]f2); %Стрілки дистанції для f
+
+         \draw ({b*(0+1/2)+2*d}, 0) coordinate (bphi) -- ++(0,-2.5);
+          \draw (bphi) ++(0,-2) arc(-90:{-90+\ph}:2) node[below, pos=0.5] {\contour{white}{$\phi$}};
+         \draw ({b*(0-1/2)+2*d}, 0) coordinate (b) -- ++(0,-1);
+          \draw[<->] ([yshift=-0.5cm]b) -- node[below] {\contour{white}{$b$}} ++(b,0);
+         \draw ({b*(0+1/2)+1*d}, 0) coordinate (a) -- ++(0,-1);
+          \draw[<->] ([yshift=-0.5cm]a) -- node[below] {\contour{white}{$a$}} ++(a,0);
+         \draw ({b*(0+1/2)+0*d}, 0) coordinate (d) -- ++(0,-1);
+           \draw[<->] ([yshift=-0.5cm]d) -- node[below] {\contour{white}{$d$}} ++(d,0);
+
+%         \foreach \i in {1,...,2}
+%         {
+%             \draw[dash dot] (0,-L) -- (\i*ddiap,{-E})
+%             %(0,-L) --  (-\i*ddiap,{-E})
+%             ;  % Напрямки на головні максимуми
+%             \pgfmathsetmacro\ph{atan(\i*addiap)}
+%             \draw[] (0,-L) [partial ellipse={-90}:{-90+\ph}:{\i+0.9}] node[pos=0.8, below] {
+%                 $\phi_\i$};
+%         }
+
+\end{tikzpicture}

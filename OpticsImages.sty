@@ -1,0 +1,387 @@
+%%% --------------------------------------------------------
+%%> \section{Declaration}
+%%% --------------------------------------------------------
+
+
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{OpticsImages}
+% https://tikz.net/optics_diffraction/
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Fancy Fonts}
+%%% --------------------------------------------------------
+
+\RequirePackage{pifont}
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Colors}
+%%% --------------------------------------------------------
+
+
+\RequirePackage{xcolor}
+\definecolor{malina}{RGB}{153,0.0,0.0}
+%\definecolor{lighbluecolor}{RGB}{0,163,243}
+%\definecolor{iptgreen}{RGB}{34,102,101}
+%\definecolor{themecolordark}{RGB}{0,163,243}
+%\definecolor{themecolorlight}{RGB}{191,233,251}
+\definecolor{themecolordark}{RGB}{0,46,100}
+\definecolor{themecolorlight}{RGB}{0,100,170}
+% ------------- Кольори секцій ------------------------------
+\definecolor{titlebgdark}{RGB}{0,103,102}
+\definecolor{titlebglight}{RGB}{191,233,251}
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Tikz}
+%%% --------------------------------------------------------
+
+
+\RequirePackage{tikz, pgfplots, tikz-3dplot}
+\RequirePackage[outline]{contour} % glow around text
+\usepackage{physics}
+\usetikzlibrary{babel}
+%---------------------------------------------------
+%\usetikzlibrary{external}
+%\usepgfplotslibrary{external}
+%\tikzexternalize[optimize=false, prefix=figures/]
+%---------------------------------------------------
+\usetikzlibrary{decorations.text, decorations.markings}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows, arrows.meta}
+\usetikzlibrary{shapes, shadows}
+\usetikzlibrary{angles, quotes}
+\usetikzlibrary{snakes}
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfdeclarelayer{layer1}
+\pgfdeclarelayer{layer2}
+\pgfdeclarelayer{layer3}
+\pgfsetlayers{layer1,layer2,layer3,bg,main}  % set the order of the layers (main is the standard layer)
+
+\usetikzlibrary{shapes.geometric,calc}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{
+	%every tick label/.append style={scale=0.5},
+	every axis label/.append style={font=\small},
+	compat=newest,
+}
+\tikzset{every picture/.style={font=\small}}
+\tikzset{
+	partial ellipse/.style args={#1:#2:#3}{
+			insert path={+ (#1:#3) arc (#1:#2:#3)}
+		}
+}
+
+\tikzset{>=latex} % for LaTeX arrow head
+
+\colorlet{myblue}{blue!80!black}
+\colorlet{mydarkblue}{blue!35!black}
+\colorlet{myred}{black!50!red}
+\colorlet{Ecol}{orange!90!black}
+\tikzstyle{myarr}=[-{Latex[length=3,width=2]}]
+\tikzstyle{Evec}=[Ecol,{Latex[length=2.8,width=2.5]}-{Latex[length=2.8,width=2.5]},line width=0.6]
+\colorlet{glasscol}{blue!10}
+\tikzstyle{glass}=[top color=glasscol!90!blue,bottom color=glasscol!90!blue,middle color=white,shading angle=40]
+
+\tikzset{
+	% Вставка вузлів над кривими plot
+	insert node/.style args={#1 at #2}{
+			postaction=decorate,
+			decoration={
+					markings,
+					mark= at position #2
+					with
+						{
+							#1
+						}
+				}
+		}
+}
+
+\tikzset{
+	laser/.pic={
+			code={
+					\fill[semithick, draw = black, bottom color=gray, middle color = white] (-0.8,-0.2) rectangle (0.8,0.2);
+					\fill[semithick, draw=black, bottom color=gray, middle color = white] (0.8,-0.19) -- ++(45:0.1) -- ++(0,0.24) -- ++(135:0.1) -- cycle;
+					\coordinate  (-top) at (0,0.2);
+				},
+		},
+}
+
+\newcommand\rightAngle[4]{
+	\pgfmathanglebetweenpoints{\pgfpointanchor{#2}{center}}{\pgfpointanchor{#3}{center}}
+	\coordinate (tmpRA) at ($(#2)+(\pgfmathresult+45:#4)$);
+	\draw[white,line width=0.6] ($(#2)!(tmpRA)!(#1)$) -- (tmpRA) -- ($(#2)!(tmpRA)!(#3)$);
+	\draw[blue!40!black] ($(#2)!(tmpRA)!(#1)$) -- (tmpRA) -- ($(#2)!(tmpRA)!(#3)$);
+}
+
+% WAVEFRONT
+\def\p{0.03}
+\def\r{0.25}
+\tikzset{
+wavefront/.pic={
+		\tikzset{/wavefront/.cd,#1}
+		\fill (0,0) circle (\p);
+		\draw (\wang:\r) arc(\wang:-\wang:\r);
+	}
+/wavefront/.search also={/tikz},
+/wavefront/.cd,
+ang/.store in=\wang, ang={60},
+}
+
+\tikzstyle{ray} = [postaction=decorate,decoration={markings,mark=at position .52 with \arrow{>}}, red]
+\tikzstyle{gray} = [line width = 1, dashed, black!50]
+
+\newcommand{\point}[4]{
+	\draw[fill=#4] (#1) circle (1pt) node[#3] {#2};
+}
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Patterns}
+%%% --------------------------------------------------------
+
+
+\usetikzlibrary{patterns}
+\tikzstyle{ground}=[fill,pattern=north east lines,draw=none,minimum width=0.3,minimum height=0.6]
+
+
+
+
+
+%%% --------------------------------------------------------
+%%> \section{Macros}
+%%% --------------------------------------------------------
+
+% ------------- Око --------------------------
+\pgfkeys{/eye/.cd,
+    x/.code           = {\def\eye@x{#1}},
+    y/.code           = {\def\eye@y{#1}},
+    rotation/.code    = {\def\eye@rot{#1}},
+    radius/.code      = {\def\eye@rad{#1}}
+}
+
+\newcommand{\eye}[1][]{% size, x, y, rotation
+    \pgfkeys{/eye/.cd,
+        x         = 0,
+        y         = 0,
+        rotation  = 0,
+        radius    = 1
+    }
+\pgfqkeys{/eye}{#1}
+    \draw[rotate around={\eye@rot:(\eye@x,\eye@y)}]
+    (\eye@x,\eye@y) -- ++(-.5*55:\eye@rad)
+    (\eye@x,\eye@y) -- ++(.5*55:\eye@rad);
+    \draw (\eye@x,\eye@y) ++(\eye@rot+55:.75*\eye@rad) arc (\eye@rot+55:\eye@rot-55:.75*\eye@rad);
+    % IRIS
+    \draw[fill=gray] (\eye@x,\eye@y) ++(\eye@rot+55/3:.75*\eye@rad) arc (\eye@rot+180-55:\eye@rot+180+55:.28*\eye@rad);
+    %PUPIL, a filled arc
+    \draw[fill=black] (\eye@x,\eye@y) ++(\eye@rot+55/3:.75*\eye@rad) arc (\eye@rot+55/3:\eye@rot-55/3:.75*\eye@rad);
+}
+
+\newcommand\pgfmathsinandcos[3]{%
+    \pgfmathsetmacro#1{sin(#3)}%
+    \pgfmathsetmacro#2{cos(#3)}%
+}
+\newcommand\LongitudePlane[2][current plane]{%
+    \pgfmathsinandcos\sinEl\cosEl{\Elevation} % elevation
+    \pgfmathsinandcos\sint\cost{#2} % azimuth
+    \tikzset{#1/.estyle={cm={\cost,\sint*\sinEl,0,\cosEl,(0,0)}}}
+}
+\newcommand\LatitudePlane[3][current plane]{%
+    \pgfmathsinandcos\sinEl\cosEl{#3} % elevation
+    \pgfmathsinandcos\sint\cost{#2} % latitude
+    \pgfmathsetmacro\ydelta{\cosEl*\sint}
+    \tikzset{#1/.estyle={cm={\cost,0,0,\cost*\sinEl,(0,\ydelta)}}} %
+}
+
+\newcommand\NewLatitudePlane[4][current plane]{%
+    \pgfmathsinandcos\sinEl\cosEl{#3} % elevation
+    \pgfmathsinandcos\sint\cost{#4} % latitude
+    \pgfmathsetmacro\yshift{#2*\cosEl*\sint}
+    \tikzset{#1/.style={cm={\cost,0,0,\cost*\sinEl,(0,\yshift)}}} %
+}
+
+\newcommand\DrawLongitudeCircle[1]{
+    \LongitudePlane{#1}
+    \tikzset{current plane/.prefix style={scale=\R}}
+    \pgfmathsetmacro\angVis{atan(sin(#1)*cos(\Elevation)/sin(\Elevation))} %
+    \draw[current plane,thin,black]  (\angVis:1)     arc (\angVis:\angVis+180:1);
+    \draw[current plane,thin,dashed] (\angVis-180:1) arc (\angVis-180:\angVis:1);
+}%
+
+\NewDocumentCommand\DrawLatitudeCircle{O{red}mmm}{
+    \LatitudePlane{#2}{#3}
+    \tikzset{current plane/.prefix style={scale=#4}}
+    \pgfmathsetmacro\sinVis{sin(#2)/cos(#2)*sin(#3)/cos(#3)}
+    \pgfmathsetmacro\angVis{asin(min(1,max(\sinVis,-1)))}
+
+    \draw[current plane,thick, line width=1pt, #1, ] (\angVis:1) arc (\angVis:-\angVis-180:1);
+
+    \draw[current plane,line width=1pt, #1, opacity=0.2] (180-\angVis:1) arc (180-\angVis:\angVis:1);
+}%
+
+%Styles
+\tikzset{>=latex}
+\tikzset{axis/.style={black, very thick, ->}}
+\tikzset{ef/.style={very thick, red}}
+\tikzset{vec/.style={black, -{Latex[length=0.8mm]}}}
+\tikzset{every text node part/.style={align=center}}
+
+%% Draw Line in Polar Coordinates from (0,0) to (t,theta)
+\newcommand{\cdraw}[2]{\draw[very thick, -stealth, red] (0,0) -- ({#1*cos(#2)}, {#1*sin(#2)});}
+
+
+	% ------------------------------- Сітка ------------------------------------
+
+
+\def\grd@save@target#1{%
+    \def\grd@target{#1}}
+\def\grd@save@start#1{%
+    \def\grd@start{#1}}
+\tikzset{
+    grid with coordinates/.style={
+        to path={%
+            \pgfextra{%
+                \edef\grd@@target{(\tikztotarget)}%
+                \tikz@scan@one@point\grd@save@target\grd@@target\relax
+                \edef\grd@@start{(\tikztostart)}%
+                \tikz@scan@one@point\grd@save@start\grd@@start\relax
+%                \draw[minor help lines] (\tikztostart) grid (\tikztotarget);
+                \draw[major help lines] (\tikztostart) grid (\tikztotarget);
+                \grd@start
+                \pgfmathsetmacro{\grd@xa}{\the\pgf@x/1cm}
+                \pgfmathsetmacro{\grd@ya}{\the\pgf@y/1cm}
+                \grd@target
+                \pgfmathsetmacro{\grd@xb}{\the\pgf@x/1cm}
+                \pgfmathsetmacro{\grd@yb}{\the\pgf@y/1cm}
+                \pgfmathsetmacro{\grd@xc}{\grd@xa + \pgfkeysvalueof{/tikz/grid with coordinates/major step}}
+                \pgfmathsetmacro{\grd@yc}{\grd@ya + \pgfkeysvalueof{/tikz/grid with coordinates/major step}}
+                \foreach \x in {\grd@xa,...,\grd@xb}
+                \node[anchor=north, gray!40] at (\x,0) {\pgfmathprintnumber{\x}};
+                \foreach \y in {\grd@ya,...,\grd@yb}
+                \node[anchor=east, gray!40] at (0,\y) {\pgfmathprintnumber{\y}};
+                \draw[red] (\grd@xa,0) -- (\grd@xb,0);
+                \draw[red] (0, \grd@ya) -- (0, \grd@yb) ;
+            }
+        }
+    },
+    minor help lines/.style={
+        help lines,
+        step=\pgfkeysvalueof{/tikz/grid with coordinates/minor step}
+    },
+    major help lines/.style={
+        help lines,
+        line width=\pgfkeysvalueof{/tikz/grid with coordinates/major line width},
+        step=\pgfkeysvalueof{/tikz/grid with coordinates/major step}
+    },
+    grid with coordinates/.cd,
+%    minor step/.initial=.5,
+    major step/.initial=0.5,
+    major line width/.initial=0.1pt,
+}
+
+\tikzset{
+    crosslines/.style={
+        to path={%
+            \pgfextra{%
+                \edef\grd@@target{(\tikztotarget)}%
+                \tikz@scan@one@point\grd@save@target\grd@@target\relax
+                \edef\grd@@start{(\tikztostart)}%
+                \tikz@scan@one@point\grd@save@start\grd@@start\relax
+                \grd@start
+                \pgfmathsetmacro{\grd@xa}{\the\pgf@x/1cm}
+                \pgfmathsetmacro{\grd@ya}{\the\pgf@y/1cm}
+                \grd@target
+                \pgfmathsetmacro{\grd@xb}{\the\pgf@x/1cm}
+                \pgfmathsetmacro{\grd@yb}{\the\pgf@y/1cm}
+                \pgfmathsetmacro{\grd@xc}{\grd@xa + \pgfkeysvalueof{/tikz/grid with coordinates/major step}}
+                \pgfmathsetmacro{\grd@yc}{\grd@ya + \pgfkeysvalueof{/tikz/grid with coordinates/major step}}
+                \draw[#1] (\grd@xa,0) -- (\grd@xb,0);
+                \draw[#1] (0, \grd@ya) -- (0, \grd@yb) ;
+            }
+        }
+    },
+}
+
+\tikzset{
+    unpolarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[<->, black!50] (0,-0.2)--(0,0.2);
+            \draw[fill, black!50] (3mm,0) circle (1.25pt);
+             }
+         },
+        postaction={decorate},
+    },
+    semipolarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[<->, black!50] (0mm,-0.2)--(0mm,0.2);
+            \draw[<->, black!50] (1.5mm,-0.2)--(1.5mm,0.2);
+            \draw[fill, black!50] (3mm,0) circle (1pt);
+             }
+         },
+        postaction={decorate},
+    },
+    p-polarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[<->, black!50] (0,-0.2)--(0,0.2);
+             }
+         },
+        postaction={decorate},
+    },
+    sp-polarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[<->, black!50] (0,-0.2)--(0.2,0.2);
+             }
+         },
+        postaction={decorate},
+    },
+    s-polarized/.style={
+        decoration={markings,
+        mark=between positions 0.1 and 0.9 step 6mm with{
+            \draw[fill, black!50] (3mm,0) circle (1pt);
+             }
+         },
+        postaction={decorate},
+    },
+}
+
+\colorlet{watercol}{blue!70!cyan!50}
+\tikzstyle{water}=[ball color=watercol]
+
+%% Viewing Screen
+\newcommand{\rect}[1]{%
+	\begin{scope}[canvas is xz plane at y=1.2]
+		\draw[thick, fill=black!40] (#1,-1.2) rectangle (#1+0.2,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is xy plane at z=1.2]
+		\draw[thick, fill=black!25](#1,-1.2) rectangle (#1+0.2,1.2);
+	\end{scope}
+	%
+	\begin{scope}[canvas is yz plane at x=#1]
+		\draw[thick, fill=black!10] (-1.2,-1.2) rectangle (1.2,1.2);
+		\draw[thick, fill=black!10, dashed] (0,0) circle (0.65cm);
+		\foreach \i in {0,45,...,360}
+		{
+			\draw[thick, dashed] (0,0) -- ({0.65*cos(\i)}, {0.65*sin(\i)});
+		}
+	\end{scope}
+}
+
+\endinput

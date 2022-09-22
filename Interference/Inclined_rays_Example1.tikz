@@ -1,0 +1,57 @@
+\begin{tikzpicture}[
+        scale=0.9,
+		declare function={
+				%        intensity(\y,\lam,\a,\L) = cos(180*\a*\y/(2*\lam*sqrt(\L*\L+\y*\y)))^2;
+				intensity(\y,\lam,\a,\L) = cos(2*pi*\a*\y/(\lam*\L) r)^2;
+			},
+	]
+	\def\sxa{-2}
+	\def\sxb{5}
+	\def\sya{-4.5}
+	\def\syb{4.5}
+
+	\draw[->] (-3,3) -- ++(1.5,0) node[below] {$z$};
+	\draw[->] (-3,3) -- ++(0, 1.5) node[left] {$y$};
+	%    \draw[gray!40, step=0.5] (\sxa,\sya) grid (\sxb,\syb);
+	\draw[->] (\sxa,0) -- (\sxb,0) node[right] {$I$};
+	\draw[->, name path=y] (0, \sya) -- (0, \syb) node[above] {$y$};
+	%            \foreach \i in {\sxa,...,\sxb}
+	%            {
+	%                        \node[below, gray!50, font=\scriptsize] at (\i, 0) {$\i$};
+	%                    }
+	%            \foreach \j in {\sya,...,\syb}
+	%            {
+	%                        \node[left, gray!50, font=\scriptsize] at (0, \j) {$\j$};
+	%                }
+	\pgfmathsetmacro\alph{20}
+	\foreach \i in {0}{
+			\draw[ray, domain=-5:0] plot (\x, {tan(\alph)*(\x + \i)});
+			\draw[ray, blue, domain=-5:0] plot (\x, {-tan(\alph)*(\x + \i)});
+			\fill[red] (-4.5, {tan(\alph)*(-4.5 + \i)}) coordinate (k1) circle(0.05) node[below] {$\vect{E}_{0_1}$};
+            \draw[red] (k1) circle (0.1);
+			\fill[blue] (-4.5, {-tan(\alph)*(-4.5 + \i)}) coordinate (k2) circle (0.05) node[below] {$\vect{E}_{0_2}$};
+            \draw[blue] (k2) circle (0.1);
+            \draw[->, red] (k1) -- ++(\alph:1) node[above] {$\vect{k}_1$};
+            \draw[->, blue] (k2) -- ++(-\alph:1) node[above] {$\vect{k}_2$};
+		}
+
+	\draw[] ({180-\alph}:1) arc({180-\alph}:{180 + \alph}:1) node[pos=0.2, left] {$\phi/2$} ;
+	\def\H{9}       % total wall height
+	\def\A{2}       % amplitude
+	\def\lambd{0.20}  % wavelength
+	\def\a{\L*\lambd/1/2}      % slit distance
+	\def\L{3}       % distance between walls
+	\begin{scope}[xshift = 1cm]
+		\draw[red,thick,variable=\y,samples=1000,smooth,domain=-\H/2:\H/2, name path global=I]
+		plot({\A*intensity(\y,\lambd,\a,\L)},\y);
+		\draw ({\A*intensity(3,\lambd,\a,\L)},3) -- ++(0.5,0) coordinate (y1);
+		\draw ({\A*intensity(4,\lambd,\a,\L)},4) -- ++(0.5,0) coordinate (y2);
+		\draw[<->] (y1) -- node[right] {$\Delta y$} (y2);
+		\draw ({\A*intensity(-2,\lambd,\a,\L)},-2) -- ++(0.5,0) node[right] {$I_{\max} \sim (E_{0_1} + E_{0_2})^2$};
+		\draw ({\A*intensity(-3.5,\lambd,\a,\L)},-3.5) -- ++(\A + 0.5,0) node[right] {$I_{\min} \sim (E_{0_1} - E_{0_2})^2$};
+	\end{scope}
+	\tikzfillbetween[of=y and I]{pattern=north west lines, opacity=0.5};
+
+
+
+\end{tikzpicture}

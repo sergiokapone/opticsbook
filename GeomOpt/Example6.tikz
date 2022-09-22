@@ -1,0 +1,35 @@
+\begin{tikzpicture}[
+    scale = 0.5,
+    declare function =
+    ]
+
+    \def\sx{5}
+    \def\sy{4}
+    \def\fO{3}
+    \def\xO{-1}
+    \def\fo{2.5}
+    \def\xo{0.5}
+
+    \def\l{2.5}
+    \draw[line join=round, draw=blue, fill=blue!5, name path=lens] (\xO,-3) arc (-30:30:2 and 6) arc (150:210:2 and 6) -- cycle;
+    %
+    \draw[line join=round, draw=blue, fill=blue!5, name path=lens] (\xo+0.38,-3) arc (210:150:2 and 6)  -- ++(-0.75, 0) arc (30:-30:2 and 6) -- cycle;
+
+    % Оптична вісь
+
+    \draw[name path=optaxis] (-\sx,0) -- (\sx,0);
+
+    \draw (\xO, 3) node[above] {$H_1$} -- ++(0,-6) ; % Об'єктив
+    \coordinate (F1) at ({\xO-\fO}, 0); % Передній фокус об'єктива
+    \coordinate (F1') at ({\xO+\fO}, 0); % Задній фокус об'єктива
+    \point{F1}{$F_1$}{below}{red}
+    \point{F1'}{$F'_1$}{below}{red}
+
+    \draw (\xo, 3)  node[above] {$H_2$} -- ++(0,-6); % Окуляр
+    \coordinate (F2') at ({\xo-\fo}, 0); % Передній фокус окуляра
+    \coordinate (F2) at ({\xo+\fo}, 0); % Задній фокус окуляра
+    \point{F2}{$F_2$}{below}{red}
+    \point{F2'}{$F'_2$}{below}{red}
+
+
+\end{tikzpicture}

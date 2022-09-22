@@ -1,0 +1,23 @@
+\begin{tikzpicture}[baseline]
+
+    \def\R{4} % sphere radius
+    \def\Elevation{20} % elevation angle
+
+
+    \fill[ball color=white!10] (0,0) circle (\R); % 3D lighting effect
+
+    \foreach \i in {89,86,...,59} {
+        \DrawLatitudeCircle{\i}{20}{4}
+        \DrawLatitudeCircle{-\i}{20}{4}
+    }
+    \foreach \i in {-6,-3,...,6} {\DrawLatitudeCircle{\i}{20}{4}}
+    \draw[dashed] (0,\R) -- (0,-\R);
+    \draw[dashed] (-\R,0) --(\R,0);
+    \draw[dashed] (45:\R) -- (225:\R);
+    \fill[red] (0,\R/12) coordinate (S1) circle (0.08);
+    \fill[red] (0,-\R/12) coordinate (S2) circle (0.08);
+    \draw[decorate,decoration={brace,amplitude=3pt, raise=0.5ex}] (S1) -- node[right=3pt] {$d$} (S2);
+
+    \draw[latex-] (90:\R) -- ++(90:1) node[above right] {$\Delta = d= \Delta_{\max} = m_{\max}\lambda$};
+    \draw[latex-] (0:\R) -- ++(0:1) node[right] {$\Delta = 0$, $m = 0$};
+\end{tikzpicture}

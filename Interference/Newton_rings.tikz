@@ -1,0 +1,36 @@
+\pgfdeclareradialshading{myring}{\pgfpointorigin}
+{
+color(0)=(white);
+color(20bp)=(red);
+color(40bp)=(white)
+}
+\pgfdeclarefading{ringo}{\pgfuseshading{myring}}
+\begin{tikzpicture}
+    %    	\draw (-3,-3) to [grid with coordinates] (3,3);
+    \fill[glass] (-3,0) rectangle (3,0.5);
+    %        \draw[dashed] (0,7.5) circle (7);
+    \fill[glass] (0,7.5) ++(244:7) arc (244:296:7) -- cycle;
+    \draw (0,7.5) -- node[right] {$R$}++(287:7);
+    \draw (0,7.5) -- ++(270:8.3);
+    \draw [stealth reversed-stealth reversed] (2.6,0.9) -- node [right] {$d$} (2.6,0.4);
+%    \draw [stealth reversed-stealth reversed] (2,0.6)    --  node [left] {$d_0$} (2,0.15);
+    \draw [thin, dashed] (-3,0.8) -- (3,0.8);
+    \draw [thin, dashed] (0,0.50) -- (3,0.50);
+    \draw (-2,0.8) -- ++(0,-1.6);
+    \draw [latex-latex] (-2,-0.6) -- node[below] {$r_m$} (0,-0.6);
+    \draw [ray] (-2.8, 4) node[left, black] {$1$} -- (-2.8,1.08) ;
+    \draw [ray] (-2.8,1.08) -- (-2.2,0.5) -- (-2,0.8);
+    \draw [ray] (-2,0.8) -- (-1.2,1.6) node[above right, black] {$2'$} node[above left, black] {$1'$};
+    %        \draw[-stealth, red] (-2.8,1.08) -- (-2.5, 1.6);
+    \draw [ray] (-2, 4) node[right, black] {$2$} -- (-2,0.8);
+
+
+\begin{scope}[xshift=8cm, yshift=3cm]
+        %    \shade [inner color=red, outer color=red!10] (0,-4.5) circle ({sqrt(15)});
+    \fill [red!60!black]  (0,0) circle ({sqrt(10)});
+    \foreach \i in {1,...,10} {
+%        \draw[red, line width = {8/\i}] (0,-4.5) circle ({sqrt(\i)});
+        \fill[even odd rule,red!60] (0,0) circle ({sqrt(\i) - 0.15/\i})  circle({sqrt(\i) + 0.15/\i});
+    }
+\end{scope}
+\end{tikzpicture}

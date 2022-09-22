@@ -1,0 +1,64 @@
+\begin{tikzpicture}[
+		declare function={
+				b=1.97; % ширина щілини
+				lambda = 0.75; % довжина хвилі
+				L=4; % Y Положення лінзи
+				f=2; % фокусна відстань лінзи
+				diap = lambda/b*f; % Y_min - положення першого мінімімі
+				adiap = lambda/b; % sin кута першого мінімуму
+				difraction(\x) = 2*( sin(pi*b/lambda/f*\x r)/(pi*b/lambda/f*\x) )^2; %тут  x -координата вздовж екрану
+			},
+	]
+
+%	\grid[0](-5,-5)--(5,5);
+	\pgfmathsetmacro\s{f}
+	\pgfmathsetmacro\d{6}
+	\pgfmathsetmacro\f{f}
+	\pgfmathsetmacro\l{1.5}
+	\pgfmathsetmacro\E{\f*\d/(\d-\f)}
+	\pgfmathsetmacro\dist{\E/\d*\l}
+
+	\fill[line join=round, glass, draw=blue, ultra thin, name path=lens] (0.25,-2) arc (-30:30:2 and 4) -- ++(-0.5, 0) arc (150:210:2 and 4) -- cycle;
+
+	\draw[name path=optaxis, dash dot] (-\d,0) -- (\E,0);
+
+
+
+	\draw[] (\E,-3) -- ++(0,6);
+
+
+	%    \coordinate (F) at (-\f,0); \point{F}{$F$}{below left}{red}
+%	\coordinate (F') at (\f,0); \point{F'}{$F'$}{below left}{red}
+
+	\draw[thick, fill=black] (-0.5, 2) rectangle ++(1,0.05) (-0.5, -2) rectangle ++(1,-0.05);
+
+	\draw (-0.5, 2) -- ++(-0.5, 0) (-0.5, -2) -- ++(-0.5, 0);
+	\draw[<->] (-0.75, 2) -- node[left, pos=0.8] {$D$} ++(0, -4);
+
+	\coordinate (A) at (-\d, 0);
+	\coordinate (T) at (-\d, \l);
+	\draw[thick, ->] (A) --  node[left] {$\ell_{\min}$} (T); % об'єкт
+
+	\def\yn{0}
+	\def\a{atan(-\l/\d)}
+	\pgfmathsetmacro\kb{tan(\a) - \yn/\f}
+	\draw[ray, domain=-\d:0] plot (\x, {tan(\a)*\x + \yn});
+	\draw[ray, domain=-0:\E] plot (\x, {\kb*\x+\yn});
+
+	\def\yn{1.97}
+	\def\a{atan(\yn/\d)}
+	\pgfmathsetmacro\kb{tan(\a) - \yn/\f}
+	\draw[ray, domain=-\d:0] plot (\x, {tan(\a)*\x + \yn});
+	\draw[ray, domain=-0:\E] plot (\x, {\kb*\x+\yn});
+
+
+
+	\draw[variable=\y,samples=500, domain=-2*diap:2*diap, red] plot ({\E+difraction(\y)}, {\y});
+
+	\draw[variable=\y,samples=500, domain=-2*diap:3*diap, red] plot ({\E+difraction(\y-\dist)}, {\y});
+
+   	\draw[variable=\y,samples=500, domain=-2*diap:3*diap, dashed] plot ({\E+difraction(\y) + difraction(\y-\dist)}, {\y});
+
+    \draw (-\d,0) ++ (1,0) arc(0:{atan(1.97/\d)}:1) node[pos=0.5, right] {$u$};
+
+\end{tikzpicture}

@@ -10,4 +10,5 @@
 *.fdb_latexmk
 *.fls
 Lamp.ico
+*.run.xml
 desktop.ini

@@ -7,6 +7,7 @@
 *.thm
 *.synctex.gz
 *.7z
-desktop.ini
 *.fdb_latexmk
 *.fls
+Lamp.ico
+desktop.ini

@@ -513,7 +513,7 @@
 	pdfpagelayout=TwoPageLeft,
 	pdfauthor={Ponomarenko S.M.},
 	pdfdisplaydoctitle=true,
-	pdfkeywords={Electrostatics, Magnetostatics, Electrodynamics, Current, Field},
+	pdfkeywords={Geometrical Optics, dispersion, Difraction, Interferention, Polarisation, Light},
 	pdfencoding=auto
 ]%
 {hyperref}

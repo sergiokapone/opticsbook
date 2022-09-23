@@ -1,3 +1,0 @@
-d:\Projects\LaTeX\OpticsProblems\OpticsProblems.synctex.gz
-d:\Projects\LaTeX\OpticsProblems\ProblemBook.synctex.gz
-d:\Projects\LaTeX\OpticsProblems\TEST.synctex.gz

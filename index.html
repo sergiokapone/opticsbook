@@ -7,6 +7,11 @@
 </head>
 <body>
 <style>
+body {
+  display: grid;
+  grid-template-rows: 1fr 1fr 3fr 1fr;
+}
+
 .footer {
   position: fixed;
   left: 0;
@@ -19,13 +24,14 @@
 }
 
 .header {
-  padding: 10px;
+  padding: 0px;
   top: 0;
   position: fixed;
   width: 100%;
   background-color: #002e64;
   color: white;
   text-align: center;
+  vertical-align: middle;
   font-size: 20px;
 }
 
@@ -39,6 +45,36 @@
     width: 99.25%;
     height: 83%;
 }
+
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: #333;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 5px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
 </style>
 
 
@@ -46,6 +82,11 @@
   <h1>Оптика. Практичний курс</h1>
 </div>
 
+<!--<div class="topnav">-->
+<!--  <a class="active" href="index.html">Книга</a>-->
+<!--  <a href="./SitePages/intro.html">Передмова</a>-->
+<!--  <a href="./SitePages/фищге.html">Про нас</a>-->
+<!--</div>-->
 
 <div class="footer">
   <p>Оптика. Практичний курс &copy; Іванова В. В., Пономаренко С. М. 2022 рік</p>
@@ -55,9 +96,6 @@
 <!-- edit this; the PDF file must be on the same domain as this page -->
 <iframe id="input" src="OpticsProblems.pdf"></iframe>
 </div>
-
-<!-- a container for the output -->
-<div id="output"></div>
 
 <script>
 var input = document.getElementById("input");

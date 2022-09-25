@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Make Text in the middle */
+header,
+footer,
+main,
+aside {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  background-color: #002e64;
+  justify-content: center;
+}
+
+header {
+  height: 50px;
+  background-color: #002e64;
+  color: white;
+}
+
+footer {
+  height: 50px;
+  background-color: #002e64;
+  color: white;
+  font-size: small;
+}
+
+.container {
+  overflow: hidden;
+  margin: .5rem 0;
+}
+
+.container nav,
+.container aside {
+  width: 100px;
+  height: calc(100vh - 100px - 1rem);
+}
+
+.container main {
+  float: right;
+  width: calc(100% - 100px - 1rem);
+  height: calc(100vh - 100px - 1rem);
+  background-color: white;
+  margin: 0 .5rem;
+}
+
+.container nav {
+  float: left;
+  background-color: #002e64;
+}
+
+.container aside {
+  float: right;
+  background-color: gold;
+}
+
+#input { 
+  position:relative; 
+  width: 100%;
+  height: 100%;
+}

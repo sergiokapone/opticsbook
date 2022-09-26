@@ -61,7 +61,7 @@ footer {
 .container aside {
   float: right;
   background-color: gold;
-  text-align: top;
+  vertical-align: top;
 }
 
 #input { 

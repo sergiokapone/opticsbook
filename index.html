@@ -8,14 +8,36 @@
     <div class="container">
       <nav>
         <ul class="menu">
-          <li><a href="./sitepages/gryf.html" target="_blank">Гриф</a></li>
-          <li><a href="./sitepages/intro.html" target="_blank">Передмова</a></li>
+          <li><a href="#" onclick='load_html("main_window","gryf.html")'>Гриф</a></li>
+          <li><a href="#" onclick='load_html("main_window", "intro.html")'>Передмова</a></li>
         </ul>
       </nav>
-      <main><iframe id="input" src="OpticsProblems.pdf"></iframe></main>
+      <main id="main_window"><iframe id="input" src="OpticsProblems.pdf"></iframe></main>
     </div>
     <footer>
       &copy; В. В. Іванова, С. М. Пономаренко, КПІ ім. Ігоря сікорського 2020
     </footer>
+    <script>
+      function load_html(id, filename) {
+        console.log(`div id: ${id}, filename: ${filename}`);
+
+        let xhttp;
+        let element = document.getElementById(id);
+        let file = filename;
+
+        if (file) {
+          xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+              if (this.status == 200) {element.innerHTML = this.responseText;}
+              if (this.status == 404) {element.innerHTML = "<h1>Page not found</h1>";}
+            }
+          }
+          xhttp.open("GET", `./sitepages/${file}`, true);
+          xhttp.send();
+          return;
+        }
+      }
+    </script>
   </body>
 </html>

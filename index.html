@@ -17,7 +17,7 @@
             >
           </li>
           <li>
-            <a href="#button" 
+            <a href=""javascript:window.location.href=window.location.href"" 
               >Книга</a
             >
           </li>
@@ -55,16 +55,6 @@
           return;
         }
       }
-
-      $(function () {
-        $("#button").click(function () {
-          if (!$("#iframe").length) {
-            $("#main_window").html(
-              '<iframe id="input" src="OpticsProblems.pdf"></iframe>'
-            );
-          }
-        });
-      });
     </script>
   </body>
 </html>

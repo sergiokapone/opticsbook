@@ -51,6 +51,7 @@ footer {
   height: calc(100vh - 100px - 1rem);
   background-color: white;
   margin: 0 .5rem;
+  vertical-align: top;
 }
 
 .container nav {
@@ -61,7 +62,6 @@ footer {
 .container aside {
   float: right;
   background-color: gold;
-  vertical-align: top;
 }
 
 #input { 

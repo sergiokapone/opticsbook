@@ -46,7 +46,7 @@ footer {
 
 .container main {
   /* float: right; */
-  width: calc(100%); /* - 150px - 1rem);*/
+  width: calc(100% - 1rem); /* - 150px - 1rem);*/
   height: calc(100vh - 100px - 1rem);
   background-color: white;
   margin: 0 .5rem;

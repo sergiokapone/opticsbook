@@ -27,22 +27,26 @@
 \contentsline {section}{\numberline {4.1}Основні поняття і закони}{68}{section.313}%
 \contentsline {section}{\numberline {4.2}Приклади розв'язку задач}{81}{section.364}%
 \contentsline {section}{\numberline {4.3}Задачі для самостійного розв’язку}{88}{section.379}%
-\contentsline {chapter}{\numberline {5}Дифракція}{97}{chapter.419}%
-\contentsline {section}{\numberline {5.1}Основні поняття і закони}{97}{section.420}%
-\contentsline {section}{\numberline {5.2}Приклади розв’язування задач}{107}{section.454}%
-\contentsline {section}{\numberline {5.3}Задачі для самостійного розв’язку }{114}{section.467}%
-\contentsline {chapter}{\numberline {6}Поляризація}{123}{chapter.508}%
-\contentsline {section}{\numberline {6.1}Основні поняття і закони}{123}{section.509}%
-\contentsline {section}{\numberline {6.2}Приклади розв’язування задач}{134}{section.549}%
-\contentsline {section}{\numberline {6.3}Задачі для самостійного розв’язку }{138}{section.556}%
-\contentsline {chapter}{Відповіді}{149}{chapter*.614}%
-\contentsline {chapter}{Додатки}{164}{appendix*.618}%
-\contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{164}{section.619}%
-\contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{165}{section.621}%
-\contentsline {subsection}{\numberline {Б.1}Тілесний кут}{165}{subsection.622}%
-\contentsline {section}{\numberline {В}Фотометричні дані}{166}{section.626}%
-\contentsline {section}{\numberline {Г}Фізичні константи}{169}{section.630}%
-\contentsline {chapter}{Література}{170}{appendix*.636}%
+\contentsline {chapter}{\numberline {5}Дифракція}{97}{chapter.420}%
+\contentsline {section}{\numberline {5.1}Основні поняття і закони}{97}{section.421}%
+\contentsline {section}{\numberline {5.2}Метод зон Френеля}{99}{section.425}%
+\contentsline {section}{\numberline {5.3}Дифракція Фраунгофера на щілині}{103}{section.438}%
+\contentsline {section}{\numberline {5.4}Дифракція Фраунгофера на круглому отворі}{105}{section.445}%
+\contentsline {section}{\numberline {5.5}Дифракційна ґратка}{107}{section.454}%
+\contentsline {section}{\numberline {5.6}Приклади розв’язування задач}{111}{section.468}%
+\contentsline {section}{\numberline {5.7}Задачі для самостійного розв’язку }{118}{section.481}%
+\contentsline {chapter}{\numberline {6}Поляризація та оптична анізотропія}{127}{chapter.522}%
+\contentsline {section}{\numberline {6.1}Основні поняття і закони}{127}{section.523}%
+\contentsline {section}{\numberline {6.2}Приклади розв’язування задач}{138}{section.563}%
+\contentsline {section}{\numberline {6.3}Задачі для самостійного розв’язку }{142}{section.570}%
+\contentsline {chapter}{Відповіді}{153}{chapter*.628}%
+\contentsline {chapter}{Додатки}{169}{appendix*.632}%
+\contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{169}{section.633}%
+\contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{170}{section.635}%
+\contentsline {subsection}{\numberline {Б.1}Тілесний кут}{170}{subsection.636}%
+\contentsline {section}{\numberline {В}Фотометричні дані}{171}{section.640}%
+\contentsline {section}{\numberline {Г}Фізичні константи}{174}{section.644}%
+\contentsline {chapter}{Література}{175}{appendix*.650}%
 \babel@toc {english}{}\relax 
 \babel@toc {ukrainian}{}\relax 
 \babel@toc {ukrainian}{}\relax 

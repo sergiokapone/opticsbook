@@ -22,7 +22,7 @@
 %    \draw[dash dot, name path=optaxis] (-5,0) -- (5,0);
     \def\fO{4.5}
 
-    \foreach[count=\i] \a in {-10, 0} {
+    \foreach[count=\i] \a in {-13, 0} {
         \foreach[count=\j] \y in {-2, 0, 2} {
             \draw[ray, domain=-4:-2.5, name path global/.expanded={I\i\j}]   plot (\x, {tan(\a)*(\x + 2.5) + \y}) ;
 
@@ -36,13 +36,13 @@
         }
     }
 
-    \draw (-2.5,0) ++(-1.25,0) arc[start angle=180, delta angle=-10, radius=1.25] node[above] {$ \psi $};
+    \draw (-2.5,0) ++(-1.25,0) arc[start angle=180, delta angle=-13, radius=1.25] node[above] {$ \psi_\text{гр} $};
 
 	\draw[variable=\y,samples=500, domain=-4*diap:3*diap, blue] plot ({2.1 + difraction(\y)}, {\y});
 
-	\draw[variable=\y,samples=500, domain=-4*diap:3*diap, blue] plot ({2.1 + difraction(\y+0.65)}, {\y});
+	\draw[variable=\y,samples=500, domain=-4*diap:3*diap, blue] plot ({2.1 + difraction(\y+0.85)}, {\y});
 
-   	\draw[variable=\y,samples=500, domain=-4*diap:3*diap, densely dashed] plot ({2.1 + difraction(\y) + difraction(\y+0.65)}, {\y});
+   	\draw[variable=\y,samples=500, domain=-4*diap:3*diap, densely dashed] plot ({2.1 + difraction(\y) + difraction(\y+0.85)}, {\y});
 
     \draw (2,-4) -- (2,3);
 

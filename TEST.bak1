@@ -10,7 +10,7 @@
 %\usetikzlibrary{3d}
 
 
-\usepackage{OpticsImages}
+%\usepackage{OpticsImages}
 
 
 
@@ -20,6 +20,8 @@
 
 
 \input{Difraction/Difraction}
+
+
 
 
 

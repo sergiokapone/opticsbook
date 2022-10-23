@@ -1,0 +1,132 @@
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{10}
+    \pgfmathsetmacro\n{0.5*\N}
+    \pgfmathsetmacro\E{2}
+    \draw[gray!50] (0,\E) circle (\E);
+    \pgfmathsetmacro\k{0}
+    \coordinate (@) at (0,0);
+
+    \foreach \i in {1,...,\n}
+    {
+
+        \draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+     \draw[blue, ->] (0,0) -- node[left] {$ E_0 $} ++(0,\E);
+     \draw[dashed] (0,\E) -- node[above] {$ E_0 $} ++(\E,0);
+    \draw[->, red] (0,0)  -- (@) ;
+\end{tikzpicture}
+\caption{Відкрито половина першої зони Френеля: $ E_P \approx \sqrt2 E_0 $}
+\label{}
+\end{subfigure}
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{10}
+    \pgfmathsetmacro\n{1*\N}
+    \pgfmathsetmacro\E{2}
+    \pgfmathsetmacro\k{0}
+    \draw[gray!50] (0,\E) circle (\E);
+    \coordinate (@) at (0,0);
+
+    \foreach \i in {1,...,\n}
+    {
+
+        \draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+
+    \draw[->, red] (0,0)  -- (@) ;
+\end{tikzpicture}
+\caption{Відкрита 1-а зона Френеля: $ E_P = E_1 \approx 2E_0 $}
+\label{}
+\end{subfigure}
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{10}
+    \pgfmathsetmacro\n{1.5*\N}
+    \pgfmathsetmacro\E{2}
+    \pgfmathsetmacro\k{0}
+    \draw[gray!50] (0,\E) circle (\E);
+    \coordinate (@) at (0,0);
+
+    \foreach \i in {1,...,\n}
+    {
+
+        \draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+
+     \draw[blue, ->] (0,0) -- node[right] {$ E_0 $} ++(0,\E);
+     \draw[dashed] (0,\E) -- node[above] {$ E_0 $} ++(-\E,0);
+    \draw[->, red] (0,0) -- (@) ;
+\end{tikzpicture}
+\caption{Відкрито півтори зони Френеля: : $ E_P \approx \sqrt2 E_0 $}
+\label{}
+\end{subfigure}
+\\[1ex]
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{10}
+    \pgfmathsetmacro\n{2*\N}
+    \pgfmathsetmacro\E{2}
+    \draw[gray!50] (0,\E) circle (\E);
+    \coordinate (@) at (0,0);
+
+    \foreach[count=\j] \i in {1,...,\n}
+    {
+
+        \ifnum\j<\N\pgfmathsetmacro\k{0}\else\pgfmathsetmacro\k{0.002}\fi
+        \draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+
+    \draw[->, red] (0,0) -- (@) ;
+\end{tikzpicture}
+\caption{Відкриті 1-а і 2-а зони Френеля: $ E_P \approx0 $}
+\label{}
+\end{subfigure}
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{10}
+    \pgfmathsetmacro\n{3*\N}
+    \pgfmathsetmacro\E{2}
+    \draw[gray!50] (0,\E) circle (\E);
+    \coordinate (@) at (0,0);
+
+    \foreach[count=\j] \i in {1,...,\n}
+    {
+
+        \ifnum\j<\N\pgfmathsetmacro\k{0}\else\pgfmathsetmacro\k{0.002}\fi
+        \draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+
+    \draw[->, red] (0,0) -- (@) ;
+\end{tikzpicture}
+\caption{Відкриті 1-а, 2-а і 3-я зони Френеля: : $ E_P \approx E_1 $}
+\label{}
+\end{subfigure}
+%---------------------------------------------------------
+\begin{subfigure}[t]{0.3\linewidth}\centering
+\begin{tikzpicture} % separate paths
+    \pgfmathsetmacro\N{30}
+    \pgfmathsetmacro\n{18*\N}
+    \pgfmathsetmacro\E{2}
+    \pgfmathsetmacro\k{0.0004}
+%    \draw[gray!50] (0,\E) circle (\E);
+    \coordinate (@) at (0,0);
+
+    \foreach[count=\j] \i in {1,...,\n}
+    {
+
+%        \ifnum\j<\N\pgfmathsetmacro\k{0}\else\pgfmathsetmacro\k{0.002}\fi
+        \draw[] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+    }
+
+    \draw[->, red] (0,0)  -- (@) ;
+\end{tikzpicture}
+\caption{Відкриті всі зони Френеля: : $ E_P \approx E_0 $}
+\label{}
+\end{subfigure}
+%---------------------------------------------------------

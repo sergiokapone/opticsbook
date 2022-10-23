@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+    \node (image) at (0,0) {
+            \includegraphics[width=10cm]{VECSEL}
+        };
+    \node[anchor = east, align=left, font=\scriptsize] (BM) at (-4.25,-1.85) {Нижнє дзеркало\\(коефіцієнт відбивання 99,9\%)};
+    \node[anchor = east, align=left, font=\scriptsize] (TM) at (-4.25,0.1) {Верхнє дзеркало\\(коефіцієнт відбивання 99,0\%)};
+    \node[anchor = east, align=left, font=\scriptsize] (RC) at (-4.25,-0.70) {Порожнина резонатора};
+
+    \node[anchor = west, align=left, font=\scriptsize, inner sep=0] (AR) at (4,-0.85) {Активна область};
+
+    \node[anchor = west, align=left, font=\scriptsize, inner sep=0] (OL) at (4,0.25) {Шари оксидів};
+
+%    \draw (-5,-5) to[grid with coordinates] (5,5);
+\end{tikzpicture}

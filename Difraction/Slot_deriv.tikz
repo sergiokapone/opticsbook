@@ -1,0 +1,87 @@
+	%---------------------------------------------------------
+	\begin{subfigure}[t]{0.45\linewidth}\centering
+		\begin{tikzpicture}[
+				declare function={
+						b=2; % ширина щілини
+						a=2; % ширина непрозорої частини
+						L=4; % Y Положення лінзи
+					},
+			]
+			% --------- Побудова отвору шириною b ------------
+
+
+			\foreach[count=\c] \i in {0}
+				{
+					\fill[black]  ({\i*a+\i*b+b/2}, -0.1) rectangle ++(a,0.1)
+					({-\i*a-\i*b-b/2}, -0.1) coordinate (L\c) rectangle ++(-a,0.1) ;
+				}
+
+
+			% ---------- Падаючі на щілину промені ------------
+
+
+			\foreach \i in {-1,-0.5,...,1}
+				{
+					\draw[ray] (\i*a, 2) -- ++(0,-1);
+				}
+
+			% --------- Побудова заломлених лінзою променів ------
+
+
+			\pgfmathsetmacro\ph{-30} % Кут дифракції
+			\foreach[count=\c] \i in {0,...,1}
+			{
+
+			\draw[ray]  ({-b/2+\i*b}, -0.1) coordinate (Out\c)  --++({-90+\ph}:{L/cos(\ph)}); % Падаючі на лінзу промені
+
+			}
+            \draw[dashed] (Out1) -- ++(0,-2);
+            \draw (Out1) ++ (0,-1) arc[start angle=-90, delta angle=\ph, radius=1] node[below, pos=0.5] {$ \phi $};
+
+            \draw [decorate,decoration={brace, amplitude=5pt, raise=5pt}] (Out1) -- node[above=10pt] {$ b $} ++(b,0) coordinate (EB);
+
+            \draw [dashed] (Out1) -- ++(b,0);
+            \draw [dashed] (Out1) -- ++(\ph:{b*cos(\ph)}) coordinate (EF);
+            \draw (Out1) ++(1,0) arc[start angle=0, delta angle=\ph, radius=1]  node[anchor=west, pos=0.5] {$ \phi $};
+
+             \draw [decorate,decoration={brace, amplitude=5pt, raise=5pt}] (EB) -- node[right=10pt, anchor=north west] {$ \Delta = b\sin\phi$} (EF);
+		\end{tikzpicture}
+		\caption{}
+		\label{pic:Slot_Fraunhofer_difraction}
+	\end{subfigure}
+	%---------------------------------------------------------
+	\begin{subfigure}[t]{0.45\linewidth}\centering
+		\begin{tikzpicture} % separate paths
+			\pgfmathsetmacro\N{10}
+			\pgfmathsetmacro\m{0.8}
+			\pgfmathsetmacro\n{\m*\N}
+			\pgfmathsetmacro\E{3}
+			\pgfmathsetmacro\k{0}
+			\pgfmathsetmacro\dangle{180*\m}
+			\draw[gray!50] (0,\E) circle (\E);
+			\coordinate (@) at (0,0);
+
+			\foreach[count=\j] \i in {1,...,\n}
+			{
+
+			\draw[->] (@) -- coordinate[at end] (@) ++ ({(2*\i-1)*pi/2/\N r}:{(pi*\E/\N - \k*\i)});
+
+			\ifnum\j<3%
+				\draw[dashed] (@) -- ++({(2*\i-1)*pi/2/\N r}:0.7);
+				\draw (@) ++({(2*\i-1)*pi/2/\N r}:0.5)
+				arc[start angle={(2*\i-1)*pi/2/\N r}, delta angle={2*pi/2/\N r}, radius=0.5]
+				node[below right, font=\scriptsize] {$ \delta/N $};
+			\fi
+			}
+			\draw[dashed] (@) -- ++(1,0);
+			\draw[dashed] (@) -- ++(\dangle:1);
+			\draw (@) ++(0.5,0) arc[start angle=0, delta angle=\dangle, radius=0.5] node[anchor=south west, pos=0.5] {$ \delta $};
+			\draw[->, red] (0,0)  -- node[right] {$ \vect{E} $} (@) ;
+			\draw[dashed] (0,\E) -- node[left] {$ R $} (@);
+			\draw[dashed] (0,\E) -- node[left] {$ R $} (0,0);
+			\draw (0,\E) ++(0,-0.5) arc[start angle=-90, delta angle=\dangle, radius=0.5] node[anchor=south west, pos=0.5] {$ \delta $};
+		\end{tikzpicture}
+		\caption{}
+		\label{pic:vector_diagram_slot}
+	\end{subfigure}
+	%---------------------------------------------------------

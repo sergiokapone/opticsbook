@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \node (image) at (0,0) {
-            \includegraphics[width=10cm]{VECSEL}
+            \includegraphics[width=10cm]{Difraction/VECSEL}
         };
     \node[anchor = east, align=left, font=\scriptsize] (BM) at (-4.25,-1.85) {Нижнє дзеркало\\(коефіцієнт відбивання 99,9\%)};
     \node[anchor = east, align=left, font=\scriptsize] (TM) at (-4.25,0.1) {Верхнє дзеркало\\(коефіцієнт відбивання 99,0\%)};

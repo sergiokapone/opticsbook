@@ -182,7 +182,7 @@
 }
 
 \RequirePackage{mhchem}
-
+\RequirePackage{icomma}
 
 
 
@@ -206,7 +206,6 @@
 
 
 \RequirePackage{currfile}
-%
 
 
 

@@ -44,9 +44,8 @@
 \contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{169}{section.634}%
 \contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{170}{section.636}%
 \contentsline {subsection}{\numberline {Б.1}Тілесний кут}{170}{subsection.637}%
-\contentsline {section}{\numberline {В}Фотометричні дані}{171}{section.641}%
-\contentsline {section}{\numberline {Г}Фізичні константи}{174}{section.645}%
-\contentsline {chapter}{Література}{175}{appendix*.651}%
+\contentsline {section}{\numberline {В}Фізичні константи}{171}{section.641}%
+\contentsline {chapter}{Література}{172}{appendix*.647}%
 \babel@toc {english}{}\relax 
 \babel@toc {ukrainian}{}\relax 
 \babel@toc {ukrainian}{}\relax 

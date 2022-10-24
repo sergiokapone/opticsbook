@@ -52,7 +52,7 @@
     \node[rotate = 90, fill=white] at (-11.9,0) {природне світло};
 
     \node[below, font=\scriptsize] at (-9.5,-2.5) {Поляризатор};
-    \node[below, font=\scriptsize] at (-6.5,-2.5) {Фазова платівка};
+    \node[below, font=\scriptsize] at (-6.5,-2.5) {Фазова платівка\\ (компенсатор)};
     \node[below, font=\scriptsize] at (-3.5,-2.5) {Аналізатор};
 
 %    \draw[dash dot] (-12,{-H/2}) to[grid with coordinates] (0,{H/2});

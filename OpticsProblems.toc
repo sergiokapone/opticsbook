@@ -37,15 +37,17 @@
 \contentsline {section}{\numberline {5.7}Задачі для самостійного розв’язку }{118}{section.482}%
 \contentsline {chapter}{\numberline {6}Поляризація та оптична анізотропія}{127}{chapter.523}%
 \contentsline {section}{\numberline {6.1}Основні поняття і закони}{127}{section.524}%
-\contentsline {section}{\numberline {6.2}Приклади розв’язування задач}{138}{section.564}%
-\contentsline {section}{\numberline {6.3}Задачі для самостійного розв’язку }{142}{section.571}%
-\contentsline {chapter}{Відповіді}{153}{chapter*.629}%
-\contentsline {chapter}{Додатки}{169}{appendix*.633}%
-\contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{169}{section.634}%
-\contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{170}{section.636}%
-\contentsline {subsection}{\numberline {Б.1}Тілесний кут}{170}{subsection.637}%
-\contentsline {section}{\numberline {В}Фізичні константи}{171}{section.641}%
-\contentsline {chapter}{Література}{172}{appendix*.647}%
+\contentsline {section}{\numberline {6.2}Штучне подвійне променезаломленні}{136}{section.555}%
+\contentsline {section}{\numberline {6.3}Приклади розв’язування задач}{139}{section.565}%
+\contentsline {section}{\numberline {6.4}Задачі для самостійного розв’язку }{142}{section.572}%
+\contentsline {chapter}{Відповіді}{153}{chapter*.630}%
+\contentsline {chapter}{Додатки}{169}{appendix*.634}%
+\contentsline {section}{\numberline {А}Шкала електромагнітних хвиль}{169}{section.635}%
+\contentsline {section}{\numberline {Б}Математичні формули та співвідношення}{170}{section.637}%
+\contentsline {subsection}{\numberline {Б.1}Тілесний кут}{170}{subsection.638}%
+\contentsline {section}{\numberline {В}Фотометричні дані}{171}{section.642}%
+\contentsline {section}{\numberline {Г}Фізичні константи}{174}{section.646}%
+\contentsline {chapter}{Література}{175}{appendix*.652}%
 \babel@toc {english}{}\relax 
 \babel@toc {ukrainian}{}\relax 
 \babel@toc {ukrainian}{}\relax 

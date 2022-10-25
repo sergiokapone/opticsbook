@@ -37,7 +37,7 @@
 \contentsline {section}{\numberline {5.7}Задачі для самостійного розв’язку }{118}{section.482}%
 \contentsline {chapter}{\numberline {6}Поляризація та оптична анізотропія}{127}{chapter.523}%
 \contentsline {section}{\numberline {6.1}Основні поняття і закони}{127}{section.524}%
-\contentsline {section}{\numberline {6.2}Штучне подвійне променезаломленні}{136}{section.555}%
+\contentsline {section}{\numberline {6.2}Штучне подвійне променезаломлення}{136}{section.555}%
 \contentsline {section}{\numberline {6.3}Приклади розв’язування задач}{139}{section.565}%
 \contentsline {section}{\numberline {6.4}Задачі для самостійного розв’язку }{142}{section.572}%
 \contentsline {chapter}{Відповіді}{153}{chapter*.630}%

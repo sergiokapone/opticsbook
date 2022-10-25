@@ -38,4 +38,14 @@
 
 \node[right] at (C) {\contour{white}{$C$}};
 \node[right] at (D) {\contour{white}{$D$}};
+
+\path [rotate around={55:(P1)}] (P1) ++(-125:1) coordinate (So);
+\path [rotate around={55:(P1)}] (P1) ++(-135:2 and 1) coordinate (Se);
+
+\node[inner sep=1pt] (Sotext) at (3,-2.5) {$ S_o $};
+\node[inner sep=1pt] (Setext)  at (2.5,-3) {$ S_e $};
+
+\draw[-to] (Sotext.north) to[out=90, in=-90] (So);
+\draw[-to] (Setext.north) to[out=90, in=-90] (Se);
+
 \end{tikzpicture}

@@ -22,8 +22,8 @@
 \tdplotsetmaincoords{60}{103}
 \begin{tikzpicture}[scale=6,tdplot_main_coords]
 
-    \colorlet{veccol}{themecolordark}
-    \colorlet{projcol}{themecolordark}
+    \colorlet{veccol}{gray}
+    \colorlet{projcol}{gray}
     \tikzstyle{proj}=[projcol!80,line width=0.08] %very thin
     \tikzstyle{area}=[draw=veccol,fill=veccol!80,fill opacity=0.6]
     \tikzstyle{vector}=[-stealth,myblue,thick,line cap=round]
@@ -81,10 +81,6 @@
     plot[domain=.99*\dphi:0]({\rvec*sin(\thetavec+\dtheta)*cos(\phivec+\x)},{\rvec*sin(\thetavec+\dtheta)*sin(\phivec+\x)},{\rvec*cos(\thetavec+\dtheta)}) --
     plot[domain=.99*\dtheta:0]({\rvec*sin(\thetavec+\x)*cos(\phivec)},{\rvec*sin(\thetavec+\x)*sin(\phivec)},{\rvec*cos(\thetavec+\x)}) --
     cycle;
-
-    % MEASURES
-    %\node[right=3,below right=-2] at (PB) {$r\sin\theta\dd{\phi}$};
-    %\node[right=5,below right=-2] at (PR) {$r\dd{\theta}$};
     \draw[<->,
     proj,
     thin,

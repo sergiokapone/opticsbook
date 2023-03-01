@@ -246,22 +246,22 @@
 			\coordinate (A) at (-2,2);
 			\coordinate (A') at (-2,-2);
 			\coordinate (B) at (2,2);
-			\coordinate (C) at (-1,0);
-			\coordinate (C') at (0,0);
+			\coordinate (C') at (-1,0);
+			\coordinate (C) at (0,0);
 
-			\draw[ray, densely dashed] (A) -- (C);
-			\draw[ray, densely dashed] (C) -- (B);
-			\draw[ray] (A) -- (C');
-			\draw[ray] (C') -- (B);
+			\draw[ray, densely dashed] (A) -- (C');
+			\draw[ray, densely dashed] (C') -- (B);
+			\draw[ray] (A) -- (C);
+			\draw[ray] (C) -- (B);
 			\draw (A) -- (A');
-			\draw[dashed] (A') -- (C);
 			\draw[dashed] (A') -- (C');
+			\draw[dashed] (A') -- (C);
 
 			\point{A}{$A$}{above}{blue}
 			\point{A'}{$A'$}{below}{blue}
 			\point{B}{$B$}{above}{blue}
-			\point{C}{$C$}{below}{blue}
 			\point{C'}{$C'$}{below}{blue}
+			\point{C}{$C$}{below}{blue}
 
 		\end{tikzpicture}
 	\end{center}

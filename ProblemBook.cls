@@ -395,7 +395,7 @@
 		\rule{\dimexpr\textwidth-\chapnumb\relax}{0.4pt}}}
 
 \titleformat{name=\chapter,numberless}[block]
-{\normalfont\sffamily}{}{0pt}
+{\normalfont\sffamily\bfseries}{}{0pt}
 {\parbox[b]{\chapnumb}{%
 		\mbox{}}%
 	\parbox[b]{\dimexpr\textwidth-\chapnumb\relax}{%

@@ -19,7 +19,7 @@
 
 
 
-\input{interference/interference_lines.tikz}
+%\input{interference/interference_lines.tikz}
 
 
 %		\begin{tikzpicture}
@@ -48,6 +48,36 @@
 %			}
 %			\draw[->, red] (0,0)  -- node[left] {$ \vect{E}_1 $} (@) ;
 %		\end{tikzpicture}
+
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \node[circle, fill=red, inner sep=1pt] (S) at (0,0) {}; \node[left] at (S) {$S$};
+        \node[circle, fill=red, inner sep=0.5pt] (P) at (6,0) {}; \node[right] at (P) {$P$};
+        \begin{scope}
+            \clip (S) circle (2);
+            \foreach[count=\x] \i in {4,4.2,...,5.4}
+            {
+                \draw[gray!80, name path global=bigcrcle\x] (P) circle (\i);
+            }
+        \end{scope}
+        \draw[ball color=yellow, opacity=0.3, name path global=smallcircle] (S) circle (2);
+%        \draw (E) -- node[above] {$ r $} (P);
+        \draw (S)  -- ++ (0:2) coordinate (P1)--  (P);
+        \draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=4pt},yshift=0pt] (P1) -- node[below=6pt] {$b$} (P);
+        \draw[name intersections={of=smallcircle and bigcrcle5}] (intersection-1) -- node[above, sloped] {$ b + m\frac\lambda2 $} (P)
+        (S) -- node[above] {$ R $} (intersection-1) coordinate(Top);
+        \draw[decorate,decoration={brace,amplitude=5pt,mirror,raise=4pt},yshift=0pt] (S) -- node[below=6pt] {$a$}++(2,0);
+
+        \draw[dashed, thick]
+        %[decorate,decoration={brace,amplitude=5pt},yshift=0pt]
+        (Top) -- node[pos=0.6, right] {$r_m$} ++(0,-1.42);
+
+    \end{tikzpicture}
+    \caption{Ілюстрація методу зон Френеля}
+    \label{pic:Diffraction2}
+\end{figure}
 
 
 \end{document}

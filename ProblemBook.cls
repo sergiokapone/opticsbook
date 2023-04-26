@@ -336,6 +336,9 @@
 	\@addtoreset{table}{section}
 	\renewcommand\thetable%
 	{\thesection.\@arabic\c@table}
+    	\@addtoreset{figure}{section}
+    	\renewcommand\thefigure%
+    	{\thesection.\@arabic\c@figure}
 	\renewcommand{\theequation}{\thesection.\arabic{equation}}
 	\clearpage\pagestyle{appendix}
 	\def\@sectiontitlemark{\appendixname}

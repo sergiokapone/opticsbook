@@ -73,11 +73,11 @@
 	% Polarization Planes
 	\begin{pgfonlayer}{layer1}
 		\begin{scope}[canvas is xy plane at z=-0.2]
-			\draw[latex-] (3,0) to[out=160, in=270] (3,3) node[right, yshift=-3pt] {\small{Площина поляризації}\\[-0.5mm]\small{поляризатора}};
+			\draw[latex-] (3,0) to[out=160, in=270] (3,3) node[right, yshift=-3pt] {\small{Площина пропускання}\\[-0.5mm]\small{поляризатора}};
 		\end{scope}
 		%
 		\begin{scope}[canvas is xy plane at z=-0.2]
-			\draw[latex-] (7.85,-0.07) to[out=130, in=270] (8,3) node[right, yshift=-3pt] {\small{Площина поляризації}\\[-0.5mm]\small{аналізатора}};
+			\draw[latex-] (7.85,-0.07) to[out=130, in=270] (8,3) node[right, yshift=-3pt] {\small{Площина пропускання}\\[-0.5mm]\small{аналізатора}};
 		\end{scope}
 	\end{pgfonlayer}
 

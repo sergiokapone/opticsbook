@@ -162,9 +162,9 @@
 %%% -------------------------------------------------------
 
 
-\RequirePackage{lualatex-math}
-\RequirePackage{amsmath}
+%\RequirePackage{lualatex-math}
 \RequirePackage[math-style=TeX,bold-style=TeX]{unicode-math}
+\RequirePackage{amsmath}
 \setmathfont[math-style=TeX]{Stix Two Math}
 %\numberwithin{equation}{chapter}
 \RequirePackage{esint}

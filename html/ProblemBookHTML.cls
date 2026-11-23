@@ -106,7 +106,8 @@
 %===============================================================================
 \providecommand{\Needspace}[1]{}
 \providecommand{\FloatBarrier}{}
-\providecommand{\InsertBoxR}[2]{#2}     % text wrapped around a box (insbox): in HTML the box stays in the text
+% text wrapped around a box (insbox, \InsertBoxR{lines}{box}[opt]): in HTML the box stays in the text, [opt] is dropped
+\NewDocumentCommand{\InsertBoxR}{m m o}{#2}
 \providecommand{\tocunnum}[1]{}
 \newenvironment{Theory}[2][]{\begin{BlockClass}{cb-theory}\textbf{#2}\par}{\end{BlockClass}}
 \NewDocumentEnvironment{Attention}{O{} O{red}}{\begin{BlockClass}{cb-attention}}{\end{BlockClass}}

@@ -1,0 +1,2944 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Фотометрія</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-255"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Фотометрія">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Фотометрія ......
+-->
+<h3 id="autosec-257"><span class="sectionnumber">2&#x2003;</span>Фотометрія</h3>
+<a id="main-html-autopage-257"></a>
+<a id="main-html-autofile-3"></a>
+
+<a id="Photometry-dup5"></a>
+<!--
+...... section Основні поняття і закони ......
+-->
+<h4 id="autosec-258"><span class="sectionnumber">&#xA7;&#x202F;2.1&#x2003;</span>Основні поняття і закони</h4>
+<a id="main-html-autopage-258"></a>
+<!--
+...... subsection Енергетичні характеристики ......
+-->
+<h5 id="autosec-259">Енергетичні характеристики</h5>
+<a id="main-html-autopage-259"></a>
+
+
+<p>
+Електромагнітна хвиля переносить енергію (яку будемо називати променистою енергією).
+</p>
+
+<p>
+Основною характеристикою — є потік випромінювання (або потужність випромінювання). Потік випромінювання (<a id="LWR-ht-Flux"></a> променистий потік) — це величина енергії, що переноситься електромагнітною хвилею за одиницю часу через ділянку:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{0}\)</span>
+
+<!--
+
+                                                                                          𝑑𝑊е
+                                                                                   Φ𝑒 =                                                                                     (2.1)                                                            --><a id="eq:Flux_e"></a><!--
+                                                                                           𝑑𝑡
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Flux_e} \Phi _e = \frac {dW_\text {е}}{dt}
+\end{equation}
+
+</p>
+
+<p>
+Потік випромінювання вимірюється у Ватах (Вт).
+</p>
+
+<p>
+Енергія залежить від спектрального складу світла. Якщо розкласти хвилю на монохроматичні складові (кожна з певною довжиною хвилі), то вся енергія певним чином розподілиться між ними. Для цього вводять спектральна густину потоку випромінювання:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{1}\)</span>
+
+<!--
+
+                                                                                    𝑑Φ𝑒
+                                                                           Φ𝑒 𝜆 =       .                                                                       (2.2)                                                               --><a id="eq:Flux_e_lambda"></a><!--
+                                                                                     𝑑𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Flux_e_lambda} \Phi _{e_{\lambda }} = \frac {d\Phi _e}{d\lambda }.
+\end{equation}
+
+</p>
+
+<p>
+<a id="LWR-ht-Radiant_intensity"></a> Сила випромінювання — характеризує потужність випромінювання в деякому напрямку і дорівнює відношенню потоку \(d\Phi _e\), що поширюється від джерела всередині малого тілесного кута \(d\Omega \), до величини цього кута:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{2}\)</span>
+
+<!--
+
+                                                                                 𝑑Φ𝑒
+                                                                          𝐼𝑒 =       .                                                                  (2.3)                                                                  --><a id="eq:Radiant_intensity"></a><!--
+                                                                                 𝑑Ω
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Radiant_intensity} I_e = \frac {d\Phi _e}{d\Omega }.
+\end{equation}
+
+</p>
+
+<p>
+Одиницею вимірювання у Міжнародній системі одиниць (СІ) є Вт/ср (Ватт на стерадіан).
+</p>
+
+<p>
+<a id="LWR-ht-Radiant_exitance"></a> Енергетична світність — характеризує потужність випромінювання з одиниці площі поверхні і дорівнює відношенню потоку \(d\Phi _e\), що випромінюється малою ділянкою поверхні джерела, до його площі \(dS_S\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{3}\)</span>
+
+<!--
+
+                                                                                  𝑑Φ𝑒
+                                                                          𝑀𝑒 =        .                                                                   (2.4)                                                                 --><a id="eq:Radiant_exitance"></a><!--
+                                                                                  𝑑𝑆𝑆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Radiant_exitance} M_e = \frac {d\Phi _e}{dS_S}.
+\end{equation}
+
+</p>
+
+<p>
+Одиницею вимірювання у Міжнародній системі одиниць (СІ) є Вт/м\(^2\).
+</p>
+
+<p>
+<a id="LWR-ht-Radiance"></a> Енергетична яскравість — характеризує потік випромінювання в одиниці тілесного кута з одиниці видимої площі джерела і дорівнює відношенню потоку \(d\Phi _e\) з малої ділянки поверхні джерела до тілесного кута \(d\Omega \) і до площі проекції
+цієї ділянки на площину, перпендикулярну до напряму поширення (видимої площі \(d\sigma \)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{4}\)</span>
+
+<!--
+
+
+                                                                           𝑑2 Φ𝑒         𝑑𝐼𝑒     𝑑𝐼
+                                                                𝐵𝑒 =                 =          = 𝑒.                                                                    (2.5)                                                              --><a id="eq:Radiance"></a><!--
+                                                                       𝑑𝑆 cos 𝛼 ⋅ 𝑑Ω   𝑑𝑆 cos 𝛼  𝑑𝜍
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Radiance} B_e = \frac {d^2\Phi _e}{dS\cos \alpha \cdot d\Omega } = \frac {dI_e}{dS\cos \alpha } = \frac {dI_e}{d\sigma }.
+\end{equation}
+
+</p>
+
+<p>
+Одиницею вимірювання у Міжнародній системі одиниць (СІ) є Вт/(м\(^2\cdot \)ср).
+</p>
+
+<p>
+<a id="LWR-ht-Irradiance"></a> Опроміненість — характеризує поверхневу густину потужності випромінювання, що падає на поверхню і дорівнює відношенню потоку \(d\Phi _{e}\), що падає на малу ділянку поверхні, до площі цієї ділянки \(dS_a\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{5}\)</span>
+
+<!--
+
+                                                                                        𝑑Φ𝑒
+                                                                                 𝐸𝑒 =       .                                                                       (2.6)                                                               --><a id="eq:Irradiance"></a><!--
+                                                                                        𝑑𝑆𝑎
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Irradiance} E_e = \frac {d\Phi _e}{dS_a}.
+\end{equation}
+
+</p>
+
+<p>
+Одиницею вимірювання у Міжнародній системі одиниць (СІ) є Вт/(м\(^2\)).
+</p>
+<!--
+...... subsection Світлові характеристики ......
+-->
+<h5 id="autosec-260">Світлові характеристики</h5>
+<a id="main-html-autopage-260"></a>
+
+
+<p>
+Енергетичні величини вичерпно характеризують енергетичні процеси, що пов’язані з поширенням, поглинанням і перевипромінюванням електромагнітних хвиль, однак вони не дозволяють кількісно оцінити візуальне сприйняття випромінювання оком людини.
+</p>
+
+<p>
+Сприйняття оком випромінювання видимого діапазону визначається не лише потужністю випромінювання, але й залежить з його спектрального складу (оскільки око — селективний приймач випромінювання). Тому, для характеристики енергетичних властивостей, у видимому діапазоні довжин
+електромагнітних хвиль з урахуванням сприйняття зоровою системою ока людини вводять так звані фотометричні (або світлові) характеристики та їх одиниці вимірювання (перелічені в в табл.&nbsp;<a href="photometry.html#lateximage-main-html-51">2.1</a>).
+</p>
+
+<p>
+Зв’язок світлових та енергетичних величин встановлюється через зорове сприйняття, яке добре вивчене експериментально. Для цього вводиться функція \(V(\lambda ) \) — відносна спектральна ефективність монохроматичного випромінювання (або функція видності ока), яка пов’язує
+енергетичні та світлові характеристики:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{6}\)</span>
+
+<!--
+
+
+                                                                  Φ𝑣𝜆 = 𝐾𝑚 𝑉 (𝜆)Φ𝑒𝜆 .                                                                  (2.7)                                                                 --><a id="eq:Phi_nu_with_Phi_v"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Phi_nu_with_Phi_v} \Phi _{v_{\lambda }} = K_m V(\lambda ) \Phi _{e_{\lambda }}.
+\end{equation}
+
+</p>
+
+<p>
+Функція видності \(V(\lambda )\) показує, як очі сприймають випромінювання різного спектрального складу, причому вплив потоку випромінювання з довжиною хвилі \(\lambda = 555\)&nbsp;нм умовно приймається за одиницю, тобто \(V(\lambda )\) максимальна в області
+жовто-зеленого кольору (\(550 \div 570\)&nbsp;нм) і спадає до нуля для червоних та фіолетових променів (рис.&nbsp;<a href="photometry.html#plt:LF">2.1</a>). Коефіцієнт \(K_{m}\) — називається світловим еквівалентом — величина якого визначається використовуваною
+системою одиниць. У системі СІ, де за одиницю світлового потоку прийнято \(1\)&nbsp;люмен (лм), цей коефіцієнт дорівнює \(683.002\)&nbsp;лм/Вт.
+</p>
+
+<figure id="autoid-148" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-50"
+    class="lateximagesource"
+><!--
+     1
+
+
+
+
+    0,8
+
+
+
+
+    0,6
+𝑉
+
+
+
+
+    0,4
+
+
+
+
+    0,2
+
+
+
+
+     0
+     400   450   500    550    600   650   700
+                       𝜆, нм
+--><img
+   src="main-html-images/image-50.svg"
+   alt="Рис. 2.1. Крива відносної спектральної чутливості людського ока для денного зору. (Дані взяті з http://www.cvrl.org/lumindex.htm)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.1. Крива відносної спектральної чутливості людського ока для денного зору.<br />
+(Дані взяті з <a href="http://www.cvrl.org/lumindex.htm" target="_blank" >http://www.cvrl.org/lumindex.htm</a>)
+
+</div>
+
+<a id="plt:LF"></a>
+
+</div>
+
+</figure>
+
+<p>
+Інші світлові величини визначаються аналогічно до енергетичних, однак мають відмінні назви (див. табл.&nbsp;<a href="photometry.html#lateximage-main-html-51">2.1</a>) і завдяки <span class="textup">(<a
+href="photometry.html#eq:Phi_nu_with_Phi_v">2.7</a>)</span> відмінні одиниці вимірювання. Наприклад, для сили світла в Міжнародній системі одиниць (СІ) вводиться одиниця, яка називається кандела, яка прийнята за основну. Одна кандела — це сила світла в заданому напрямку від
+джерела, що випромінює монохроматичне випромінювання частотою \(540\cdot 10^{12}\) Гц і має силу випромінення в цьому напрямку \((1/683)\)&nbsp;Вт/ср.
+</p>
+
+<p>
+<span
+    id="lateximage-main-html-51"
+    class="lateximagesource"
+><!--
+                  Таблиця 2.1: Енергетичні та світлові характеристики
+
+       Енергетичні характеристики                                 Світлові характеристики
+                                                                                        ´∞
+Потік                          ´∞                                               Φ𝑣 =         Φ𝑣𝜆 𝑑𝜆, лм
+                       Φ𝑒 =         Φ𝑒𝜆 𝑑𝜆, Вт        Світловий потік
+випромінювання
+                                                                                        0
+                               0                                                     (люмен)
+                                                                                             𝑑Φ𝑣
+Сила                           𝑑Φ𝑒                                                 𝐼𝑣 =            , кд
+                        𝐼𝑒 =             , Вт/ср      Сила світла                            𝑑Ω
+випромінювання                     𝑑Ω                                               (кандела)
+Енергетична                        𝑑Φ𝑒                                                      𝑑Φ𝑣
+                       𝑀𝑒 =              , Вт/м2      Світність                  𝑀𝑣 =             , лм/м2
+світність                          𝑑𝑆                                                       𝑑𝑆
+
+                                                                                        𝑑𝐼𝑣
+                                                                                 𝐵𝑣 =         , нт (ніт)
+                                                                                        𝑑𝜍
+
+
+
+                                                                                  1 нт = 1 кд/м2
+Енергетична                  𝑑𝐼𝑒
+                      𝐵𝑒 =         , Вт/(м2 ⋅ср)      Яскравість                 1 ст = 104 кд/м2
+яскравість                   𝑑𝜍
+                                                                                     (стильб)
+                                                                                1 Лб = 104 /𝜋 кд/м2
+                                                                                    (Ламберт)
+                                                                                                 𝑑Φ𝑣
+                               𝑑Φ𝑒
+                                                                                    𝐸𝑣 =               ,
+Опроміненість           𝐸𝑒 =             , Вт/м   2
+                                                      Освітленість                                𝑑𝑆
+                                   𝑑𝑆
+                                                                                лк = лм/м2 (люкс)
+--><img
+   src="main-html-images/image-51.svg"
+   alt="Рисунок 2"
+   style=""
+   class="lateximage"
+></span>
+</p>
+<!--
+...... subsection Закон обернених квадратів ......
+-->
+<h5 id="autosec-266">Закон обернених квадратів</h5>
+<a id="main-html-autopage-266"></a>
+
+
+<p>
+Розглянемо точкове джерело випромінювання.
+</p>
+
+<figure id="autoid-149" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-52"
+    class="lateximagesource"
+><!--
+✺
+
+
+
+
+    𝑟
+
+
+
+
+        𝛼
+            𝑑Ω
+
+
+                 𝑑𝑆
+--><img
+   src="main-html-images/image-52.svg"
+   alt="Рис. 2.2. До пояснення закону обернених квадратів"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.2. До пояснення закону обернених квадратів
+
+</div>
+
+<a id="pic:Inverse_square_low"></a>
+
+</div>
+
+</figure>
+
+<p>
+Точкове джерело —- це джерело, розмірами якого можна знехтувати в порівнянні з відстанню до нього, і яке випромінює потік, рівномірний у всіх напрямках.
+</p>
+
+<p>
+Освітленість, що створюється точковим джерелом обернено пропорційна квадрату відстані \(r\) від джерела до поверхні і прямо пропорційно косинусу кута \(\alpha \), між напрямком на джерело світлового потоку і нормаллю до поверхні, що освітлюється:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{7}\)</span>
+
+<!--
+
+                                                                           𝐼
+                                                                      𝐸=      cos 𝛼.                                                                       (2.8)                                                                --><a id="eq:Inverse_square_low"></a><!--
+                                                                           𝑟2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Inverse_square_low} E = \frac {I}{r^2}\cos \alpha .
+\end{equation}
+
+</p>
+
+<p>
+Це твердження носить назву закону обернених квадратів.
+</p>
+<!--
+...... subsection Закон Ламберта ......
+-->
+<h5 id="autosec-270">Закон Ламберта</h5>
+<a id="main-html-autopage-270"></a>
+
+
+<p>
+Джерелом випромінювання може бути не лише точкове джерело, а й деяка поверхня.
+</p>
+
+<p>
+Простою моделлю протяжного джерела випромінювання є так званий ламбертівський випромінювач у якого яскравість не залежить від кута спостереження. Для таких джерел сила випромінювання в даному напрямку пропорційна косинусу кута \(\alpha \) між цим напрямком і нормаллю до
+випромінюючої площадки (рис.&nbsp;<a href="photometry.html#pic:Lambert_Law">2.3</a>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{8}\)</span>
+
+<!--
+
+
+                                                                         𝐼 = 𝐼0 cos 𝛼.                                                                       (2.9)                                                                --><a id="eq:Lambert_Law"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Lambert_Law} I = I_0\cos \alpha .
+\end{equation}
+
+</p>
+
+<p>
+Цей вираз називається законом Ламберта.
+</p>
+
+<figure id="autoid-150" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-53"
+    class="lateximagesource"
+><!--
+         𝐧
+             𝐼0
+                  𝐼 = 𝐼0 cos 𝛼
+             𝛼
+𝐵 = 𝐵0
+--><img
+   src="main-html-images/image-53.svg"
+   alt="Рис. 2.3. Розподіл сили світла і яскравості для плоского ламбертівського джерела світла"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;2.3. Розподіл сили світла і яскравості для плоского ламбертівського джерела світла
+
+</div>
+
+<a id="pic:Lambert_Law"></a>
+
+</div>
+
+</figure>
+
+<p>
+На практиці будь-яка поверхня, що добре розсіює, може вважатися ламбертівським випромінювачем (білий матовий папір, шорсткі поверхні металів тощо).
+</p>
+<!--
+...... subsection Освітленість від протяжних ламбертівських випромінювачів ......
+-->
+<h5 id="autosec-274">Освітленість від протяжних ламбертівських випромінювачів</h5>
+<a id="main-html-autopage-274"></a>
+
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker"><span
+    class="textcolor"
+    style="color:#002E64"
+><span
+    id="lateximage-main-html-54"
+    class="lateximagesource"
+><!--
+✺
+--><img
+   src="main-html-images/F1BA367E7274DC5115CE049D320AB1E4.svg"
+   alt="(Pisymbol)"
+   style=""
+   class="lateximage"
+></span></span></span> Якщо поверхня освітлюється нескінченно великою рівнояскравою плоскою поверхнею або увігнутою напівсферою довільного радіуса, то її освітленість дорівнює
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{9}\)</span>
+<!--
+
+                                                                        𝐸 = 𝜋𝐵,                                                                          (2.10)                   --><a id="eq:E_inf_plane"></a><!--
+-->
+<p>
+
+\begin{equation}
+\label {eq:E_inf_plane} E = \pi B,
+\end{equation}
+
+</p>
+<p>
+де \(B\) — яскравість джерела.
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker"><span
+    class="textcolor"
+    style="color:#002E64"
+><span
+    id="lateximage-main-html-55"
+    class="lateximagesource"
+><!--
+✺
+--><img
+   src="main-html-images/F1BA367E7274DC5115CE049D320AB1E4.svg"
+   alt="(Pisymbol)"
+   style=""
+   class="lateximage"
+></span></span></span> Якщо поверхня освітлюється рівнояскравим диском радіуса \(R\) (рис.&nbsp;<a href="photometry.html#pic:Disk_rays">2.4</a>), який знаходиться на відстані \(r\) від неї, то її освітленість дорівнює:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{10}\)</span>
+<!--
+
+                                                                        𝐸 = 𝜋𝐵 sin2 𝛼,                                                                         (2.11)                                                 --><a id="eq:E_disk"></a><!--
+-->
+<p>
+
+\begin{equation}
+\label {eq:E_disk} E = \pi B \sin ^2\alpha ,
+\end{equation}
+
+</p>
+<p>
+де \(2\alpha \) — кут між крайніми променями.
+</p>
+<div class="center">
+<p>
+<span
+    id="lateximage-main-html-56"
+    class="lateximagesource"
+><!--
+    𝑅
+
+
+
+
+𝛼
+--><img
+   src="main-html-images/image-56.svg"
+   alt="Рис. 2.4. Освітлення рівнояскравим джерелом"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+<div class="figurecaption">
+<a id="autoid-151" ></a >
+Рис.&nbsp;2.4. Освітлення рівнояскравим джерелом
+</div>
+<a id="pic:Disk_rays"></a>
+</div>
+</li>
+<li>
+
+<p>
+<span class="listmarker"><span
+    class="textcolor"
+    style="color:#002E64"
+><span
+    id="lateximage-main-html-57"
+    class="lateximagesource"
+><!--
+✺
+--><img
+   src="main-html-images/F1BA367E7274DC5115CE049D320AB1E4.svg"
+   alt="(Pisymbol)"
+   style=""
+   class="lateximage"
+></span></span></span> Освітленість для осьової точки \(A&apos;\) зображення, яке створює об’єктив (за умови відсутності оптичних втрат), визначається як:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{11}\)</span>
+<!--
+
+                                                                      𝐸𝐴′ = 𝜋𝐵 sin2 ᵆ′ ,                                                                     (2.12)                                                  --><a id="eq:E_objective"></a><!--
+-->
+<p>
+
+\begin{equation}
+\label {eq:E_objective} E_{A&apos;} = \pi B \sin ^2u&apos;,
+\end{equation}
+
+</p>
+<p>
+\(2u&apos;\) — задній апертурний кут об’єктива, \(B\) — яскравість об’єкта.
+</p>
+<p>
+Цю формулу можна отримати з <span class="textup">(<a href="photometry.html#eq:E_disk">2.11</a>)</span> з тих міркувань, що кут сходження крайніх променів з вершиною на поверхні зображення замість \(2\alpha \) стає рівним \(2u&apos;\).
+</p>
+<div class="center">
+<p>
+<span
+    id="lateximage-main-html-58"
+    class="lateximagesource"
+><!--
+𝐴           𝑢′   𝐴′
+    𝐹       𝐹′
+        𝐷
+--><img
+    src="main-html-images/image-58.svg"
+    alt="Рисунок 6"
+    style=""
+    class="lateximage"
+></span>
+</p>
+</div>
+<p>
+Якщо предмет знаходиться на нескінченності, то для об’єктів з малою світлосилою
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{12}\)</span>
+<!--
+
+                                                                                                                                          𝐷
+                                                                                                                              sin ᵆ′ ≈       ,
+                                                                                                                                         2𝑓′
+-->
+<p>
+
+\begin{equation*}
+\sin u&apos; \approx \frac {D}{2f&apos;},
+\end{equation*}
+
+</p>
+<p>
+де \(D\) — діаметр вхідної зіниці, \(f&apos;\) — фокусна відстань об’єктива. Тоді з <span class="textup">(<a href="photometry.html#eq:E_objective">2.12</a>)</span> випливає, що освітленість зображення (за умови відсутності втрат на поверхнях лінзи) дорівнює:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{12}\)</span>
+<!--
+
+                                                                                                                                    𝜋 𝐷 2
+                                                                                                                           𝐸𝐴′ =     ( ) .                                                                                                                    (2.13)
+                                                                                                                                   4𝐵 𝑓′
+-->
+<p>
+
+\begin{equation}
+E_{A&apos;} = \frac {\pi }{4B} \left ( \frac {D}{f&apos;}\right )^2.
+\end{equation}
+
+</p>
+</li>
+</ul>
+<!--
+...... section Приклади розв’язування задач ......
+-->
+<h4 id="autosec-287"><span class="sectionnumber">&#xA7;&#x202F;2.2&#x2003;</span>Приклади розв’язування задач</h4>
+<a id="main-html-autopage-287"></a>
+
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 14.</b> На висоті \(h = 3\)&nbsp;м над землею й на відстані \(l = 4\)&nbsp;м від стіни висить лампа силою світла \(I = 100\)&nbsp;кд. Визначити освітленість \(E_1\) стіни та \(E_2\) підлоги на лінії їхнього перетину.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Знайдемо кути між нормаллю до поверхні в якій шукаємо освітленість і напрямком на джерело.
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-59"
+    class="lateximagesource"
+><!--
+        𝑙
+    ✺
+
+
+
+        𝑟
+ℎ
+
+                 𝛼2
+
+            𝛼1
+--><img
+   src="main-html-images/image-59.svg"
+   alt="Рисунок 7"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+В кут між стіною і підлогою <em>на стіну</em> випромінювання падає під кутом \(\alpha _1\) (див. рис.). Тому, освітленість стіни згідно закону обернених квадратів <span class="textup">(<a href="photometry.html#eq:Inverse_square_low">2.8</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{13}\)</span>
+
+<!--
+
+                                                                                                                          𝐼               𝐼⋅𝑙           100 ⋅ 4
+                                                                                                                   𝐸1 =      cos 𝛼1 =               =               = 3, 2 лк.
+                                                                                                                          𝑟2          (ℎ2 + 𝑙2 )3/2   (42 + 33 )3/2
+
+-->
+
+<p>
+
+\begin{equation*}
+E_1 = \frac {I}{r^2}\cos \alpha _1 = \frac {I\cdot l}{(h^2 + l^2)^{3/2}} = \frac {100\cdot 4}{(4^2 + 3^3)^{3/2}} = 3,2\ \text {лк}.
+\end{equation*}
+
+</p>
+
+<p>
+В кут між стіною і підлогою <em>на підлогу</em> випромінювання падає під кутом \(\alpha _2\) (див. рис.).
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{13}\)</span>
+
+<!--
+
+                                                                                                                          𝐼               𝐼⋅ℎ           100 ⋅ 3
+                                                                                                                   𝐸2 =      cos 𝛼2 =               =               = 2, 4 лк.
+                                                                                                                          𝑟2          (ℎ2 + 𝑙2 )3/2   (42 + 33 )3/2
+
+-->
+
+<p>
+
+\begin{equation*}
+E_2 = \frac {I}{r^2}\cos \alpha _2 = \frac {I\cdot h}{(h^2 + l^2)^{3/2}} = \frac {100\cdot 3}{(4^2 + 3^3)^{3/2}} = 2,4\ \text {лк}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 15.</b> Круглий диск радіусом \(R\) світиться за законом Ламберта з яскравістю \(B\). Визначити освітленість у точці, що віддалена на відстань \(h\) від центру диска у напрямі, нормальному до його поверхні.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-60"
+    class="lateximagesource"
+><!--
+             𝑑𝜍
+    𝑑𝑆 =
+            cos 𝜃
+елемент поверхні диска
+                              𝑑𝜙
+                                                𝑅
+
+
+
+
+                         𝑟         𝜃       ℎ
+
+                             d𝜃
+                                           𝜃0
+
+
+
+
+                                       𝐴
+--><img
+   src="main-html-images/image-60.svg"
+   alt="Рисунок 8"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Весь диск розріжемо на нескінченно малі світні точки, для яких освітленість в точці \(A\) визначається за законом обернених квадратів <span class="textup">(<a href="photometry.html#eq:Inverse_square_low">2.8</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{13}\)</span>
+
+<!--
+
+                                                                                       𝑑𝐼
+                                                                                𝑑𝐸 =      cos 𝜃.                                                                                (2.14)                                                      --><a id="eq:dE"></a><!--
+                                                                                       𝑟2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:dE} dE = \frac {dI}{r^2}\cos \theta .
+\end{equation}
+
+</p>
+
+<p>
+З означення яскравості
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{14}\)</span>
+
+<!--
+
+
+                                                                           𝑑𝐼 = 𝐵𝑑𝑆 cos 𝜃 = 𝐵𝑑𝜍,                                                                                (2.15)                                                      --><a id="eq:dI"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:dI} dI = BdS\cos \theta = Bd\sigma ,
+\end{equation}
+
+</p>
+
+<p>
+де \(dS\) — елемента площі поверхні диска, \(d\sigma \) — видима з точки \(A\) площа диска, яку можна знайти з означення тілесного кута&nbsp;<span class="textup">(<a href="appendices.html#eq:solid_angle">Б.1</a>)</span>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{15}\)</span>
+
+<!--
+
+
+                                                                      𝑑𝜍 = 𝑟2 𝑑Ω = 𝑟2 sin 𝜃𝑑𝜃𝑑𝜙.                                                                           (2.16)                                                      --><a id="eq:dsigma"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:dsigma} d\sigma = r^2 d\Omega = r^2 \sin \theta d\theta d\phi .
+\end{equation}
+
+</p>
+
+<p>
+Таким чином, враховуючи <span class="textup">(<a href="photometry.html#eq:dI">2.15</a>)</span> та <span class="textup">(<a href="photometry.html#eq:dsigma">2.16</a>)</span>, вираз <span class="textup">(<a
+href="photometry.html#eq:dE">2.14</a>)</span> приймає вигляд:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{16}\)</span>
+
+<!--
+
+                                                                                                                                𝐵𝑑𝜍
+                                                                                                                         𝑑𝐸 =       cos 𝜃 = 𝐵𝑟2 cos 𝜃 sin 𝜃𝑑𝜃𝑑𝜙.
+                                                                                                                                 𝑟2
+-->
+
+<p>
+
+\begin{equation*}
+dE = \frac {Bd\sigma }{r^2}\cos \theta = B r^2 \cos \theta \sin \theta d\theta d\phi .
+\end{equation*}
+
+</p>
+
+<p>
+Проінтегруємо цей вираз по площі всього диска, враховуючи що диск є ламбертівським джерелом (\(B = \mathrm {const}\)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{16}\)</span>
+
+<!--
+
+
+                                                                      ˆ2𝜋 ˆ𝜃0
+                                                                𝐸=𝐵      𝑑𝜙 𝑟2 cos 𝜃 sin 𝜃𝑑𝜃 = 𝜋𝐵 sin2 𝜃0 ,                                                                  (2.17)                                                      --><a id="eq_ex:E"></a><!--
+                                                                       0    0
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_ex:E} E = B \int \limits _0^{2\pi } d\phi \int \limits _0^{\theta _0} r^2 \cos \theta \sin \theta d\theta = \pi B \sin ^2\theta _0,
+\end{equation}
+
+</p>
+
+<p>
+де \(2\theta _0\) — кут між крайніми променями від диска в точці \(A\).
+</p>
+
+<p>
+З умов задачі \(\sin \theta _0 = \frac {R}{\sqrt {R^2 + h^2}}\), тому з <span class="textup">(<a href="photometry.html#eq_ex:E">2.17</a>)</span> остаточно маємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{17}\)</span>
+
+<!--
+
+
+                                                                                                                                             𝐵𝜋𝑅2
+                                                                                                                                      𝐸=                .                                                                                                                (2.18)
+                                                                                                                                           √𝑅 2 + ℎ 2
+
+-->
+
+<p>
+
+\begin{equation}
+E = \frac {B \pi R^2}{\sqrt {R^2 + h^2}}.
+\end{equation}
+
+</p>
+
+<p>
+<em>Рефлексія після розв’язку</em>:
+</p>
+
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Величина \(B \cdot \pi R^2 = BS_\text {диска} = I\) — є силою світла диска, який умовно сконцентровано в точку в його центрі.
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Якщо диск має нескінченний радіус (\(\theta _0 \to \pi /2\)), то формула <span class="textup">(<a href="photometry.html#eq_ex:E">2.17</a>)</span> дає вираз
+</p>
+<span class="hidden"> \(\seteqnumber{0}{2.}{18}\)</span>
+<!--
+
+                                                                                                                                          𝐸 = 𝜋𝐵,
+-->
+<p>
+
+\begin{equation*}
+E = \pi B,
+\end{equation*}
+
+</p>
+<p>
+
+</p>
+</li>
+</ul>
+
+<p>
+що співпадає з освітленістю від нескінченної рівнояскравої площини <span class="textup">(<a href="photometry.html#eq:E_inf_plane">2.10</a>)</span>.
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 16.</b> Люмінесцентна циліндрична лампа діаметром \(d = 2,5\)&nbsp;см і довжиною \(l = 40\)&nbsp;см створює на відстані \(r = 5\)&nbsp;м у напрямку, перпендикулярному осі лампи, освітленість \(E_v = 2\)&nbsp;лк. Приймаючи лампу за косинусний
+випромінювач, визначити: 1) силу світла \(I\) у даному напрямку; 2) яскравість \(L\); 3) світність \(M\) лампи.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Більший із двох розмірів лампи — довжина — в \(12\) разів менше відстані, на якій виміряна освітленість. Отже, для обчислення сили світла в даному напрямку можна прийняти лампу за точкове джерело та застосувати формулу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{18}\)</span>
+
+<!--
+
+                                                                                                                                                𝐼
+                                                                                                                                          𝐸=       ,
+                                                                                                                                                𝑟2
+-->
+
+<p>
+
+\begin{equation*}
+E = \frac {I}{r^2},
+\end{equation*}
+
+</p>
+
+<p>
+звідки \(I = 25\)&nbsp;кд. Для обчислення яскравості застосуємо формулу
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{18}\)</span>
+
+<!--
+
+                                                                                                                                                𝐼
+                                                                                                                                           𝐵=
+                                                                                                                                                𝜍
+
+-->
+
+<p>
+
+\begin{equation*}
+B = \frac {I}{\sigma }
+\end{equation*}
+
+</p>
+
+<p>
+де \(\sigma \) — площа проекції протяжного джерела світла на площину, перпендикулярну напрямку спостереження.
+</p>
+
+<p>
+У випадку циліндричної люмінесцентної лампи проекція має форму прямокутника довжиною \(l\) і шириною \(d\). Отже, знайдемо \(B = 2,5\cdot 10^3\)&nbsp;кд/м\(^2\).
+</p>
+
+<p>
+Так як люмінесцентну лампу можна вважати косинусним випромінювачем, то її світність \(M = \pi B = 7,9\cdot 10^3\)&nbsp;лк.
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 17.</b> Прожектор ближньої дії дає пучок світла у вигляді конуса з кутом розкриву \(2\theta = 40^\circ \). Світловий потік \(\Phi \) прожектора дорівнює \(8\cdot 10^4\)&nbsp;лм. Припускаючи, що світловий потік всередині конуса розподілений рівномірно,
+визначити силу світла прожектора.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Повний тілесний кут прожектора можна визначити в сферичній системі координат з <span class="textup">(<a href="appendices.html#eq:solid_angle_in_spherical">Б.2</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                ˆ𝜃0ˆ2𝜋
+                                                                                                                         Ω=           sin 𝜃𝑑𝜃𝑑𝜙 = 2𝜋(1 − cos 𝜃0 ).
+                                                                                                                                0 0
+
+-->
+
+<p>
+
+\begin{equation*}
+\Omega = \int \limits _0^{\theta _0} \int \limits _0^{2\pi } \sin \theta d\theta d\phi = 2\pi (1- \cos \theta _0).
+\end{equation*}
+
+</p>
+
+<p>
+З означення сили світла \(I = \frac {\Phi }{\Omega }\) маємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{2.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                             Φ             8 ⋅ 10−4
+                                                                                                                  𝐼=                   =               = 2, 11 ⋅ 105 кд.
+                                                                                                                       2𝜋(1 − cos 𝜃0 )   2𝜋(1 − 0, 94)
+
+-->
+
+<p>
+
+\begin{equation*}
+I = \frac {\Phi }{2\pi (1- \cos \theta _0)} = \frac {8\cdot 10^{-4}}{2\pi (1- 0,94)} = 2,11\cdot 10^5\ \text {кд}.
+\end{equation*}
+
+</p>
+
+</div>
+<!--
+...... section Задачі для самостійного розв’язку ......
+-->
+<h4 id="autosec-294"><span class="sectionnumber">&#xA7;&#x202F;2.3&#x2003;</span>Задачі для самостійного розв’язку</h4>
+<a id="main-html-autopage-294"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-152"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.1.</span></span> <a id="autoid-153" ></a ><a id="LWR-ht-problem:2.{1}"></a>Як встановлюється зв’зок між люменом і ватом?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-154"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.2.</span></span> <a id="autoid-155" ></a ><a id="LWR-ht-problem:2.{2}"></a>Як використовується закон обернених квадратів для визначення сили світла методом суб’єктивної
+фотометрії?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-156"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.3.</span></span> <a id="autoid-157" ></a ><a id="LWR-ht-problem:2.{3}"></a>Наведіть приклади ламбертових випромінювачів.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-158"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.4.</span></span> <a id="autoid-159" ></a ><a id="LWR-ht-problem:2.{4}"></a>Сформулюйте інваріант Штраубеля
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-160"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.5.</span></span> <a id="autoid-161" ></a ><a id="LWR-ht-problem:2.{5}"></a>Оцінити похибку наближення освітленості, яка створюється рівнояскравим диском деякого розміру, до
+освітленості від точкового джерела.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Світловий потік і сила світла ......
+-->
+<h5 id="autosec-300">Світловий потік і сила світла</h5>
+<a id="main-html-autopage-300"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-162"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.6.</span></span> <a id="autoid-163" ></a ><a id="LWR-ht-problem:2.{6}"></a>Лампочка, яка споживає потужність \(P = 75\)&nbsp;Вт, створює на відстані \(r = З\)&nbsp;м при
+нормальному падінні променів освітленість \(E = 8\)&nbsp;лк. Визначити питому потужність \(p\) лампочки (у ватах на канделу) і світлову віддачу \(\eta \) лампочки (у лм/Вт). <a href="answers.html#LWR-ht-solution:2.{6}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-164"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.7.</span></span> <a id="autoid-165" ></a ><a id="LWR-ht-problem:2.{7}"></a>Тепловий фотоприймач (див. рис.) — це камера з площею внутрішньої поверхні \(S = 2\)&nbsp;см\(^2\),
+яка має невеликий отвір площею \(S_1 =1\)&nbsp;мм\(^2\).
+</p>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; width:132pt ; ">
+
+<a id="main-html-autopage-303"></a>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-61"
+      class="lateximagesource"
+><!--
+--><img
+      src="main-html-images/image-61.svg"
+      alt="Рисунок 9"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+</div>
+
+<p>
+[1]
+</p>
+
+<p>
+Внутрішня поверхня поглинає незначну кількість світла (коефіцієнт поглинання \(k_\text {п} = 0,01\)), а іншу частину розсіює. В цих умовах всередені фотоприймача утворюється рівномірно розподілене за всіма напрямками випромінювання. Яка частина світлового потоку \(\nfrac
+{\Phi }{\Phi _0}\) (де \(\Phi _0\) — потік, який падає на вхідний отвір камери) виходить через отвір назад?
+</p>
+
+<p>
+<a href="answers.html#LWR-ht-solution:2.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-166"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.8.</span></span> <a id="autoid-167" ></a ><a id="LWR-ht-problem:2.{8}"></a>Яку силу струму \(I\) покаже гальванометр, приєднаний до селенового фотоелемента, якщо на відстані \(r
+= 75\)&nbsp;см від нього помісити лампочку, повний світловий потік якої дорівнює \(1,2\cdot 10^3\) лм? Площа робочої поверхні фотоелемента рівна \(10\)&nbsp;см\(^2\), чутливість \(S_i = 3\cdot 10{-4}\)&nbsp;А/лм. <a
+href="answers.html#LWR-ht-solution:2.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-168"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.9.</span></span> <a id="autoid-169" ></a ><a id="LWR-ht-problem:2.{9}"></a>Плоско-опуклу лінзу розрізали навпіл і склали плоскими боками дві половинки. Як зміниться яскравість
+зображення віддаленого предмета? <a href="answers.html#LWR-ht-solution:2.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Освітленість ......
+-->
+<h5 id="autosec-309">Освітленість</h5>
+<a id="main-html-autopage-309"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-170"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.10.</span></span> <a id="autoid-171" ></a ><a id="LWR-ht-problem:2.{10}"></a>При друкуванні фотознімка негатив освітлювався протягом \(t_1 = 3\)&nbsp;с лампочкою силою
+світла \(I_1 = 15\)&nbsp;кд з відстані \(r_1 = 50\)&nbsp;см. Визначити час \(t_2\), протягом якого потрібно освітлювати негатив лампочкою з силою світла \(I_2 = 60\)&nbsp;кд з відстані \(r_2 = 2\)&nbsp;м, щоб одержати відбиток з таким ж ступенем почорніння, як і в першому
+випадку? <a href="answers.html#LWR-ht-solution:2.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-172"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.11.</span></span> <a id="autoid-173" ></a ><a id="LWR-ht-problem:2.{11}"></a>На висоті \(h = 3\)&nbsp;м над землею й на відстані \(r = 4\)&nbsp;м від стіни висить лампа силою
+світла \(I = 100\)&nbsp;кд. Визначити освітленість \(E_1\) стіни й \(E_2\) горизонтальної поверхні землі на лінії їхнього перетину. <a href="answers.html#LWR-ht-solution:2.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-174"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.12.</span></span> <a id="autoid-175" ></a ><a id="LWR-ht-problem:2.{12}"></a>На щоглі висотою \(h = 8\)&nbsp;м висить лампа силою світла \(I = 10^3\)&nbsp;кд. Приймаючи
+лампу за точкове джерело світла, визначити, на якій відстані \(l\) від основи щогли освітленість \(E\) поверхні землі дорівнює \(1\) лк. <a href="answers.html#LWR-ht-solution:2.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-176"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.13.</span></span> <a id="autoid-177" ></a ><a id="LWR-ht-problem:2.{13}"></a>На якій висоті \(h\) над центром круглого стола радіусом \(r = 1\)&nbsp;м потрібно повісити
+лампочку, щоб освітленість на краю стола була максимальною? <a href="answers.html#LWR-ht-solution:2.{13}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Яскравість і світність ......
+-->
+<h5 id="autosec-314">Яскравість і світність</h5>
+<a id="main-html-autopage-314"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-178"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.14.</span></span> <a id="autoid-179" ></a ><a id="LWR-ht-problem:2.{14}"></a>Світильник з матового скла має форму кулі діаметром \(d = 20\)&nbsp;см. Сила світла \(I\) кулі
+дорівнює \(80\)&nbsp;кд. Визначити повний світловий потік \(\Phi \), світність \(M\) и яскравість \(B\) світильника. <a href="answers.html#LWR-ht-solution:2.{14}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-180"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.15.</span></span> <a id="autoid-181" ></a ><a id="LWR-ht-problem:2.{15}"></a>Якою виявиться освітленість \(E\) ділянки, якщо джерелом світла є нескінченна площина, паралельна цій
+ділянці? Поверхнева яскравість джерела світла всюди однакова і не залежить від напрямку. <a href="answers.html#LWR-ht-solution:2.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-182"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.16.</span></span> <a id="autoid-183" ></a ><a id="LWR-ht-problem:2.{16}"></a>Знайти освітленість на горизонтальній ділянці, яка освітлюється небесною напівсферою, за умови
+рівномірної яскравості неба. <a href="answers.html#LWR-ht-solution:2.{16}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-184"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.17.</span></span> <a id="autoid-185" ></a ><a id="LWR-ht-problem:2.{17}"></a>Сонце, перебуваючи поблизу зеніту, створює на горизонтальній поверхні освітленість \(E =
+10^5\)&nbsp;лк. Діаметр Сонця видний під кутом \(\alpha = 32&apos;\). Визначити видиму яскравість \(B\) Сонця. <a href="answers.html#LWR-ht-solution:2.{17}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-186"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.18.</span></span> <a id="autoid-187" ></a ><a id="LWR-ht-problem:2.{18}"></a>Яскравість \(B\) куба, що світиться однакова у всіх напрямках і дорівнює \(5\cdot
+10^3\)&nbsp;кд/м\(^2\). Ребро а куба рівне \(20\)&nbsp;см. В якому напрямку сила світла \(I\) куба максимальна? Визначити максимальну силу світла \(I_{\max }\) куба. <a href="answers.html#LWR-ht-solution:2.{18}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-188"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.19.</span></span> <a id="autoid-189" ></a ><a id="LWR-ht-problem:2.{19}"></a>Яскравість лампи з плафоном, який має форму конуса висотою \(15\)&nbsp;см з діаметром
+\(20\)&nbsp;см, однакова в усіх напрямках і дорівнює \(2 \cdot 10^3\)&nbsp;кд/м\(^2\). Основа конуса не світиться. Визначити силу світла конуса в напрямках: 1) вздовж осі; 2) перпендикулярно до осі. <a href="answers.html#LWR-ht-solution:2.{19}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-190"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.20.</span></span> <a id="autoid-191" ></a ><a id="LWR-ht-problem:2.{20}"></a><a id="prb:2.20"></a>На висоті \(h = 1\)&nbsp;м над горизонтальною площиною паралельно
+їй розташований невеликий диск, що світиться. Сила світла \(I_0\) диска в напрямку його осі дорівнює \(100\)&nbsp;кд. Приймаючи диск за точкове джерело з косинусним розподілом сили світла, знайти освітленість \(E\) горизонтальної площини в точці \(A\), віддаленої на відстань \(r =
+3\)&nbsp;м від точки, розташованої під центром диска. <a href="answers.html#LWR-ht-solution:2.{20}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-192"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.21.</span></span> <a id="autoid-193" ></a ><a id="LWR-ht-problem:2.{21}"></a>На якій висоті \(h\) над горизонтальною площиною (див. попереднє завдання&nbsp;<a
+href="photometry.html#prb:2.20">2.20</a>) потрібно помістити диск, що світиться, щоб освітленість у точці \(A\) була максимальною? <a href="answers.html#LWR-ht-solution:2.{21}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-194"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.22.</span></span> <a id="autoid-195" ></a ><a id="LWR-ht-problem:2.{22}"></a>Визначити освітленість \(E\), світність \(M\) і яскравість \(B\) кіноекрана, який рівномірно розсіює світло
+у всіх напрямках, якщо світловий потік \(\Phi \), що падає на екран з об’єктива кіноапарата (без кінострічки), дорівнює \(1,75\cdot 10^3\)&nbsp;лм. Розмір екрану \(5 \times 3,6\)&nbsp;м, коефіцієнт відбиття \(\rho = 0,75\). <a
+href="answers.html#LWR-ht-solution:2.{22}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-196"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 2.23.</span></span> <a id="autoid-197" ></a ><a id="LWR-ht-problem:2.{23}"></a>Освітленість \(E\) поверхні, покритої шаром сажі, дорівнює \(150\)&nbsp;лк, яскравість \(B\) однакова
+у всіх напрямках і дорівнює \(1\)&nbsp;кд/м\(^2\). Визначити коефіцієнт відбиття \(\rho \) сажі. <a href="answers.html#LWR-ht-solution:2.{23}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

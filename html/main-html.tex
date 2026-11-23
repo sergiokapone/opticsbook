@@ -1,0 +1,44 @@
+% !TeX program = lualatex
+% HTML (lwarp) variant of OpticsProblems.tex. Sources of the HTML pipeline live in html/; html/build-html.ps1 copies this file
+% to the project root for the build and removes it (and everything lwarp makes) afterwards.
+\documentclass{ProblemBookHTML}
+\addbibresource{d:/Projects/LaTeX/MyPackages/bib/MyBase.bib}
+
+\title{Оптика. Практичний курс}
+\author{В.~В.~Іванова, С.~М.~Пономаренко}
+\begin{document}
+\maketitle
+\tableofcontents
+% the preface is a page of its own (prepare_html.py turns its \chapter* into \schapterpage)
+\ForceHTMLPage
+\htmlinput{intro}
+
+\newcommand{\ChaptersOne}{GeomOpt,Photometry}
+\newcommand{\ChaptersTwo}{Dispersion,Interference,Difraction,Polarisation}
+\part{Геометрична оптика та фотометрія}
+\multiinclude{\ChaptersOne}[]
+\part{Фізична оптика}
+\multiinclude{\ChaptersTwo}[]
+
+% answers to the problems (written by the chapters, as in OpticsProblems.tex)
+\answers
+\multiinclude{\ChaptersOne}[-Answers]
+\multiinclude{\ChaptersTwo}[-Answers]
+
+% appendices (as in OpticsProblems.tex)
+\appendix
+\htmlinput{Additions/Spectra}
+\htmlinput{Additions/Mathematics}
+\htmlinput{Additions/Photometry}
+\htmlinput{Additions/PhysConstants}
+
+% bibliography: the two lists of OpticsProblems.tex under one heading
+\nocite{BornWolfEng,Chizh,Kolobrodov1,Kolobrodov2,Ivanova}
+\ForceHTMLPage
+\schapter{Література}
+\defbibheading{subheading}[\bibname]{\section*{#1}}
+\addtocategory{Textbooks}{BornWolfEng,Chizh,Kolobrodov1,Kolobrodov2}
+\addtocategory{Problems}{Ivanova}
+\printbibliography[category=Textbooks,heading=subheading,title={Підручники та посібники}]
+\printbibliography[category=Problems,heading=subheading,title={Задачники}]
+\end{document}

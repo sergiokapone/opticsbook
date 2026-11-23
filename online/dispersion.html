@@ -1,0 +1,2772 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Фізична оптика</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-325"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Фізична оптика">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... part Фізична оптика ......
+-->
+<h2 id="autosec-327">Частина&nbsp;<span class="sectionnumber">II&#x2003;</span>Фізична оптика</h2>
+<a id="main-html-autopage-327"></a>
+<a id="main-html-autofile-4"></a>
+<!--
+...... chapter Дисперсія ......
+-->
+<h3 id="autosec-328"><span class="sectionnumber">3&#x2003;</span>Дисперсія</h3>
+<a id="main-html-autopage-328"></a>
+
+
+<a id="Dispersion-dup2"></a>
+<!--
+...... section Основні поняття і закони ......
+-->
+<h4 id="autosec-329"><span class="sectionnumber">&#xA7;&#x202F;3.1&#x2003;</span>Основні поняття і закони</h4>
+<a id="main-html-autopage-329"></a>
+
+
+<p>
+Дисперсія світла — явище, обумовлене залежністю показника заломлення речовини від частоти електромагнітних хвиль (або довжини хвилі), які в ній розповсюджуються:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{0}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝑛 = 𝑓(𝜆).                                                                                                                  (3.1)
+
+-->
+
+<p>
+
+\begin{equation}
+n = f(\lambda ).
+\end{equation}
+
+</p>
+
+<p>
+Якщо показник зменшується зі зростанням довжини хвилі \(\frac {dn}{d\lambda } &lt; 0\), то дисперсія називається нормальною, якщо збільшується — \(\frac {dn}{d\lambda } &gt; 0\), то аномальною. Аномальна дисперсія має місце на вузьких неробочих ділянках спектру
+поблизу ліній поглинання.
+</p>
+
+<p>
+Конкретні оптичні матеріали характеризуються середньою дисперсією показника заломлення речовини:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{1}\)</span>
+
+<!--
+
+                                                                                                                                  Δ𝑛  𝑛 ′ − 𝑛𝐶 ′
+                                                                                                                                     = 𝐹          ,                                                                                                              (3.2)
+                                                                                                                                  Δ𝜆  𝜆𝐹 ′ − 𝜆𝐶 ′
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\Delta n}{\Delta \lambda } = \frac {n_{F&apos;} - n_{C&apos;}}{\lambda _{F&apos;} - \lambda _{C&apos;}},
+\end{equation}
+
+</p>
+
+<p>
+де \(n_{F&apos;} - n_{C&apos;}\) — середня дисперсія, яка визначається як різниця показників заломлення для блакитної (F’ ) і червоної (C’ ) ліній кадмію.
+</p>
+
+<p>
+Кутова дисперсія призми визначається при \(n_0 = 1\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{2}\)</span>
+
+<!--
+
+                                                                                    𝜃
+                                                                𝑑𝜍0         2 sin            𝑑𝑛
+                                                                    =               2
+                                                                                                  ,                                                          (3.3)                                                  --><a id="eq:Prism_Dispersion"></a><!--
+                                                                𝑑𝜆                      2 𝜃
+                                                                                            𝑑𝜆
+                                                                          1 − 𝑛2 sin
+                                                                        √                2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Prism_Dispersion} \frac {d\sigma _0}{d\lambda } = \frac {2\sin \frac \theta 2}{\sqrt {1 - n^2\sin ^2\frac \theta 2}}\frac {dn}{d\lambda },
+\end{equation}
+
+</p>
+
+<p>
+де \(\sigma _0\) мінімальний кут відхилення променя призмою; \(\theta \) — заломлюючий кут призми; \(n\) — показник заломлення матеріалу призми.
+</p>
+
+<figure id="autoid-198" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-331"></a>
+
+<p>
+<span
+    id="lateximage-main-html-62"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-62.svg"
+   alt="(а) Дисперсія в призмі"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а) Дисперсія в призмі
+
+</div>
+
+<a id="pic:Prism_dispersion"></a>
+
+<a id="sub@pic:Prism_dispersion"></a>
+
+</div>
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-334"></a>
+
+<p>
+<span
+    id="lateximage-main-html-63"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-63.svg"
+   alt="(б) Дисперсія в дощовій краплі"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б) Дисперсія в дощовій краплі
+
+</div>
+
+<a id="pic:Droplet_dispersion"></a>
+
+<a id="sub@pic:Droplet_dispersion"></a>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.1. Прояви дисперсії
+
+</div>
+
+<a id="pic:dispersion"></a>
+
+</div>
+
+</figure>
+
+<p>
+Дисперсійна формула Коші, що застосовується для апроксимації експериментальних залежностей \(n(\lambda )\), має вигляд
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{3}\)</span>
+
+<!--
+
+
+                                                                            𝐵    𝐶
+                                                                   𝑛=𝐴+        + 4 +…                                                                       (3.4)                                                                   --><a id="eq:Cauchi_dispersion"></a><!--
+                                                                            𝜆2  𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Cauchi_dispersion} n = A + \frac {B}{\lambda ^2} + \frac {C}{\lambda ^4} + \ldots
+\end{equation}
+
+</p>
+
+<p>
+де \(A\), \(B\), \(C\) — сталі величини, що визначаються для кожної речовини дослідним шляхом; \(\lambda \) — довжина хвилі у вакуумі.
+</p>
+
+<p>
+Згідно класичної теорії, дисперсія світла виникає внаслідок вимушених коливань зовнішні (оптичних) електронів під впливом змінного поля електромагнітної хвилі, яка взаємодіє з речовиною. Теорія дисперсії розріджених середовищ у яких атоми мають лише один оптичний електрон дає вираз
+для комплексної діелектричної проникності:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{4}\)</span>
+
+<!--
+
+
+                                                               4𝜋𝑁𝑒 𝑒2    1                 𝜔2𝑝
+                                                    ̂
+                                                   𝜖(𝜔) =1+            2
+                                                                                   =1+ 2             , (СГС)                                                             (3.5)                                                                   --><a id="eq:epsilon"></a><!--
+                                                                 𝑚𝑒 𝜔0 − 𝜔2 − 2𝑖𝜔𝛾    𝜔0 − 𝜔2 − 2𝑖𝜔𝛾
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:epsilon} \hat {\epsilon }(\omega ) = 1 + \frac {4\pi N_e e^2}{m_e}\frac {1}{\omega _0^2 - \omega ^2 - 2i\omega \gamma } = 1 + \frac {\omega _p^2}{\omega _0^2 - \omega ^2 - 2i\omega \gamma }, \ \text
+{(СГС)}
+\end{equation}
+
+</p>
+
+<p>
+де \(N_e\) — концентрація електронів, \(e\) — заряд електрона, \(m_e\) — маса електрона, \(\omega \)&nbsp;— частота падаючої хвилі, \(\omega _0 \) — власна частота коливань оптичного електрона, \(\gamma \) — коефіцієнт згасання, \(\omega _p\) — <em>плазмова</em>
+(<em>ленгмюрівська</em>) частота, яка дається виразом:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{5}\)</span>
+
+<!--
+
+
+                                                                                  4𝜋𝑁𝑒 𝑒2
+                                                                         𝜔2𝑝 =            , (СГС)                                                                       (3.6)                                                                 --><a id="eq:Lengmur"></a><!--
+                                                                                    𝑚𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Lengmur} \omega _p^2 = \frac {4\pi N_e e^2}{m_e},\ \text {(СГС)}
+\end{equation}
+
+</p>
+
+<p>
+Згідно рівнянь Максвелла:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{6}\)</span>
+
+<!--
+
+
+                                                                            𝜖 ̂ = 𝑛̂ 2                                                                      (3.7)                                                                  --><a id="eq_dispersio:e=n^2"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_dispersio:e=n^2} \hat {\epsilon } = \hat {n}^2
+\end{equation}
+
+</p>
+
+<p>
+Комплексний показник заломлення представляють у вигляді:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{7}\)</span>
+
+<!--
+
+
+                                                                            𝑛̂ = 𝑛 − 𝑖𝜒                                                                        (3.8)                                                                  --><a id="eq_dispersion: n"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_dispersion: n} \hat {n} = n - i \chi
+\end{equation}
+
+</p>
+
+<p>
+Виділяючи дійсну та уявну частину з <span class="textup">(<a href="dispersion.html#eq:epsilon">3.5</a>)</span> можна отримати вирази:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{8}\)</span>
+
+<!--
+
+
+                                                                                         𝜔2𝑝 (𝜔20 − 𝜔2 )
+                                                                𝑛2 − 𝜒2 = 1 +                              .                                                        (3.9)                                                                 --><a id="eq:n-e_theory"></a><!--
+                                                                                 (𝜔20 − 𝜔2 )2 + 4𝜔2 𝛾2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:n-e_theory} n^2 - \chi ^2 = 1 + \frac {\omega _p^2(\omega _0^2 - \omega ^2)}{(\omega _0^2 - \omega ^2)^2 + 4\omega ^2\gamma ^2}.
+\end{equation}
+
+</p>
+
+<p>
+та
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{9}\)</span>
+
+<!--
+
+
+                                                                                  𝜔2𝑝 𝜔𝛾
+                                                                     𝑛𝜒 =     2
+                                                                                                                                                                    (3.10)                                                                 --><a id="eq:ne_theoty"></a><!--
+                                                                            (𝜔0 − 𝜔2 )2 + 4𝜔2 𝛾2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ne_theoty} n\chi = \frac {\omega _p^2 \omega \gamma }{(\omega _0^2 - \omega ^2)^2 + 4\omega ^2\gamma ^2}
+\end{equation}
+
+</p>
+
+<p>
+З цих співвідношень можна отримати показники заломлення \(n\) та коефіцієнт екстинкції \(\chi \).
+</p>
+
+<p>
+При частотах, далеких від власної частоти \(\omega _0\) виконується умова
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{10}\)</span>
+
+<!--
+
+
+                                                                         |𝜔2 − 𝜔20 | ≫ 2𝜔𝛾.                                                                         (3.11)                                                                 --><a id="eq:prozorost"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:prozorost} |\omega ^2 - \omega _0^2| \gg 2\omega \gamma .
+\end{equation}
+
+</p>
+
+<p>
+Для розріджених прозорих речовин <span class="textup">(<a href="dispersion.html#eq:n-e_theory">3.9</a>)</span> з урахуванням <span class="textup">(<a href="dispersion.html#eq:prozorost">3.11</a>)</span> дає:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{11}\)</span>
+
+<!--
+
+
+                                                                                                                                         1    𝜔2𝑝
+                                                                                                                                 𝑛≈1+               .                                                                                                                           (3.12)
+                                                                                                                                         2 𝜔20 − 𝜔2
+
+-->
+
+<p>
+
+\begin{equation}
+n \approx 1 + \frac 12 \frac {\omega _p^2}{\omega _0^2 - \omega ^2}.
+\end{equation}
+
+</p>
+
+<p>
+За умови \(\omega _0 - \gamma \lesssim \omega _0 \lesssim \omega _0 + \gamma \) показник заломлення зростає із збільшенням частоти (рис.&nbsp;<a href="dispersion.html#plt:n,a(omega)">3.2</a>). Такий характер залежності \(n(\omega )\), як було зазначено,
+називають нормальною дисперсією.
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Для низьких частот (\(\omega &lt; \omega _0\)) показник заломлення більше одиниці \(n &gt; 1\), тобто, фазова швидкість \(v = \frac {c}{n} &lt; c\) хвилі в середовищі менші за швидкість світла у вакуумі. Це означає, що хвиля в середовищі відстає від падаючої хвилі по фазі.
+Якщо ж частота світла більша за власну частоту осциляторів (\(\omega &gt; \omega _0\)), то \(n &lt; 1\) і фазова швидкість хвилі в середовищі \(v = \frac {c}{n} &gt; c\) виявляється більше швидкості світла в вакуумі, тобто, хвиля в середовищі випереджає по фазі падаючу.
+</p>
+
+<p>
+Цей теоретичний висновок добре узгоджується з дослідними результатами. Так, наприклад, для скла при довжині хвилі близько \(0,1\)&nbsp;нм (рентгенівські хвилі) одержано \(n = 0,999999\), тому для них можна спостерігати явище повного внутрішнього відбивання на межі повітря-скло.
+</p>
+</div>
+
+<figure id="autoid-199" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-64"
+    class="lateximagesource"
+><!--
+ 2             Область                                          𝑛 — показник заломлення
+          нормальної дисперсії                                  𝜒 — коефіцієнт екстинкції
+           𝑑𝑛
+                > 1, 𝑛 > 1
+           𝑑𝜔
+                                                                 Область
+1,5
+                                                            аномальної дисперсії
+                                                                 𝑑𝑛
+                                                                     < 1
+                                                                 𝑑𝜔
+
+
+ 1
+
+
+                                                                        Область
+0,5                                                                нормальної дисперсії
+                                                                      𝑑𝑛
+                                                                           > 1, 𝑛 < 1
+                                                                      𝑑𝜔
+
+
+
+ 0
+      0               0,5        1−
+                                      𝛾    11   1+
+                                                     𝛾    1,5                2              2,5
+                                      𝜔0             𝜔0
+
+                                                 𝜔/𝜔0
+--><img
+   src="main-html-images/image-64.svg"
+   alt="Рис. 3.2. Криві функцій для показника заломлення n та коефіцієнта екстинкції поблизу резонансної частоти _0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.2. Криві функцій для показника заломлення \(n\) та коефіцієнта екстинкції \(\chi \) поблизу резонансної частоти \(\omega _0\)
+
+</div>
+
+<a id="plt:n,a(omega)"></a>
+
+</div>
+
+</figure>
+
+<p>
+Для плазми, яка є іонізованим газом, а також для електронного газу в металах, в якому власні частоти вільних електронів дорівнюють нулю, а коливанням важких іонів можна знехтувати (\(\frac {m_e}{m_n} \ll 1\), \(m_n\) — маса додатного іону) — діелектрична проникність
+визначається головним чином вільними електронами. Тому, поклавши в <span class="textup">(<a href="dispersion.html#eq:epsilon">3.5</a>)</span> \(\omega _0 = 0\), для плазми отримаємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{12}\)</span>
+
+<!--
+
+
+                                                                                      𝜔𝑝 2
+                                                                            𝜖=1−(       ) .                                                                             (3.13)                                                                  --><a id="eq:plasm"></a><!--
+                                                                                      𝜔
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:plasm} \epsilon = 1 - \left ( \frac {\omega _p}{\omega }\right )^2.
+\end{equation}
+
+</p>
+
+<p>
+Зазвичай, \(\omega &lt; \omega _p\) (приклад радіохвилі ультракороткого діапазону, що падають на іоносферу Землі). В цьому випадку \(n\) є суто уявною величиною (не має дійсної частини), тому з рівняння <span class="textup">(<a
+href="dispersion.html#eq_dispersion: n">3.8</a>)</span> випливає, шо для плазми дійсна \(\Re {(\hat {n})} = 0\). В цьому випадку плазма (або метал) є непрозорою для електромагнітних хвиль. Хвилі при падінні на її поверхню зазнають повного внутрішнього відбивання. При
+\(\omega &gt; \omega _p\) уявна частина \(\Im {(\hat {n})} = 0\) і хвилі в розрідженій плазмі, або металі поширюються майже без поглинання (\(\omega \gg \gamma \)). Плазма (або метал є повністю прозорими для електромагнітної хвилі. Границею прозорості є умова
+\(\epsilon = 0\), яка досягається за випадку \(\omega = \omega _p\).
+</p>
+<!--
+...... subsection Фазова та групова швидкості ......
+-->
+<h5 id="autosec-341"><span class="sectionnumber">3.1.1&#x2003;</span>Фазова та групова швидкості</h5>
+<a id="main-html-autopage-341"></a>
+
+
+<p>
+Монохроматична хвиля, за визначенням, є нескінченна у просторі та у часі. Реальна хвиля завжди просторово обмежена і випромінюється протягом обмеженого інтервалу часу, а тому не є строго монохроматичною. Проте будь-яку реальну хвилю можна як результат суперпозиції великої
+кількості строго монохроматичних плоских хвиль. Тобто реальна хвиля є групою монохроматичних складових.
+</p>
+
+<figure id="autoid-200" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-65"
+    class="lateximagesource"
+><!--
+𝐮
+--><img
+   src="main-html-images/image-65.svg"
+   alt="Рис. 3.3. Приклад пакету хвиль"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;3.3. Приклад пакету хвиль
+
+</div>
+
+</div>
+
+</figure>
+
+<p>
+Під фазовою швидкістю розповсюдження хвиль розуміють швидкість, з якою поширюється поверхня однакових фаз:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{13}\)</span>
+
+<!--
+
+                                                                                  𝜔
+                                                                             𝑣=                                                                                   (3.14)                                                                     --><a id="eq:pahse_velocity"></a><!--
+                                                                                  𝑘
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:pahse_velocity} v = \frac {\omega }{k}
+\end{equation}
+
+</p>
+
+<p>
+За відсутності дисперсії фазова швидкість хвиль не залежить від частоти. Тому, якщо є група хвиль різних частот, то всі вони будуть рухатися з однією і тією ж швидкістю і пакет, який вони утворюють у в результаті накладання, при русі не змінює своєї форми, його огинаюча рухатиметься з
+тією ж швидкістю, що і хвилі, з яких складається.
+</p>
+
+<p>
+Якщо дисперсія є, то огинаюча рухається з іншою швидкістю, ніж швидкості монохроматичних компонент.
+</p>
+
+<p>
+Швидкість руху максимуму амплітуди групи хвиль або хвильового пакету — називається груповою швидкістю.
+</p>
+
+<p>
+Групова швидкість визначається за формулою
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{14}\)</span>
+
+<!--
+
+                                                                                 𝑑𝜔
+                                                                            ᵆ=      .                                                                            (3.15)                                                                     --><a id="eq: group_velocity"></a><!--
+                                                                                 𝑑𝑘
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq: group_velocity} u = \frac {d\omega }{dk}.
+\end{equation}
+
+</p>
+
+<p>
+Як легко бачити, зв’язок фазової і групової швидкості маж вигляд:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{15}\)</span>
+
+<!--
+
+                                                                                          𝑑𝑣
+                                                                                 ᵆ=𝑣−𝜆       ,                                                                                (3.16)                                                                     --><a id="eq:Reley"></a><!--
+                                                                                          𝑑𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Reley} u = v- \lambda \frac {dv}{d\lambda },
+\end{equation}
+
+</p>
+
+<p>
+яке носить назву формули Релея.
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Фазова швидкість може бути більше швидкості світла, і це не суперечить релятивістській теорії, яка стверджує, що швидкість матеріальних тіл та швидкість сигналу не можуть перевищувати \(c\).
+</p>
+
+<p>
+Групова швидкість в залежності від знаку доданку \(\frac {dv}{d\lambda }\) може бути меншою, так і більше фазової, але завжди менше швидкості світла у вакуумі. Коли дисперсії немає (у вакуумі) \(u = v\).
+</p>
+
+<p>
+Максимум інтенсивності (енергії) припадає на максимум огинаючої у хвильовому пакеті Тому в тих випадках, швидкість перенесення енергії (а отже, і інформації) хвилею дорівнює груповий швидкості і не перевищує \(c\) у вакуумі.
+</p>
+
+<p>
+Поняття групової швидкості не застосовується, коли поглинання середовища дуже велике (область аномальної дисперсії).
+</p>
+</div>
+<!--
+...... section Приклади розв’язування задач ......
+-->
+<h4 id="autosec-345"><span class="sectionnumber">&#xA7;&#x202F;3.2&#x2003;</span>Приклади розв’язування задач</h4>
+<a id="main-html-autopage-345"></a>
+
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 18.</b> Показник заломлення прозорої речовини для деякого спектрального діапазону описується двочленною дисперсійною формулою Коші:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{16}\)</span>
+
+<!--
+
+                                                                                                                                                          𝐵
+                                                                                                                                            𝑛=𝐴+             ,
+                                                                                                                                                          𝜆2
+
+-->
+
+<p>
+
+\begin{equation*}
+n = A + \frac {B}{\lambda ^2},
+\end{equation*}
+
+</p>
+
+<p>
+де \(A &gt; 0\), \(B &gt; 0\). Визначити: а) дисперсію показника заломлення речовини; б) фазову швидкість світла; в) групову швидкість світла.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+а) Дисперсія показника заломлення речовини
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{16}\)</span>
+
+<!--
+
+                                                                                                                                             𝑑𝑛   2𝐵
+                                                                                                                                                =− 3.
+                                                                                                                                             𝑑𝜆   𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {dn}{d\lambda } = - \frac {2B}{\lambda ^3}.
+\end{equation*}
+
+</p>
+
+<p>
+б) Фазова швидкість світла у речовині
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{16}\)</span>
+
+<!--
+
+
+                                                                                                                                             𝑐     𝑐𝜆2
+                                                                                                                                        𝑣=     =         .
+                                                                                                                                             𝑛   𝐴𝜆2 + 𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+v = \frac {c}{n} = \frac {c\lambda ^2}{A\lambda ^2 + B}.
+\end{equation*}
+
+</p>
+
+<p>
+в) Групова швидкість світла у речовині визначається через фазову за формулою Релея:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{16}\)</span>
+
+<!--
+
+
+                                                                                                                                             𝑑𝑣   𝐶𝜆2 (𝐴𝜆2 − 𝐵)
+                                                                                                                             ᵆ=𝑣−𝜆              =               .
+                                                                                                                                             𝑑𝜆     𝐴𝜆2 + 𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+u = v - \lambda \frac {dv}{d\lambda } = \frac {C\lambda ^2(A\lambda ^2 - B)}{A\lambda ^2 + B}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 19.</b> Напишіть рівняння плоскої хвилі для випадків коли комплексний показник заломлення дорівнює \(\hat {n} = n - i\chi \) та \(\hat {n} = - i\chi \), відповідно. З’ясуйте фізичний зміст таких показників заломлення.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Рівняння плоскої хвилі, що поширюється вздовж додатного напрямку осі \(x\) в середовищі запишемо у вигляді:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{16}\)</span>
+
+<!--
+
+                                                                                ̂
+                                                           𝐄 = 𝐄0 𝑒𝑖(𝜔𝑡−𝑘𝑥) ,                                                                 (3.17)                                                        --><a id="eq_dispersion:E_Plane_wave_complex"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_dispersion:E_Plane_wave_complex} \vect {E} = \vect {E}_0 e^{i(\omega t - \hat {k} x)},
+\end{equation}
+
+</p>
+
+<p>
+де \(\hat {k} = \frac {2\pi \hat {n}}{\lambda _0}\) — комплексне хвильове число, \(\lambda _0\) — довжина хвилі у вакуумі, \(\hat {n}\) — комплексний показник заломлення середовища.
+</p>
+
+<p>
+Якщо \(\hat {n} = n - i\chi \), то <span class="textup">(<a href="dispersion.html#eq_dispersion:E_Plane_wave_complex">3.17</a>)</span> приймає вигляд:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{17}\)</span>
+
+<!--
+
+                                                                                                                                      2𝜋𝜒         2𝜋𝑛               2𝜋𝑛
+                                                                                                                                  −       𝑥 𝑖(𝜔𝑡−     𝑥)      𝑖(𝜔𝑡−     𝑥)
+                                                                                                                                       𝜆0          𝜆0                𝜆0
+                                                                                                                       𝐄 = 𝐄0 𝑒            𝑒             = 𝐀𝑒              ,
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect {E} = \vect {E}_0e^{-\frac {2\pi \chi }{\lambda _0} x} e^{i(\omega t - \frac {2\pi n}{\lambda _0} x)} = \vect {A} e^{i(\omega t - \frac {2\pi n}{\lambda _0} x )},
+\end{equation*}
+
+</p>
+
+<p>
+що являє собою рівняння плоскої хвилі з амплітудою, яка зменшується за законом:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{17}\)</span>
+
+<!--
+
+                                                                                                                                                 2𝜋𝜒               𝑘
+                                                                                                                                             −
+                                                                                                                                                  𝜆0
+                                                                                                                                                     𝑥            − 𝜔𝑥
+                                                                                                                               𝐀 = 𝐄0 𝑒                  = 𝐄0 𝑒    2      ,
+
+-->
+
+<p>
+
+\begin{equation*}
+\vect {A} = \vect {E}_0e^{-\frac {2\pi \chi }{\lambda _0} x} = \vect {E}_0e^{- \frac {k_{\omega }}{2} x},
+\end{equation*}
+
+</p>
+
+<p>
+де \(k_{\omega } = \frac {4\pi \chi }{\lambda _0}\) — показник поглинання хвилі середовищем, який має розмірність см\(^{-1}\).
+</p>
+
+<p>
+Оскільки інтенсивність хвилі \(I \sim \vect {A}^2\), то з останнього рівняння отримуємо вираз:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{17}\)</span>
+
+<!--
+
+
+                                                                                                                                           𝐼 = 𝐼0 𝑒−𝑘𝜔𝑥 ,
+
+-->
+
+<p>
+
+\begin{equation*}
+I = I_0e^{- k_{\omega } x},
+\end{equation*}
+
+</p>
+
+<p>
+який називається законом Бугера-Ламберта-Бера.
+</p>
+
+<p>
+При \(\hat {n} = - i\chi \), <span class="textup">(<a href="dispersion.html#eq_dispersion:E_Plane_wave_complex">3.17</a>)</span> приймає вигляд:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{17}\)</span>
+
+<!--
+
+                                                                        2𝜋𝜒                  𝑥
+                                                                    −       𝑥            −
+                                                         𝐄 = 𝐄0 𝑒        𝜆0
+                                                                            𝑒 𝑖𝜔𝑡   = 𝐄0 𝑒   𝛿 𝑒𝑖𝜔𝑡 ,                                                            (3.18)                                                --><a id="eq_dispersin:E_stand_wave"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_dispersin:E_stand_wave} \vect {E} = \vect {E}_0e^{-\frac {2\pi \chi }{\lambda _0} x} e^{i\omega t} = \vect {E}_0e^{-\frac {x}{\delta }} e^{i\omega t},
+\end{equation}
+
+</p>
+
+<p>
+що уже являє собою рівняння плоскої <em>стоячої хвилі</em>, з амплітудою, що також як і в попередньому випадку, експоненційно спадає.
+</p>
+
+<p>
+<em>Примітки</em>: З фізичної точки зору, рівняння вигляду <span class="textup">(<a href="dispersion.html#eq_dispersin:E_stand_wave">3.18</a>)</span> описує електричне поле в плазмі за умови \(\omega &lt; \omega _p\). В цьому випадку вводять поняття
+<em>глибини проникнення</em> електричного поля хвилі в середовище, яка визначається як відстань, на якій амплітуда електричного поля спадає в \(e\) разів, тобто:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+                                                                                                                                                     𝜆0
+                                                                                                                                             𝛿=         .
+                                                                                                                                                    2𝜋𝜒
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta = \frac {\lambda _0}{2\pi \chi }.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 20.</b> Знайти число вільних електронів на атом срібла, якщо плівка срібла прозора для ультрафіолетового випромінювання, починаючи з енергії \(8,9\)&nbsp;еВ. Для срібла відносна атомна маса \(A=108\), густина \(\rho =10,5\)&nbsp;г/см\(^3\).
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Фотону з енергією \(8.9\)&nbsp;еВ відповідає довжина хвилі \(\lambda = 1,393 \cdot 10^{-5}\)&nbsp;см.
+</p>
+
+<p>
+Умовою прозорості плазми у речовини на даних частотах є \(\omega = \omega _p\) (див. рівн.<span class="textup">(<a href="dispersion.html#eq:plasm">3.13</a>)</span>).
+</p>
+
+<p>
+Оскільки \(\omega _p^2 = \frac {4\pi N_e e^2}{m_e}\) (див. рівн. <span class="textup">(<a href="dispersion.html#eq:Lengmur">3.6</a>)</span>),
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                  4𝜋𝑁𝑒 𝑒2          2𝜋𝑐 2
+                                                                                                                                          = 𝜔2 = (    ) .
+                                                                                                                                    𝑚𝑒              𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {4\pi N_e e^2}{m_e} = \omega ^2 = \left ( \frac {2\pi c}{\lambda } \right )^2.
+\end{equation*}
+
+</p>
+
+<p>
+Звідки виразимо концентрацію електронів вільних електронів срібла
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                              𝜋𝑐2 𝑚𝑒
+                                                                                                                                       𝑁𝑒 =          . (СГС)
+                                                                                                                                               𝑒2 𝜆2
+
+-->
+
+<p>
+
+\begin{equation*}
+N_e = \frac {\pi c^2 m_e}{e^2 \lambda ^2}.\ \text {(СГС)}
+\end{equation*}
+
+</p>
+
+<p>
+Концентрація атомів срібла:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+                                                                                                                                                    𝑁𝐴 𝜌
+                                                                                                                                             𝑁=          .
+                                                                                                                                                     𝐴
+-->
+
+<p>
+
+\begin{equation*}
+N = \frac {N_A \rho }{A}.
+\end{equation*}
+
+</p>
+
+<p>
+Число вільних електронів на один атом (значення підставимо в системі СГС):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                       𝑁𝑒   𝜋𝑐2 𝑚𝑒 𝐴
+                                                                                                                                          =           ≈ 1.
+                                                                                                                                       𝑁    𝑁𝐴 𝜌𝑒2 𝜆2
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {N_e}{N} = \frac {\pi c^2 m_e A }{N_A \rho e^2 \lambda ^2} \approx \pgfmathprintnumber [fixed, precision=1]{\renNeN }.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 21.</b> Знайти зв’язок між фазовою і груповою швидкостями електромагнітних хвиль у плазмі при \(\omega &gt; \omega _p\).
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+З формули <span class="textup">(<a href="dispersion.html#eq:plasm">3.13</a>)</span> для отримуємо вираз показника заломлення:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                                         𝜔𝑝 2
+                                                                                                                                         𝑛2 = 1 − (        ) .
+                                                                                                                                                         𝜔
+
+-->
+
+<p>
+
+\begin{equation*}
+n^2 = 1 - \left ( \frac {\omega _p}{\omega }\right )^2.
+\end{equation*}
+
+</p>
+
+<p>
+З означення показника заломлення \(v = \frac {c}{n}\), з іншого боку \(v = \frac {\omega }{k}\), прирівняємо ці вирази \(\frac {c^2}{n^2} = \frac {\omega ^2}{k^2}\) і отримаємо функцію \(\omega (k)\) (дисперсійне співвідношення):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                         𝜔2 = 𝜔2𝑝 − 𝑐2 𝑘2 .
+
+-->
+
+<p>
+
+\begin{equation*}
+\omega ^2 = \omega _p^2 - c^2k^2.
+\end{equation*}
+
+</p>
+
+<p>
+Продиференціюємо останній вираз:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                         2𝜔𝑑𝜔 = 2𝑐2 𝑘𝑑𝑘
+
+-->
+
+<p>
+
+\begin{equation*}
+2\omega d\omega = 2c^2k dk
+\end{equation*}
+
+</p>
+
+<p>
+і поділимо праву і ліву частину на \(2kdk\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+                                                                                                                                             𝜔𝑑𝜔
+                                                                                                                                                 = 𝑐2 .
+                                                                                                                                             𝑘𝑑𝑘
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\omega d\omega }{k dk} = c^2.
+\end{equation*}
+
+</p>
+
+<p>
+Враховуючи, що фазова швидкість \(v = \frac {\omega }{k}\), а групова швидкість \(u = \frac {d\omega }{dk}\), остаточно маємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{3.}{18}\)</span>
+
+<!--
+
+
+                                                                                                                                              𝑣ᵆ = 𝑐2 .
+
+-->
+
+<p>
+
+\begin{equation*}
+vu = c^2.
+\end{equation*}
+
+</p>
+
+</div>
+<!--
+...... section Задачі для самостійного розв’язку ......
+-->
+<h4 id="autosec-346"><span class="sectionnumber">&#xA7;&#x202F;3.3&#x2003;</span>Задачі для самостійного розв’язку </h4>
+<a id="main-html-autopage-346"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-201"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.1.</span></span> <a id="autoid-202" ></a ><a id="LWR-ht-problem:3.{1}"></a>Що характеризує дисперсія показника заломлення речовини?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-203"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.2.</span></span> <a id="autoid-204" ></a ><a id="LWR-ht-problem:3.{2}"></a>Що характеризує дисперсія призми? Які значення має \(\frac {dn}{d\lambda }\) нормальній та
+аномальній дисперсіях?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-205"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.3.</span></span> <a id="autoid-206" ></a ><a id="LWR-ht-problem:3.{3}"></a>Що характеризує групова швидкість? Як вона пов’язана з фазовою швидкістю?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-207"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.4.</span></span> <a id="autoid-208" ></a ><a id="LWR-ht-problem:3.{4}"></a>Для яких речовин групова швидкість рівна або менше, або більше фазової?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-209"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.5.</span></span> <a id="autoid-210" ></a ><a id="LWR-ht-problem:3.{5}"></a>Вивести залежність групової швидкості від дисперсії показника заломлення речовини \(\frac
+{dn}{d\lambda }\).
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-211"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.6.</span></span> <a id="autoid-212" ></a ><a id="LWR-ht-problem:3.{6}"></a>Як виражається показник заломлення розрідженого газу через частоту світла поблизу лінії поглинання?
+Накресліть приблизний графік цієї залежності.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-213"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.7.</span></span> <a id="autoid-214" ></a ><a id="LWR-ht-problem:3.{7}"></a>Як виражається показник заломлення розрідженого газу через частоту світла поблизу лінії поглинання?
+Накресліть приблизний графік цієї залежності.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-215"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.8.</span></span> <a id="autoid-216" ></a ><a id="LWR-ht-problem:3.{8}"></a>В дисперсійній формулі Коші для скла Ф1 в видимій області сталі \(A=1,5878\) і \(B=0,0087\) (для
+довжини хвилі в мкм). Визначити для зеленої лінії ртуті (\(0,546\)&nbsp;мкм): а) показник заломлення скла Ф1; б) дисперсію показника заломлення; в) фазову швидкість монохроматичного світла; г) групову швидкість для групи хвиль з центром в \(0,546\)&nbsp;мкм. <a
+href="answers.html#LWR-ht-solution:3.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-217"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.9.</span></span> <a id="autoid-218" ></a ><a id="LWR-ht-problem:3.{9}"></a>Для рівносторонньої призми з скла ТК12 експериментально визначені мінімальні кути відхилення
+\(43^\circ 57&apos;39&apos;&apos;\), \(43^\circ 32&apos;2&apos;&apos;\) та \(43^\circ 7&apos;5&apos;&apos;\) для променів трьох довжин хвиль відповідно \(\lambda _{F&apos;}= 0,480\)&nbsp; мкм, \(\lambda _e = 0,546\)&nbsp;мкм і \(\lambda
+_{C&apos;}=0,6438\)&nbsp;мкм. Обчислити: а) показники заломлення \(n_{\lambda }\) ; б) середню дисперсію показника заломлення скла; в) середню кутову дисперсію призми; г) коефіцієнти двочленної формули Коші; д) фазову та групову швидкості світла у склі ТК12
+(для\(\lambda _e\)). <a href="answers.html#LWR-ht-solution:3.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-219"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.10.</span></span> <a id="autoid-220" ></a ><a id="LWR-ht-problem:3.{10}"></a>Знайти залежність між груповою \(u\) і фазовою \(v\) швидкостями для наступних законів дисперсії: а)
+\(v \sim \frac {1}{\sqrt {\lambda }}\), б) \(v \sim k\), в) \(v \sim \frac 1{\nu ^2}\), де \(\lambda \), \(k\), \(\nu \) — довжина хвилі, хвильове число та часто, відповідно.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-221"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.11.</span></span> <a id="autoid-222" ></a ><a id="LWR-ht-problem:3.{11}"></a>Виведіть співвідношення <span class="textup">(<a
+href="dispersion.html#eq:n-e_theory">3.9</a>)</span> та <span class="textup">(<a href="dispersion.html#eq:ne_theoty">3.10</a>)</span>. <a href="answers.html#LWR-ht-solution:3.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-223"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.12.</span></span> <a id="autoid-224" ></a ><a id="LWR-ht-problem:3.{12}"></a>При зондуванні розрідженої плазми радіохвилями різних частот виявили, що радіохвилі з \(\lambda
+&gt; 0,75\)&nbsp;м зазнають повного внутрішнього відображення. Знайти концентрацію вільних електронів у цій плазмі. <a href="answers.html#LWR-ht-solution:3.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-225"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.13.</span></span> <a id="autoid-226" ></a ><a id="LWR-ht-problem:3.{13}"></a>Знайти концентрацію вільних електронів іоносфери, якщо для радіохвиль з частотою
+\(100\)&nbsp;МГц її показник заломлення \(n=0,90\). <a href="answers.html#LWR-ht-solution:3.{13}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-227"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.14.</span></span> <a id="autoid-228" ></a ><a id="LWR-ht-problem:3.{14}"></a>Маючи на увазі, що для жорсткого рентгенівського випромінювання електрони речовини можна вважати
+вільними, визначити, на скільки різниться з одиницею показник заломлення графіта для променів з довжиною хвилі у вакуумі \(\lambda =50\) нм. <a href="answers.html#LWR-ht-solution:3.{14}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-229"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 3.15.</span></span> <a id="autoid-230" ></a ><a id="LWR-ht-problem:3.{15}"></a>Показник заломлення сірководню для світла з довжинами хвиль \(509\), \(534\) і \(589\)&nbsp;нм
+дорівнюють відповідно \(1,647\), \(1,640\) і \(1,630\). Обчислити фазову і групову швидкості світла поблизу \(\lambda =534\)&nbsp;нм. <a href="answers.html#LWR-ht-solution:3.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

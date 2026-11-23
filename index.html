@@ -1,17 +1,74 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="./styles/styles.css" />
-  </head>
-  <body>
-    <header>Оптика. Практичний курс</header>
-    <div class="container">
-      <main id="main_window">
-        <iframe id="input" src="OpticsProblems.pdf"></iframe>
-      </main>
-    </div>
-    <footer>
-      &copy; В. В. Іванова, С. М. Пономаренко, КПІ ім. Ігоря сікорського 2022
-    </footer>
-  </body>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Оптика. Практичний курс | Навчальний посібник</title>
+<meta name="description" content="Навчальний посібник для практичних занять з оптики: геометрична оптика, фотометрія, дисперсія, інтерференція, дифракція, поляризація. Задачі з відповідями.">
+<link rel="canonical" href="https://sergiokapone.github.io/opticsbook/">
+<meta property="og:title" content="Оптика. Практичний курс">
+<meta property="og:description" content="Навчальний посібник для практичних занять з оптики. Читати онлайн або завантажити PDF.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sergiokapone.github.io/opticsbook/">
+<style>
+:root{--navy:#002e64;--blue:#0064aa;--ink:#1d2330;--paper:#f6f8fb;--card:#fff;--rule:#d5dce8;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--ink:#e6eaf2;--paper:#10151f;--card:#171e2b;--rule:#2b3547;--blue:#6fb0ee}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.hero{background:linear-gradient(135deg,#002e64,#0064aa);color:#fff;text-align:center;padding:3.2rem 1.2rem 3rem}
+.hero h1{margin:0;font-size:clamp(2rem,6vw,3.2rem);letter-spacing:.01em}
+.hero .sub{margin:.3rem 0 0;font-size:1.25rem;opacity:.9}
+.hero .by{margin:1.1rem 0 1.6rem;opacity:.85;font-size:.98rem}
+.btns{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center}
+.btn{display:inline-block;padding:.65rem 1.5rem;border-radius:999px;font-weight:600;text-decoration:none;border:2px solid #fff;color:#fff}
+.btn.primary{background:#fff;color:var(--navy)}
+.btn:hover{background:rgba(255,255,255,.2)}.btn.primary:hover{background:#e6f0fb}
+main{max-width:62rem;margin:0 auto;padding:2rem 1.2rem 3rem}
+h2{color:var(--navy);border-bottom:2px solid var(--rule);padding-bottom:.3rem;margin:2.2rem 0 1rem}
+@media (prefers-color-scheme:dark){h2{color:#9db4ff}}
+.about p{text-align:justify;hyphens:auto}
+.part{margin:1.8rem 0 .6rem;color:var(--blue);font-size:1.05rem;text-transform:uppercase;letter-spacing:.05em}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem}
+.part,.toc-h{grid-column:1/-1}
+.ch{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--navy);border-radius:6px;padding:.8rem 1rem}
+.ch h4{margin:0 0 .4rem;font-size:1.05rem}
+.ch h4 a{color:inherit;text-decoration:none}.ch h4 a:hover{color:var(--blue)}
+.ch .n{display:inline-block;min-width:1.7rem;margin-right:.4rem;color:var(--blue)}
+.ch ul{margin:0;padding:0;list-style:none;font-size:.88rem;color:var(--ink);opacity:.85}
+.ch li{padding:.1rem 0}.ch li span{color:var(--blue);margin-right:.3rem}
+footer{text-align:center;padding:1.4rem 1rem 2.2rem;font-size:.9rem;opacity:.75}
+</style>
+</head>
+<body>
+<header class="hero">
+<h1>Оптика</h1>
+<p class="sub">Практичний курс</p>
+<p class="by">В. В. Іванова, С. М. Пономаренко · КПІ ім. Ігоря Сікорського</p>
+<div class="btns">
+<a class="btn primary" href="online/">Читати онлайн</a>
+<a class="btn" href="OpticsProblems.pdf">Завантажити PDF</a>
+</div>
+</header>
+<main>
+<section class="about">
+<h2>Про посібник</h2>
+<p>Навчальний посібник призначений для практичних занять з курсу оптики як розділу загальної фізики. Він є результатом багаторічного досвіду роботи зі студентами Фізико-технічного інституту, які набувають фаху прикладної фізики. У книзі значна частина теоретичних відомостей викладена в обсязі, достатньому для розв’язування задач. Кожний розділ супроводжується прикладами, які ілюструють і поглиблюють розуміння принципів та законів оптики, а також прикладами суто практичного застосування. Особливу увагу приділено опануванню підходів до розв’язання задач прикладного характеру.</p>
+<p>Основою матеріалу став посібник В. В. Іванової «Задачі з загальної фізики. Оптика» (2012), суттєво оновлений, розширений і доповнений теоретичними відомостями та оригінальними задачами. Посібник може бути корисним студентам інших фізичних та інженерних спеціальностей.</p>
+</section>
+<section>
+<h2>Зміст</h2>
+<div class="toc">
+<h3 class="part">I Геометрична оптика та фотометрія</h3>
+<article class="ch"><h4><a href="online/geomopt.html"><span class="n">1</span>Геометрична оптика</a></h4><ul><li><span>1.1</span> Застосування основних законів</li><li><span>1.2</span> Центровані оптичні системи. Оптичні прилади</li><li><span>1.3</span> Задачі для самостійного розв’язку</li></ul></article>
+<article class="ch"><h4><a href="online/photometry.html"><span class="n">2</span>Фотометрія</a></h4><ul><li><span>2.1</span> Основні поняття і закони</li><li><span>2.2</span> Приклади розв’язування задач</li><li><span>2.3</span> Задачі для самостійного розв’язку</li></ul></article>
+<h3 class="part">II Фізична оптика</h3>
+<article class="ch"><h4><a href="online/dispersion.html"><span class="n">3</span>Дисперсія</a></h4><ul><li><span>3.1</span> Основні поняття і закони</li><li><span>3.2</span> Приклади розв’язування задач</li><li><span>3.3</span> Задачі для самостійного розв’язку</li></ul></article>
+<article class="ch"><h4><a href="online/interference.html"><span class="n">4</span>Інтерференція</a></h4><ul><li><span>4.1</span> Основні поняття і закони</li><li><span>4.2</span> Приклади розв'язку задач</li><li><span>4.3</span> Задачі для самостійного розв’язку</li></ul></article>
+<article class="ch"><h4><a href="online/difraction.html"><span class="n">5</span>Дифракція</a></h4><ul><li><span>5.1</span> Основні поняття і закони</li><li><span>5.2</span> Метод зон Френеля</li><li><span>5.3</span> Дифракція Фраунгофера на щілині</li><li><span>5.4</span> Дифракція Фраунгофера на круглому отворі</li><li><span>5.5</span> Дифракційна ґратка</li><li><span>5.6</span> Приклади розв’язування задач</li><li><span>5.7</span> Задачі для самостійного розв’язку</li></ul></article>
+<article class="ch"><h4><a href="online/polarisation.html"><span class="n">6</span>Поляризація та оптична анізотропія</a></h4><ul><li><span>6.1</span> Основні поняття і закони</li><li><span>6.2</span> Штучне подвійне променезаломлення</li><li><span>6.3</span> Приклади розв’язування задач</li><li><span>6.4</span> Задачі для самостійного розв’язку</li><li><span>А</span> Шкала електромагнітних хвиль</li><li><span>Б</span> Математичні формули та співвідношення</li><li><span>В</span> Фотометричні дані</li><li><span>Г</span> Фізичні константи</li></ul></article>
+</div>
+</section>
+</main>
+<footer>© В. В. Іванова, С. М. Пономаренко, КПІ ім. Ігоря Сікорського</footer>
+</body>
 </html>

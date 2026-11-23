@@ -1,0 +1,4720 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Поляризація та оптична анізотропія</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-654"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Поляризація та оптична анізотропія">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Поляризація та оптична анізотропія ......
+-->
+<h3 id="autosec-656"><span class="sectionnumber">6&#x2003;</span>Поляризація та оптична анізотропія</h3>
+<a id="main-html-autopage-656"></a>
+<a id="main-html-autofile-7"></a>
+
+<a id="Polarisation-dup6"></a>
+<!--
+...... section Основні поняття і закони ......
+-->
+<h4 id="autosec-657"><span class="sectionnumber">&#xA7;&#x202F;6.1&#x2003;</span>Основні поняття і закони</h4>
+<a id="main-html-autopage-657"></a>
+
+
+<p>
+Електромагнітні хвилі поперечні. Це означає, що напрямок коливань вектора електричного \(\vect {E} \) та магнітного полів \(\vect {H} \) перпендикулярні до напрямку поширення хвилі (рис.&nbsp;<a href="polarisation.html#pic:EM_wave">6.1</a>). Вектор \(\vect {E} \)
+називають світловим вектором.
+</p>
+
+<figure id="autoid-418" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-121"
+    class="lateximagesource"
+><!--
+    𝑦
+            𝐄
+
+        𝐁
+                𝐤
+
+𝑧
+
+
+
+
+                    𝑥
+--><img
+   src="main-html-images/image-121.svg"
+   alt="Рис. 6.1. Структура плоскої електромагнітної хвилі"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.1. Структура плоскої електромагнітної хвилі
+
+</div>
+
+<a id="pic:EM_wave"></a>
+
+</div>
+
+</figure>
+
+<p>
+Хвилю, в якій напрямок коливань електричного вектора електромагнітної хвилі \(\vect {E} \) впорядковано будь-яким чином, називають поляризованою.
+</p>
+
+<p>
+Якщо коливання вектора \(\vect {E} \) відбуваються тільки в одній площині, що проходить через промінь, ми маємо справу з плоско- (або лінійно-) поляризованою хвилею (рис.&nbsp;<a href="polarisation.html#pic:linear">6.2</a>). Площина, в якій коливається вектор \(\vect {E}
+\), називають площиною поляризації (площиною коливань світлового вектора).
+</p>
+
+<p>
+Природне світло випромінюється великою кількістю збуджених атомів випадковим чином і незалежно один від одного. Тому в природному світлі рівноймовірні всі напрямки коливань електричного поля \(\vect {E} \) (рис.&nbsp;<a href="polarisation.html#pic:unpolarised">6.3</a>).
+</p>
+
+<figure id="autoid-419" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; width:219pt ; ">
+
+<a id="main-html-autopage-662"></a>
+
+<p>
+<span
+    id="lateximage-main-html-122"
+    class="lateximagesource"
+><!--
+𝐤
+--><img
+   src="main-html-images/image-122.svg"
+   alt="Рис. 6.2. Лінійно- (або плоско-) поляризоване світло"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.2. Лінійно- (або плоско-) поляризоване світло
+
+</div>
+
+<a id="pic:linear"></a>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; width:219pt ; ">
+
+<a id="main-html-autopage-665"></a>
+
+<p>
+<span
+    id="lateximage-main-html-123"
+    class="lateximagesource"
+><!--
+𝐤
+--><img
+   src="main-html-images/image-123.svg"
+   alt="Рис. 6.3. Неполяризоване світло"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+<div class="figurecaption">
+Рис.&nbsp;6.3. Неполяризоване світло
+</div>
+<a id="pic:unpolarised"></a>
+</div>
+
+</div>
+
+</figure>
+
+<p>
+Інший вид поляризації полягає в тому, що вектор \(\vect {E} \) обертається навколо напряму поширення хвилі, одночасно змінюючись періодично по модулю. При цьому кінець вектор \(\vect {E} \) описує еліпс (у кожній точці середовища). Таку хвилю називають
+еліптично-поляризованою (рис.&nbsp;<a href="polarisation.html#pic:eliptical">6.4а</a>). Або поляризованою по колу (рис.&nbsp;<a href="polarisation.html#pic:circular">6.4б</a>), якщо кінець вектора \(\vect {E} \) описує коло.
+</p>
+
+<figure id="autoid-420" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-669"></a>
+
+<p>
+<span
+    id="lateximage-main-html-124"
+    class="lateximagesource"
+><!--
+𝐤
+--><img
+   src="main-html-images/image-124.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+<a id="pic:eliptical"></a>
+
+<a id="sub@pic:eliptical"></a>
+
+</div>
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-672"></a>
+
+<p>
+<span
+    id="lateximage-main-html-125"
+    class="lateximagesource"
+><!--
+𝐤
+--><img
+   src="main-html-images/image-125.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+<a id="pic:circular"></a>
+
+<a id="sub@pic:circular"></a>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.4. Еліптично- та поляризоване по колу світло
+
+</div>
+
+<a id="pic:eliptical_polarisation"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Закон Малюса ......
+-->
+<h5 id="autosec-675">Закон Малюса</h5>
+<a id="main-html-autopage-675"></a>
+
+
+<p>
+Для лінійно поляризованого світла
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{0}\)</span>
+
+<!--
+
+
+                                                                            𝐼А = 𝐼П 𝑇A cos2 𝜃.                                                                           (6.1)                                              --><a id="eq:Malus_law_for_linear"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Malus_law_for_linear} I_\text {А} = I_\text {П}T_\text {A}\cos ^2\theta .
+\end{equation}
+
+</p>
+
+<p>
+де \(I_\text {А} \) — інтенсивність лінійно поляризованого світла на виході аналізатора; \(I_\text {П} \) — інтенсивність лінійно поляризованого світла на вході аналізатора (на виході поляризатора, що йде перед аналізатором); \(T_\text {А} \) — коефіцієнт пропускання
+аналізатора за рахунок втрат на відбиття та поглинання світла; \(\theta \) — кут між площиною поляризації світла, що падає, та площиною пропускання аналізатора.
+</p>
+
+<p>
+Для природного світла
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{1}\)</span>
+
+<!--
+
+                                                                                     1
+                                                                              𝐼П =     𝑇 𝐼 ,                                                                             (6.2)                                              --><a id="eq:Malus_law_for_nature"></a><!--
+                                                                                     2 П пр
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Malus_law_for_nature} I_\text {П} = \frac 12 T_\text {П}I_\text {пр},
+\end{equation}
+
+</p>
+
+<p>
+де \(I_\text {П} \) — інтенсивність лінійно поляризованого світла на виході поляризатора; \(T_\text {П} \) — коефіцієнт пропускання поляризатора; \(I_\text {пр} \) — інтенсивність природного світла на виході поляризатора.
+</p>
+
+<p>
+Інтенсивність світла на виході системи «поляризатор-аналізатор» (рис.&nbsp;<a href="polarisation.html#pic:P-A">6.5</a>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{2}\)</span>
+
+<!--
+
+                                                                                  1
+                                                                           𝐼А =     𝑇 𝑇 𝐼 cos2 𝜃.                                                                            (6.3)                                              --><a id="eq:Malus_law_for_P-A"></a><!--
+                                                                                  2 П A пр
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Malus_law_for_P-A} I_\text {А} = \frac 12 T_\text {П} T_\text {A} I_\text {пр}\cos ^2\theta .
+\end{equation}
+
+</p>
+
+<p>
+де \(T_\text {П} \) та \(T_\text {А} \) — коефіцієнти пропускання відповідно поляризатора та аналізатора; \(I_\text {пр} \) — інтенсивність природного світла на виході системи; \(\theta \) — кут між площинами пропускання аналізатора та поляризатора.
+</p>
+
+<figure id="autoid-421" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-126"
+    class="lateximagesource"
+><!--
+                                           Ана             𝐼А                𝐤
+                                              л   ізат          𝜃
+                                                      ор
+
+                           E, 𝐼П             𝜃
+      Пол
+            яри
+                за   тор
+                                                                Площина пропускання
+                                                                    аналізатора
+𝐼пр
+
+
+
+                              Площина пропускання
+                                 поляризатора
+--><img
+   src="main-html-images/image-126.svg"
+   alt="Рис. 6.5. Система «Поляризатор-аналізатор»"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.5. Система «Поляризатор-аналізатор»
+
+</div>
+
+<a id="pic:P-A"></a>
+
+</div>
+
+</figure>
+
+<p>
+Кількісною характеристикою поляризації світла є ступінь поляризації:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{3}\)</span>
+
+<!--
+
+                                                                                            𝐼max − 𝐼min
+                                                                                       𝑃=               .                                        (6.4)   --><a id="eq:P"></a><!--
+                                                                                            𝐼max + 𝐼min
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:P} P = \frac {I_{\max } - I_{\min }}{I_{\max } + I_{\min }}.
+\end{equation}
+
+</p>
+
+<p>
+\(P = 1\) — якщо світло плоско поляризоване, \(P = 0\), якщо світло природне, \(0 &lt; P &lt; 1\) — якщо світло частково лінійно поляризоване.
+</p>
+<!--
+...... subsection Поляризація світла при відбитті та заломленні. Закон Брюстера ......
+-->
+<h5 id="autosec-679">Поляризація світла при відбитті та заломленні. Закон Брюстера</h5>
+<a id="main-html-autopage-679"></a>
+
+
+<p>
+При падінні природного світла на границю розділу двох діелектриків з показниками заломлення \(n_1 \) та \(n_2 \) відбитий промінь стає частково поляризованим переважно у напрямку, перпендикулярному до площини падіння, а заломлений — частково поляризованим переважно паралельно
+площині падіння (рис.&nbsp;<a href="polarisation.html#pic:brewster">6.6</a>). Зі зміною кута падіння ступінь поляризації обох променів змінюється.
+</p>
+
+<figure id="autoid-422" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-127"
+    class="lateximagesource"
+><!--
+𝜖𝐵
+     𝑛1
+     𝑛2
+--><img
+   src="main-html-images/image-127.svg"
+   alt="Рис. 6.6. Кут Брюстера"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.6. Кут Брюстера
+
+</div>
+
+<a id="pic:brewster"></a>
+
+</div>
+
+</figure>
+
+<p>
+Ступінь поляризації відбитого \(R \) та заломленого \(D \) променів визначаються за формулами:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{4}\)</span>
+
+
+<!--
+
+
+                                                                                                                                          𝑅⟂ − 𝑅 ∥
+                                                                                                                                  𝑃𝑅 =             ,                                                                                                      (6.5)
+                                                                                                                                          𝑅⟂ + 𝑅 ∥
+                                                                                                                                             𝑅⟂ − 𝑅∥
+                                                                                                                                 𝑃𝐷 =                               ,                                        (6.6)              --><a id="eq:P_D"></a><!--
+                                                                                                                                          2 − (𝑅⟂ + 𝑅∥ )
+
+
+-->
+
+
+<p>
+
+\begin{align}
+P_R &amp;= \frac {R_\perp - R_\parallel }{R_\perp + R_\parallel }, \\ P_D &amp;= \frac {R_\perp - R_\parallel }{2 - (R_\perp + R_\parallel )} \label {eq:P_D},
+\end{align}
+де \(R_\perp \) та \(R_\parallel \) — коефіцієнт відбиття перпендикулярної та паралельної складових природного світла, відповідно.
+</p>
+
+<p>
+Загальний енергетичний коефіцієнт відбиття при цьому визначається виразом
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{6}\)</span>
+
+<!--
+
+                                                                                                                                          1
+                                                                                                                                    𝑅=      (𝑅 + 𝑅∥ ).
+                                                                                                                                          2 ⟂
+-->
+
+<p>
+
+\begin{equation*}
+R = \frac 12 (R_\perp + R_\parallel ).
+\end{equation*}
+
+</p>
+
+<p>
+З рівнянь Максвелла випливають вирази для коефіцієнтів відбиття:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{6}\)</span>
+
+
+<!--
+
+
+                                                                                                                                          sin2 (𝜖1 − 𝜖′2 )
+                                                                                                                                  𝑅⟂ =                          ,                                         (6.7)              --><a id="eq:R_perp"></a><!--
+                                                                                                                                          sin2 (𝜖1 + 𝜖′2 )
+                                                                                                                                          tg2 (𝜖1 − 𝜖′2 )
+                                                                                                                                   𝑅∥ =                     ,                                     (6.8)                 --><a id="eq:R_parallel"></a><!--
+                                                                                                                                          tg2 (𝜖1 + 𝜖′2 )
+
+
+-->
+
+
+<p>
+
+\begin{align}
+R_\perp &amp;= \frac {\sin ^2(\epsilon _1 - \epsilon &apos;_2)}{\sin ^2(\epsilon _1 + \epsilon &apos;_2)}, \label {eq:R_perp}\\ R_\parallel &amp;= \frac {\tg ^2(\epsilon _1 - \epsilon &apos;_2)}{\tg ^2(\epsilon
+_1 + \epsilon &apos;_2)}, \label {eq:R_parallel}
+\end{align}
+де \(\epsilon _1 \) — кут падіння променя природного світла на границю розділу двох діелектриків; \(\epsilon &apos;_2 \) — кут заломлення, які пов’язані законом заломлення:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{8}\)</span>
+
+<!--
+
+                                                                                                                                                  𝑛1
+                                                                                                                                 𝜖′2 = arcsin (      sin 𝜖1 ) .
+                                                                                                                                                  𝑛2
+
+-->
+
+<p>
+
+\begin{equation*}
+\epsilon &apos;_2 = \arcsin \left ( \frac {n_1}{n_2} \sin \epsilon _1\right ).
+\end{equation*}
+
+</p>
+
+<p>
+При куті падіння природного світла \(\epsilon _1 \), що дорівнює
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{8}\)</span>
+
+<!--
+
+                                                                                                                                                     𝑛2
+                                                                                                                                    𝜖𝐵 = arctg (        ),                                           (6.9)                --><a id="eq:Brewster"></a><!--
+                                                                                                                                                     𝑛1
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Brewster} \epsilon _B = \arctg \left ( \frac {n_2}{n_1} \right ),
+\end{equation}
+
+</p>
+
+<p>
+з <span class="textup">(<a href="polarisation.html#eq:R_parallel">6.8</a>)</span> випливає, що \(R_\parallel = 0\), тобто відбите світло повністю поляризоване в площині, перпендикулярній площині падіння, а заломлений промінь має найбільшу степінь часткової
+поляризації з переважним напрямом, що паралельний площині падіння (рис.&nbsp;<a href="polarisation.html#pic:brewster">6.6</a>). Кут \(\epsilon _B \) називається кутом Брюстера.
+</p>
+
+<p>
+Відбитий та заломлений промені взаємно перпендикулярні:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{9}\)</span>
+
+<!--
+
+
+                                                                                                                                     𝜖𝐵 + 𝜖′2 = 90∘ ,
+
+-->
+
+<p>
+
+\begin{equation*}
+\epsilon _B + \epsilon &apos;_2 = 90^\circ ,
+\end{equation*}
+
+</p>
+
+<p>
+тому
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{9}\)</span>
+
+<!--
+
+
+                                                                                                                                  𝑅𝐵⟂ = sin2 (𝜖𝐵 − 𝜖′2 ),
+
+-->
+
+<p>
+
+\begin{equation*}
+R_{B_\perp } = \sin ^2(\epsilon _B - \epsilon &apos;_2),
+\end{equation*}
+
+</p>
+
+<p>
+а \(R = \frac 12 R_\perp \).
+</p>
+
+<p>
+Ступінь поляризації заломленого променя з <span class="textup">(<a href="polarisation.html#eq:P_D">6.6</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{9}\)</span>
+
+<!--
+
+                                                                                                                                               𝑅⟂
+                                                                                                                                     𝑃𝐷 =           .
+                                                                                                                                             2 − 𝑅⟂
+
+-->
+
+<p>
+
+\begin{equation*}
+P_D = \frac {R_\perp }{2 - R_\perp }.
+\end{equation*}
+
+</p>
+
+<p>
+Якщо взяти \(N \) платівок (стопа Столетова), то при падінні під кутом Брюстера відбитий промінь буде практично повністю поляризованими. Ступінь поляризації заломленого променя:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{9}\)</span>
+
+<!--
+
+
+                                                                                                        1 − (1 − 𝑅𝐵⟂ )2𝑁
+                                                                                                 𝑃𝐷 =                      .                                                                         (6.10)                --><a id="eq:P_stopa"></a><!--
+                                                                                                        1 − (1 + 𝑅𝐵⟂ )2𝑁
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:P_stopa} P_D = \frac {1 - (1 - R_{B_\perp })^{2N}}{1 - (1 + R_{B_\perp })^{2N}}.
+\end{equation}
+
+</p>
+<!--
+...... subsection Поляризація світла при природному подвійному променезаломленні ......
+-->
+<h5 id="autosec-683">Поляризація світла при природному подвійному променезаломленні</h5>
+<a id="main-html-autopage-683"></a>
+
+
+<p>
+Явище природного подвійного променезаломлення спостерігається при проходженні променя світла крізь анізотропні кристали. Воно полягає у розщепленні падаючого променя при заломленні на поверхні кристалу на два взаємно перпендикулярні лінійно поляризовані промені: звичайний —
+\(o\) (від слова «ordinary») та незвичайний — \(e\) (від слова «extraordinary») (рис&nbsp;<a href="polarisation.html#pic:double_refraction">6.7</a>).
+</p>
+
+<figure id="autoid-423" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-128"
+    class="lateximagesource"
+><!--
+    𝑂′
+
+
+
+             𝑒
+         𝑜
+
+
+
+𝑂
+--><img
+   src="main-html-images/image-128.svg"
+   alt="Рис. 6.7. Подвійне променезаломлення"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.7. Подвійне променезаломлення
+
+</div>
+
+<a id="pic:double_refraction"></a>
+
+</div>
+
+</figure>
+
+<p>
+Найсильніше двопроменезаломлення виявлено в одноосному кристалі <a href="https://www.youtube.com/watch?v=eq9NE2qQzTo" target="_blank" >ісландського шпату</a>, з якого зазвичай виготовляються поляризаційні призми.
+</p>
+
+<p>
+<b>Властивості звичайного та незвичайного променів</b>:
+</p>
+
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> обидва промені утворюються в точці падіння на вхідній грані кристалу. Всередині кристалу промені йдуть вздовж різних напрямів, а на виході з кристалу — паралельно один одному;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> обидва промені лінійно поляризовані у взаємно перпендикулярних площинах; звичайний — у площині, що перпендикулярна до оптичної осі кристалу (\(O-O&apos; \)); незвичайний — у площині, що паралельна оптичній осі кристалу;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> для звичайного променя чинний закон заломлення Снелліуса
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+<!--
+                                                                                                                                  sin 𝜖1
+                                                                                                                                          = 𝑛𝑜 = const;
+                                                                                                                                  sin 𝜖′2
+-->
+<p>
+
+\begin{equation*}
+\frac {\sin \epsilon _1}{\sin \epsilon &apos;_2} = n_o = \mathrm {const};
+\end{equation*}
+
+</p>
+<p>
+для незвичайного — ні, оскільки його показник заломлення не є сталим та змінюється в залежності від напряму променя, що падає, \(n_e = n_e (\epsilon _1) \neq \mathrm {const}\);
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> всередині кристалу звичайний та незвичайний промінь розповсюджуються з різними швидкостями
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+<!--
+                                                                                                                                     𝑐                 𝑐
+                                                                                                                             𝑣𝑜 =      ,     𝑣𝑒 =            .
+                                                                                                                                    𝑛𝑜              𝑛𝑒 (𝜖1 )
+-->
+<p>
+
+\begin{equation*}
+v_o = \frac {c}{n_o}, \quad v_e = \frac {c}{n_e(\epsilon _1)}.
+\end{equation*}
+
+</p>
+<p>
+Лише у напрямі, що паралельний оптичній осі кристала (\(O-O&apos;\)), обидва промені розповсюджуються з однаковою швидкістю \(v_o = v_e\) та не розділяються один з одним, \(n_o = n_e\). У напрямі, перпендикулярному до оптичної осі кристалу, обидва промені також не
+розділюються просторово, але мають найбільшу різницю швидкості розповсюдження \(v_e - v_o\) та найбільшу різницю показників заломлення \(n_e - n_o = b\) що називається показником подвійного променезаломлення;
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> якщо промінь світла, що падає на кристал, є природнім, то звичайний та незвичайний промені <em>некогерентні</em> між собою, а їх інтенсивності визначаються виразами
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+<!--
+                                                                                                                                  1                   1
+                                                                                                                           𝐼𝑜 =     𝑇 𝐼 ,     𝐼𝑒 =      𝑇 𝐼 ,
+                                                                                                                                  2 𝑜 пр              2 𝑒 пр
+-->
+<p>
+
+\begin{equation*}
+I_o = \frac 12 T_o I_\text {пр}, \quad I_e = \frac 12 T_e I_\text {пр},
+\end{equation*}
+
+</p>
+<p>
+де \(T_o \) та \(T_e \) — коефіцієнти пропускання кристалом відповідно звичайного та незвичайного променів. У недихроїчних кристалах \(T_e = T_o \approx 1\) та \(I_e \approx I_o \), у дихроїчних (кристал турмаліну) з великою різницею поглинання звичайного та незвичайного
+променів \(T_o \ll T_e \) і \(I_o \ll I_e \) ;
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> якщо промінь світла, що падає на кристал, лінійно поляризований, то звичайний та незвичайний промені <em>когерентні</em> між собою, а інтенсивність світла \(I_1 \), що падає, розподіляється між ними у відповідності із законом Малюса
+<span class="textup">(<a href="polarisation.html#eq:Malus_law_for_linear">6.1</a>)</span>:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+<!--
+
+                                                                                                                        𝐼𝑒 = 𝑇𝑒 𝐼1 cos2 𝜃,    𝐼𝑜 = 𝑇𝑜 𝐼1 sin2 𝜃,
+-->
+<p>
+
+\begin{equation*}
+I_e = T_eI_1\cos ^2\theta , \quad I_o = T_oI_1\sin ^2\theta ,
+\end{equation*}
+
+</p>
+<p>
+де \(\theta \) — кут між площиною поляризації променя, що падає, та оптичною віссю кристалу (\(O-O&apos; \)).
+</p>
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> По відношенню до звичайного променя кристал є ізотропним середовищем. Хвильову поверхню для точкового звичайного джерела \(S \) у кристалі можна представити сферою. Анізотропія кристалу проявляється для незвичайного променя.
+Хвильова поверхня незвичайного джерела \(S \) представляється еліпсоїдом обертання, що вписаний у сферу хвильової поверхні звичайного променя (для додатного кристалу \(b &gt; 0 \), рис.&nbsp;<a href="polarisation.html#pic:positive">6.8а</a>) або описаний навколо сфери (для
+від’ємного кристалу \(b &lt; 0 \), рис.&nbsp;<a href="polarisation.html#pic:negative">6.8б</a>).
+</p>
+<figure id="autoid-424" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+<a id="main-html-autopage-688"></a>
+<p>
+<span
+    id="lateximage-main-html-129"
+    class="lateximagesource"
+><!--
+𝑂
+
+
+
+
+     𝑣𝑒   𝑣𝑜
+
+
+
+
+𝑂′
+--><img
+   src="main-html-images/image-129.svg"
+   alt="(а) Кварц (додатній кристал) n_e = 1.55, n_o = 1.54 , b = 0.01 &amp;gt;0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+<div class="figurecaption">
+(а)                                                   Кварц   (додатній   кристал)<br />
+\(n_e = 1.55\), \(n_o = 1.54 \), \(b = 0.01 &gt;0\)
+</div>
+<a id="pic:positive"></a>
+<a id="sub@pic:positive"></a>
+</div>
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+<a id="main-html-autopage-691"></a>
+<p>
+<span
+    id="lateximage-main-html-130"
+    class="lateximagesource"
+><!--
+𝑂
+
+
+
+
+     𝑣𝑜   𝑣𝑒
+
+
+
+
+𝑂′
+--><img
+   src="main-html-images/image-130.svg"
+   alt="(б) Ісландський шпат (від’ємний кристал) n_e = 1.486, n_o = 1.558 , b = -0.172 &amp;lt; 0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+<div class="figurecaption">
+(б)                                                         Ісландський   шпат   (від’ємний   кристал)<br />
+\(n_e = 1.486\), \(n_o = 1.558 \), \(b = -0.172 &lt; 0\)
+</div>
+<a id="pic:negative"></a>
+<a id="sub@pic:negative"></a>
+</div>
+
+<div class="figurecaption">
+Рис.&nbsp;6.8. Приклади додатного та від’ємного кристалів
+</div>
+</div>
+</figure>
+</li>
+</ul>
+<!--
+...... subsection Поляризаційні прилади ......
+-->
+<h5 id="autosec-694">Поляризаційні прилади</h5>
+<a id="main-html-autopage-694"></a>
+
+
+<p>
+Явище подвійного променезаломлення використовується для виготовлення поляризаційних призм, фазових пластинок та інших оптичних елементів.
+</p>
+
+<p>
+Поляризаційні призми складаються з двох або більше тригранних призм з одновісного кристала з однаковою або різною орієнтацією оптичних осей, склеєних між собою прозорою речовиною або розділеним повітряним прошарком. Якщо із призми виходить лише один пучок лінійно
+поляризованого світла, то призма називається однопроменевою, якщо обидва — то двопроменевою. Прикладом однопроменевої призми є призма Ніколя, яку називають ніколем (рис.&nbsp;<a href="polarisation.html#pic:Nicol">6.9</a>). В цій призмі звичайний промінь падає на зазор з
+канадським бальзамом (оптично менш густим середовищем \(n_o &gt; n &gt; n_e\)) під кутом більше граничного і зазнає повного внутрішнього відбиття. Незвичайний промінь проходить наскрізь.
+</p>
+
+<figure id="autoid-425" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-131"
+    class="lateximagesource"
+><!--
+  48∘ 15′
+
+
+
+
+                               𝑒
+68∘
+
+
+
+            Оптична вісь
+
+
+                           𝑜
+--><img
+   src="main-html-images/image-131.svg"
+   alt="Рис. 6.9. Призма Ніколя"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.9. Призма Ніколя
+
+</div>
+
+<a id="pic:Nicol"></a>
+
+</div>
+
+</figure>
+
+<p>
+Фазові платівки — це поляризаційні елементи для монохроматичного світла. Вони вирізаються з кристалу зі сторонами, що паралельні його оптичній осі та дають на виході звичайну та незвичайну хвилю, які йдуть разом з максимальною різницею фаз між ними.
+</p>
+
+<figure id="autoid-426" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-132"
+    class="lateximagesource"
+><!--
+     𝑂
+             𝐄0
+𝐄𝑒
+
+
+         𝛼
+
+
+             𝐄𝑜
+
+
+
+
+ 𝑂′
+--><img
+   src="main-html-images/image-132.svg"
+   alt="Рис. 6.10. Амплітуди коливань звичайного і незвичайного променів"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.10. Амплітуди коливань звичайного і незвичайного променів
+
+</div>
+
+<a id="pic:fallong_ray"></a>
+
+</div>
+
+</figure>
+
+<p>
+Якщо напрям коливань електричного вектора \(\vect {E} = \vect {E}_0 e^{i\omega t} \) в падаючому поляризованому світлі становить кут \(\alpha \) з одним з головних напрямків платівки (рис.&nbsp;<a href="polarisation.html#pic:fallong_ray">6.10</a>), то амплітуди
+коливань в незвичайній і звичайній хвилях будуть відповідно дорівнювати:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                             𝐸𝑒 = 𝐸0 cos 𝛼,    𝐸𝑜 = 𝐸0 sin 𝛼.
+
+-->
+
+<p>
+
+\begin{equation*}
+E_e = E_0 \cos \alpha ,\quad E_o = E_0\sin \alpha .
+\end{equation*}
+
+</p>
+
+<p>
+Пройшовши через товщу пластинки \(d \), ці дві хвилі набудуть різниці ходу \(\Delta = (n_e - n_o) d\), тобто звичайна хвиля відстане по фазі від незвичайної на величину:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{10}\)</span>
+
+<!--
+
+                                                                                                      2𝜋
+                                                                                              𝛿=         (𝑛𝑒 − 𝑛𝑜 )𝑑,                                                                                 (6.11)        --><a id="eq:phase_delta"></a><!--
+                                                                                                       𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:phase_delta} \delta = \frac {2\pi }{\lambda } (n_e - n_o) d,
+\end{equation}
+
+</p>
+
+<p>
+Додавання двох взаємно перпендикулярних коливань з різними амплітудами і різницею фаз описується рівнянням:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{11}\)</span>
+
+<!--
+
+
+                                                                                        𝐸𝑥2  𝐸𝑦2   𝐸𝑥 𝐸𝑦
+                                                                                          2
+                                                                                            + 2 −2       cos 𝛿 = sin2 𝛿.                                                                              (6.12)        --><a id="eq:ellipse_eqn"></a><!--
+                                                                                        𝐸𝑜   𝐸𝑒    𝐸𝑜 𝐸𝑒
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:ellipse_eqn} \frac {E_x^2}{E_o^2} + \frac {E_y^2}{E_e^2} - 2\frac {E_xE_y}{E_oE_e}\cos \delta = \sin ^2\delta .
+\end{equation}
+
+</p>
+
+<p>
+Тобто, тип поляризації залежить від \(\delta \) та \(\alpha \).
+</p>
+
+<p>
+Розглянемо часткові випадки.
+</p>
+
+<p>
+Якщо товщина платівки дорівнюватиме величині:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{12}\)</span>
+
+<!--
+
+                                                                                        2𝑚 + 1 𝜆
+                                                                                   𝑑=             ,     (чвертьхвильова пластинка)                                                                        (6.13)        --><a id="eq:lambda/4"></a><!--
+                                                                                        𝑛𝑒 − 𝑛𝑜 4
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:lambda/4} d = \frac {2m+1}{n_e - n_o}\frac \lambda 4, \quad \text {(\emphz {чвертьхвильова пластинка})}
+\end{equation}
+
+</p>
+
+<p>
+різниця фаз між променями з <span class="textup">(<a href="polarisation.html#eq:phase_delta">6.11</a>)</span> складатиме
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{13}\)</span>
+
+<!--
+
+                                                                                                                                                    𝜋
+                                                                                                                                     𝛿 = (2𝑚 + 1)     .
+                                                                                                                                                    2
+-->
+
+<p>
+
+\begin{equation*}
+\delta = (2m+1)\frac \pi 2.
+\end{equation*}
+
+</p>
+
+<p>
+Підставивши цей вираз в <span class="textup">(<a href="polarisation.html#eq:ellipse_eqn">6.12</a>)</span>, отримаємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝐸𝑥2  𝐸𝑦2
+                                                                                                                                        2
+                                                                                                                                          + 2 = 1,
+                                                                                                                                      𝐸𝑜   𝐸𝑒
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {E_x^2}{E_o^2} + \frac {E_y^2}{E_e^2} = 1,
+\end{equation*}
+
+</p>
+
+<p>
+яке є рівнянням еліпса, орієнтованого вздовж головної осі. Така пластинка перетворює <em>лінійно поляризоване світло у еліптично поляризоване та навпаки</em> (рис.<a href="polarisation.html#pic:lambda/4">6.11</a>).
+</p>
+
+<p>
+Співвідношення довжин його півосей залежить від величини кута \(\alpha \). Зокрема, при \(\alpha = 45^\circ \) \(E_e = E_o \), так що еліпс перетвориться на коло, що описується рівнянням
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                                     𝐸𝑥2 + 𝐸𝑦2 = 𝐸𝑜2 .
+
+-->
+
+<p>
+
+\begin{equation*}
+E_x^2 + E_y^2 = E_o^2.
+\end{equation*}
+
+</p>
+
+<p>
+В даному випадку маємо світло, поляризоване по колу.
+</p>
+
+<figure id="autoid-427" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-133"
+    class="lateximagesource"
+><!--
+𝑂
+
+
+
+
+𝑂′
+--><img
+   src="main-html-images/image-133.svg"
+   alt="Рисунок 13"
+   style=""
+   class="lateximage"
+></span> <span
+   id="lateximage-main-html-134"
+   class="lateximagesource"
+><!--
+𝑂
+
+     𝐄
+
+
+
+
+𝑂′
+--><img
+   src="main-html-images/image-134.svg"
+   alt="Рис. 6.11. Дія чвертьхвильової фазової пластинки"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.11. Дія чвертьхвильової фазової пластинки
+
+</div>
+
+<a id="pic:lambda/4"></a>
+
+</div>
+
+</figure>
+
+<p>
+Якщо товщина пластинки дорівнюватиме величині:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{13}\)</span>
+
+<!--
+
+                                                                                    2𝑚 + 1 𝜆
+                                                                               𝑑=             ,   (півхвильова пластинка)                                                                             (6.14)                 --><a id="eq:lambda/2"></a><!--
+                                                                                    𝑛𝑒 − 𝑛𝑜 2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:lambda/2} d = \frac {2m+1}{n_e - n_o}\frac \lambda 2, \quad \text {(\emphz {півхвильова пластинка})}
+\end{equation}
+
+</p>
+
+<p>
+різниця фаз між променями з <span class="textup">(<a href="polarisation.html#eq:phase_delta">6.11</a>)</span> складатиме
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{14}\)</span>
+
+<!--
+
+
+                                                                                                                            𝛿 = (2𝑚 + 1)𝜋,
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta = (2m+1)\pi ,
+\end{equation*}
+
+</p>
+
+<p>
+а рівняння <span class="textup">(<a href="polarisation.html#eq:ellipse_eqn">6.12</a>)</span> дає рівняння прямої, що повернута на кут \(2\alpha \) по відношенню до напрямку поляризації падаючої хвилі, тобто, така пластинка повертає площину поляризації лінійно
+поляризованого світла, що на неї падає, на подвійний кут (рис.<a href="polarisation.html#pic:lambda/2">6.12</a>).
+</p>
+
+<figure id="autoid-428" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-135"
+    class="lateximagesource"
+><!--
+ 𝑂
+
+
+
+2𝛼
+
+
+
+
+𝑂′
+--><img
+   src="main-html-images/image-135.svg"
+   alt="Рисунок 15"
+   style=""
+   class="lateximage"
+></span> <span
+   id="lateximage-main-html-136"
+   class="lateximagesource"
+><!--
+    𝑂
+𝐄         𝐄0
+
+
+
+    𝛼 𝛼
+
+
+
+
+    𝑂′
+--><img
+   src="main-html-images/image-136.svg"
+   alt="Рис. 6.12. Дія півхвильової фазової пластинки"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.12. Дія півхвильової фазової пластинки
+
+</div>
+
+<a id="pic:lambda/2"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Інтерференція поляризованого світла ......
+-->
+<h5 id="autosec-711">Інтерференція поляризованого світла</h5>
+<a id="main-html-autopage-711"></a>
+
+
+<p>
+Інтерференція поляризованих променів спостерігається при проходженні променя світла крізь систему поляризатор – фазова пластинка — аналізатор (рис.&nbsp;<a href="polarisation.html#pic:Interferention_of_polarized">6.13</a>). Два когерентні промені, що виходять з
+аналізатора, поляризовані у одній площині та мають різницю фаз <span class="textup">(<a href="polarisation.html#eq:phase_delta">6.11</a>)</span>, інтерферують між собою, підсилюючи та ослаблюючи один одного в залежності від значень \(\delta \). Інтенсивність
+результуючої хвилі виражається інтерференційною формулою (без врахування поглинання):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{14}\)</span>
+
+<!--
+
+                                                                        1                                         𝛿
+                                                                   𝐼=     𝐼 (cos2 𝛽 − sin 2𝛼 ⋅ sin 2(𝛼 − 𝛽) ⋅ sin2 ) ,                                                              (6.15)                 --><a id="eq:Interferention_of_polarized"></a><!--
+                                                                        2 пр                                      2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Interferention_of_polarized} I = \frac 12 I_\text {пр} \left ( \cos ^2\beta - \sin 2\alpha \cdot \sin 2(\alpha -\beta )\cdot \sin ^2\frac \delta 2\right ),
+\end{equation}
+
+</p>
+
+<p>
+де \(\beta \) — кут між площинами пропускання аналізатора (\(A - A&apos;\)) та поляризатора (\(P - P&apos;\)); \(\alpha \) — кут між площиною пропускання поляризатора та оптичною віссю фазової пластинки (\(O - O&apos; \)).
+</p>
+
+<figure id="autoid-429" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-137"
+    class="lateximagesource"
+><!--
+                                                                     𝛼   𝐤
+                                                                 𝛽
+                                               Ан а
+                                                   ліза      𝐼
+                                                       тор
+                                           𝐴
+                                                𝛽
+
+                            Пла
+                               тівк
+                                   а 𝜆/
+                                       4
+                            𝑂                         𝐴′
+
+          Пол
+             я   риза
+                      тор
+      𝑃
+𝐼пр       𝛼
+                            𝑂′
+
+
+
+
+                   𝑃′
+--><img
+   src="main-html-images/image-137.svg"
+   alt="Рис. 6.13. Інтерференція поляризованого світла"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.13. Інтерференція поляризованого світла
+
+</div>
+
+<a id="pic:Interferention_of_polarized"></a>
+
+</div>
+
+</figure>
+
+<p>
+Найчастіше на практиці застосовують схеми, де \(\alpha = 45^\circ \), а поляризатор і аналізатор паралельні (\(\beta = 0 \)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{15}\)</span>
+
+<!--
+
+                                                                                                                                          1       𝛿
+                                                                                                                                   𝐼∥ =     𝐼 cos2 ,                                                                                                                 (6.16)
+                                                                                                                                          2 пр    2
+-->
+
+<p>
+
+\begin{equation}
+I_\parallel = \frac 12 I_\text {пр} \cos ^2\frac \delta 2,
+\end{equation}
+
+</p>
+
+<p>
+або схрещені (\(\beta = 90^\circ \)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{16}\)</span>
+
+<!--
+
+                                                                                                                                          1       𝛿
+                                                                                                                                   𝐼⟂ =     𝐼 sin2 .                                                         (6.17)                 --><a id="eq:I_perp"></a><!--
+                                                                                                                                          2 пр    2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:I_perp} I_\perp = \frac 12 I_\text {пр} \sin ^2\frac \delta 2.
+\end{equation}
+
+</p>
+
+<p>
+При освітленні схеми білим світлом, жмуток променів, що виходить, забарвлюється в той колір, довжина хвилі якого \(\lambda \) відповідає умові інтерференційного максимуму:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{17}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝛿 = 2𝑚𝜋,                                                                                                                       (6.18)
+
+-->
+
+<p>
+
+\begin{equation}
+\delta = 2m\pi ,
+\end{equation}
+
+</p>
+
+<p>
+при якій \(I_\parallel = \frac 12 I_\text {пр} \) та \(I_\perp = 0\). При повороті аналізатора на \(90^\circ \) (\(\beta = 90^\circ \)), жмуток променів, що виходить, забарвлюється у колір додатковий до кольору, що відповідає довжині хвилі \(\lambda \), коли
+\(I_\parallel = 0 \) та \(I_\perp = \frac 12 I_\text {пр}\). Таке забарвлення білого світла, що проходить крізь систему, називається монохроматичною поляризацією.
+</p>
+<!--
+...... section Штучне подвійне променезаломлення ......
+-->
+<h4 id="autosec-715"><span class="sectionnumber">&#xA7;&#x202F;6.2&#x2003;</span>Штучне подвійне променезаломлення</h4>
+<a id="main-html-autopage-715"></a>
+
+
+<p>
+Штучна анізотропія — це подвійне променезаломлення, яке штучно викликається у ізотропних прозорих речовинах під дією пружних деформацій, електричного та магнітного полів. Спостерігається вона у схемах, що аналогічні схемам інтерференції поляризованих променів (рис.&nbsp;<a
+href="polarisation.html#pic:Interferention_of_polarized">6.13</a>), у яких замість фазової пластинки встановлюється комірка штучного подвійного променезаломлення. У цих схемах аналізатор та поляризатор зазвичай схрещені (\(\beta = 90^\circ \)), а оптична вісь комірки
+штучного подвійного променезаломлення (\(O - O&apos; \)) орієнтується під кутом \(45^\circ \) до площини пропускання поляризатора (\(\alpha = 45^\circ \)), інтенсивність жмутка на виході системи виражається формулою <span class="textup">(<a
+href="polarisation.html#eq:I_perp">6.17</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{18}\)</span>
+
+<!--
+
+                                                                                                                                           1       𝛿
+                                                                                                                                    𝐼⟂ =     𝐼 sin2 ,
+                                                                                                                                           2 пр    2
+-->
+
+<p>
+
+\begin{equation*}
+I_\perp = \frac 12 I_\text {пр} \sin ^2\frac \delta 2,
+\end{equation*}
+
+</p>
+
+<p>
+де
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{18}\)</span>
+
+<!--
+
+                                                                                                                                        2𝜋
+                                                                                                                                   𝛿=      (𝑛𝑒 − 𝑛𝑜 )𝑑,
+                                                                                                                                         𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta = \frac {2\pi }{\lambda } (n_e - n_o) d,
+\end{equation*}
+
+</p>
+
+<p>
+різниця фаз звичайного та незвичайного променів; \((n_e - n_o) \) — штучне подвійне променезаломлення; \(d \) — шлях світла у комірці.
+</p>
+
+<p>
+Ефект фотопружності. Під дією пружних деформацій ізотропні прозорі тверді матеріали стають анізотропними зі штучним подвійним променезаломленням, що дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{18}\)</span>
+
+<!--
+
+
+                                                                                                𝑛𝑒 − 𝑛𝑜 = 𝑘𝜍,                                                                                                   (6.19)              --><a id="eq:photoelasticity"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:photoelasticity} n_e - n_o = k\sigma ,
+\end{equation}
+
+</p>
+
+<p>
+де \(k \) — коефіцієнт пропорційності, що залежить від типу матеріалу; \(\sigma \) — внутрішня напруга викликана деформацією.
+</p>
+
+<p>
+Лінійний електрооптичний ефект, або ефект Поккельса спостегігається в кристалах. Під дією поперечного (або поздовжнього) електричного поля деякі ізотропні кристали, частіше всього штучного походження, стають анізотропними зі штучним подвійним променезаломленням:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{19}\)</span>
+
+<!--
+
+
+                                                                                                 𝑛𝑒 − 𝑛𝑜 = 𝑘𝐸,                                                                                                   (6.20)              --><a id="eq:pollels_effect"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:pollels_effect} n_e - n_o = k E,
+\end{equation}
+
+</p>
+
+<p>
+де \(k\) — коефіцієнт пропорційності, що залежить від типу кристалу, \(E \) — напруженість електричного поля.
+</p>
+
+<p>
+Квадратичний електрооптичний ефект, або ефект Керра спостерігається в газах, рідких, склоподібних та кристалічних діелектриках з центрами симетрії і полягає у зміні показника заломлення під впливом електричного поля:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{20}\)</span>
+
+<!--
+
+
+                                                                                                 𝑛𝑒 − 𝑛𝑜 = 𝐾𝜆𝐸 2 ,                                                                                                   (6.21)              --><a id="eq:kerr_effect"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:kerr_effect} n_e - n_o = K\lambda E^2,
+\end{equation}
+
+</p>
+
+<p>
+де \(K\) — стала Керра, \(\lambda \) — довжина хвилі в вакуумі, \(E \) — напруженість електричного поля.
+</p>
+
+<p>
+Діелектричне середовище, яке у вихідному стані було оптично ізотропним, під дією електричного поля стає анізотропним, що призводить до подвійного променезаломлення. Оптична вісь при цьому збігається з напрямком силових ліній напруженості електричного поля. Для дослідження
+анізотропних властивостей рідини (нітробензолу, сірководню тощо) використовується комірка Керра.
+</p>
+
+<p>
+Аналогічно виникненню штучного подвійного променезаломлення під впливом електричного поля можливе створення штучної оптичної анізотропії під дією магнітного поля ( ефект Коттона-Мутона):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{21}\)</span>
+
+<!--
+
+
+                                                                                           𝑛𝑒 − 𝑛𝑜 = 𝐶𝜆𝐻 2 ,                                                                                           (6.22)                 --><a id="eq:cotton-mutton_effect"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:cotton-mutton_effect} n_e - n_o = C\lambda H^2,
+\end{equation}
+
+</p>
+
+<p>
+де \(C\) — стала Коттона-Мутона, \(\lambda \) — довжина хвилі в вакуумі, \(H \) — напруженість магнітного поля.
+</p>
+<!--
+...... subsection Обертання площини поляризації ......
+-->
+<h5 id="autosec-716">Обертання площини поляризації</h5>
+<a id="main-html-autopage-716"></a>
+
+
+<p>
+При проходженні лінійно поляризованого світла крізь прозорі оптично активні речовини виникає природне обертання (закручення) площини поляризації на кут:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{22}\)</span>
+
+<!--
+
+
+                                                                                                   𝜓 = 𝛼𝑑,                                                                                    (6.23)                 --><a id="eq:rotation_angle"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:rotation_angle} \psi = \alpha d,
+\end{equation}
+
+</p>
+
+<p>
+де \(\alpha \) — стала обертання, що залежить від речовини та довжини хвилі світла; \(d \) — шлях світла у оптично активній речовині.
+</p>
+
+<p>
+Якщо помістити оптично активну речовину між схрещеними поляризатором та аналізатором (рис.&nbsp;<a href="polarisation.html#pic:polarisation_plane_rotation">6.14</a>), то на виході останнього з’явиться світло, інтенсивність якого визначається законом Малюса (без
+урахування поглинання):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{23}\)</span>
+
+<!--
+
+                                                                                                                                               1
+                                                                                                                                        𝐼А =     𝐼 sin2 𝜓,                                                                                                     (6.24)
+                                                                                                                                               2 пр
+-->
+
+<p>
+
+\begin{equation}
+I_\text {А} = \frac 12 I_\text {пр} \sin ^2\psi ,
+\end{equation}
+
+</p>
+
+<p>
+де \(I_\text {пр} \) — інтенсивність природного світла на виході поляризатора; \(\psi \) — кут повороту площини поляризації у речовині.
+</p>
+
+<p>
+Кут повороту площини поляризації у розчинах оптично активних речовин у неактивному розчиннику визначається виразом ( закон Біо):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{24}\)</span>
+
+<!--
+
+
+                                                                                                                                          𝜓 = [𝛼]𝑐𝑑,                                                        (6.25)                 --><a id="eq:Bio"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Bio} \psi = [\alpha ] cd,
+\end{equation}
+
+</p>
+
+<p>
+де \([\alpha ] \) — питома стала обертання, що залежить від довжини хвилі світла; \(c \) — концентрація активної речовини у розчині; \(d \) — шлях світла у розчині.
+</p>
+
+<figure id="autoid-430" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-138"
+    class="lateximagesource"
+><!--
+                                                                         𝐤
+                                                         Ана
+                                                               ліза
+                                                                   тор
+                                                     𝐴
+
+                                                         𝜓
+
+                                                ом
+                                        оз   чин
+                                    р
+                           е   та з
+                        кюв
+                                                                  𝐴′
+
+      Пол
+         я   риза
+                  тор
+      𝑃
+𝐼пр
+
+
+
+
+          𝑃′
+--><img
+   src="main-html-images/image-138.svg"
+   alt="Рис. 6.14. Обертання площини поляризації"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;6.14. Обертання площини поляризації
+
+</div>
+
+<a id="pic:polarisation_plane_rotation"></a>
+
+</div>
+
+</figure>
+
+<p>
+Штучне обертання площини поляризації у прозорих оптично неактивних речовинах здійснюється у поздовжньому магнітному полі ( ефект Фарадея) на кут:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{25}\)</span>
+
+<!--
+
+
+                                                                                                   𝜓 = 𝑉 𝐻𝑑,                                                                                                     (6.26)   --><a id="eq:Faraday_effect"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Faraday_effect} \psi = VHd,
+\end{equation}
+
+</p>
+
+<p>
+де \(V \) — питоме магнітне обертання (стала Верде), що залежить від речовини та довжини хвилі світла; \(H \) — напруженість поздовжнього магнітного поля; \(d \) — шлях світла у магнітному поля та речовині.
+</p>
+<!--
+...... section Приклади розв’язування задач ......
+-->
+<h4 id="autosec-720"><span class="sectionnumber">&#xA7;&#x202F;6.3&#x2003;</span>Приклади розв’язування задач</h4>
+<a id="main-html-autopage-720"></a>
+
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 33.</b> Через аналізатор розглядається частково поляризоване світло. При повороті аналізатора на кут \(60^\circ \) від положення, що відповідає максимальній яскравості, яскравість світла, що проходить крізь систему, зменшується удвічі. Представляючи частково
+поляризоване світло як суму природного та лінійно поляризованого та нехтуючи поглинанням поляризатора, визначити: а) відношення інтенсивностей природного та лінійного поляризованого світла; б) ступінь поляризації світла, що розглядається.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+а) Інтенсивність частково поляризованого світла, що падає на аналізатор, можна представити сумою
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                                                     𝐼ЧП = 𝐼П + 𝐼пр ,
+
+-->
+
+<p>
+
+\begin{equation*}
+I_\text {ЧП} = I_\text {П} + I_\text {пр},
+\end{equation*}
+
+</p>
+
+<p>
+де \(I_\text {П} \) — інтенсивність лінійно поляризованої складової; \(I_\text {пр} \) — інтенсивність природної складової.
+</p>
+
+<p>
+У першому положенні максимальної яскравості (\(\phi = 0 \)) згідно із законом Малюса <span class="textup">(<a href="polarisation.html#eq:Malus_law_for_linear">6.1</a>)</span> та \(T_\text {А} = 1 \)) крізь аналізатор проходить вся лінійно поляризована складова
+\(I_\text {П} \) та згідно з <span class="textup">(<a href="polarisation.html#eq:Malus_law_for_nature">6.2</a>)</span> — поляризоване світло, інтенсивність якого дорівнює половині інтенсивності природної складової: \(I_{A_1} = I_\text {П} + 0,5I_\text
+{пр} \). У другому положенні (\(\phi = 60^\circ \)) згідно з <span class="textup">(<a href="polarisation.html#eq:Malus_law_for_linear">6.1</a>)</span> та <span class="textup">(<a href="polarisation.html#eq:Malus_law_for_nature">6.2</a>)</span>
+світло, що проходить крізь аналізатор, має сумарну інтенсивність: \(I_{A_2} = I_\text {П} \cos ^2\phi + 0,5I_\text {пр} \). За умовою задачі \(I_{A_1} = 2I_{A_2} \), звідки отримуємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                      𝐼пр
+                                                                                                                          = 2(1 − 2 cos2 𝜙) = 1,   тобто   𝐼пр = 𝐼П .
+                                                                                                                      𝐼П
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {I_\text {пр}}{I_\text {П}} = 2(1 - 2\cos ^2 \phi ) = 1,\quad \text {тобто} \quad I_\text {пр} = I_\text {П}.
+\end{equation*}
+
+</p>
+
+<p>
+Мінімальна яскравість на виході аналізатора відповідає куту його повороту \(\phi = 90^\circ \), коли \(I_{A_3} = 0,5I_\text {пр} \).
+</p>
+
+<p>
+б) Ступінь поляризації частково поляризованого світла характеризує у ньому частину лінійно поляризованої складової та визначається за формулою
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                         𝐼max − 𝐼min
+                                                                                                                                    𝑃=               ,
+                                                                                                                                         𝐼max + 𝐼min
+
+-->
+
+<p>
+
+\begin{equation*}
+P = \frac {I_{\max } - I_{\min }}{I_{\max } + I_{\min }},
+\end{equation*}
+
+</p>
+
+<p>
+де \(I_{\max } \) і \(I_{\min } \) — максимальна (\(\phi = 0 \)) та мінімальна (\(\phi = 90^\circ \)) інтенсивності у двох взаємно перпендикулярних напрямах. З умов задачі отримуємо \(P = 0,5 \).
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 34.</b> На плоскопаралельну пластинку із одновісного від’ємного кристалу падає плоска монохроматична хвиля під кутом \(\epsilon _1 &gt; 0 \) . Оптична вісь кристалу (\(O&apos; - O&apos; \)) лежить у площині падіння та орієнтована відносно поверхні пластинки
+під кутом \(\alpha &gt; 0 \) . Виконати графічні побудови Гюйгенса для орієнтовного визначення напряму хвильових фронтів та ходу звичайного та незвичайного променів.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Представимо жмуток, що падає, двома крайніми променями \(1 \) та \(2 \) (див. рис.).
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-139"
+    class="lateximagesource"
+><!--
+                    2                             1
+                                        𝜖1
+                        𝑂
+
+                        𝛼
+        𝐵                       𝐴
+
+
+                                    𝐶             𝑂′
+
+                            𝐷
+
+                                             𝑆𝑜
+                                        𝑆𝑒
+
+
+𝑒   𝑜       𝑒   𝑜
+--><img
+   src="main-html-images/image-139.svg"
+   alt="Рисунок 19"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Фронт хвилі, що падає, перпендикулярний до них. Промінь \(1 \) першим приходить на поверхню пластинки у точці \(A \), яка згідно з принципом Гюйгенса є точковим джерелом випромінювання у кристалі вторинних звичайної та незвичайної хвиль. У цій точці проводимо напрям оптичної осі
+у відповідності зі значенням кута \(\alpha \). За час \(\Delta t \), коли промінь 2 прийде на поверхню пластинки у точці \(B \), навколо точки \(A \) утворюються сферична хвильова поверхня звичайної хвилі радіуса \(v_o\Delta t \). З точки \(A \) проводимо всередині пластинки коло
+\(S_o \), що відповідає цій сфері. Дотична з точки \(B \) до цього кола \(BC \) дає положення фронту звичайної хвилі у кристалі, а лінія \(AC \) дає напрям ходу звичайного променя. Його площина поляризації перпендикулярна до осі \(O - O&apos; \), тобто до площини падіння (на рис.
+показано крапками). Будуємо хвильову поверхню незвичайної хвилі у вигляді еліпса \(S_e \), що описаний навколо кола \(S_o \) (кристал від’ємний, див. рис.). Мала піввісь еліпса дорівнює \(v_o\Delta t \), а велика — \(v_e\Delta t \). Дотична з точки \(B \) до еліпса \(BD \) дає
+положення фронту незвичайного променя у кристалі, а лінія \(AD \) — напрям ходу незвичайного променя. Площина його поляризації паралельна осі \(O - O&apos; \) та співпадає з площиною падіння (на рис. показано поперечними рисками). На виході з нижньої поверхні пластинки обидва
+промені йдуть паралельно падаючому. З точки \(B \) промені проводяться паралельно відповідним променям з точки \(A \). Ця побудова хоча і орієнтовна, тим не менше дає уявлення про те, як проходять промені у двопроменезаломлюючому кристалі у відповідності зі значеннями \(\epsilon
+_1 \), \(\alpha \) та типом кристалу. У даній задачі незвичайний промінь має більший кут заломлення та проходить лівіше звичайного.
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 35.</b> Між схрещеними поляризатором та аналізатором встановлена клиновидна пластинка із ісландського шпату з оптичною віссю, що паралельна ребру клина. Кут при вершині клина дорівнює \(4,72&apos; \), вісь пластинки утворює з площиною пропускання поляризатора
+кут \(45^\circ \). Знайти ширину інтерференційних смуг, що спостерігаються на виході системи у монохроматичному світлі (\(486 \)&nbsp;нм). Для цієї довжини хвилі показники заломлення ісландського шпату дорівнюють \(n_o = 1,668 \) та \(n_e = 1,491 \).
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-140"
+    class="lateximagesource"
+><!--
+                                                               𝑦
+
+
+                                                                   Δ𝑦
+
+
+
+природне світло
+                                                                   𝐼
+
+
+
+
+                  Поляризатор   Фазова платівка   Аналізатор
+                                (компенсатор)
+--><img
+   src="main-html-images/image-140.svg"
+   alt="Рисунок 20"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+На рис. поляризатор та аналізатор показані у вигляді поляризаційних призм.
+</p>
+
+<p>
+У відповідності з умовами задачі ( \(\beta = 90^\circ ; \alpha = 45^\circ \)) інтенсивність світла за аналізатором визначається за інтерференційною формулою <span class="textup">(<a href="polarisation.html#eq:I_perp">6.17</a>)</span>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                           1       𝛿
+                                                                                                                                    𝐼⟂ =     𝐼 sin2 ,
+                                                                                                                                           2 пр    2
+-->
+
+<p>
+
+\begin{equation*}
+I_{\perp } = \frac {1}{2} I_\text {пр} \sin ^2 \frac {\delta }{2},
+\end{equation*}
+
+</p>
+
+<p>
+де різниця фаз між звичайним та незвичайним променями <span class="textup">(<a href="polarisation.html#eq:phase_delta">6.11</a>)</span>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                        2𝜋
+                                                                                                                                   𝛿=      (𝑛𝑒 − 𝑛𝑜 )𝑑
+                                                                                                                                         𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta = \frac {2\pi }{\lambda } (n_e - n_o)d
+\end{equation*}
+
+</p>
+
+<p>
+змінюється по висоті пластинки за рахунок зміни її товщини d. При малому заломлюючому куті \(\theta \) клина \(d = y\theta \).
+</p>
+
+<p>
+На екрані, встановленому за аналізатором, будуть спостерігатися інтерференційні смуги рівної товщини у вигляді прямих ліній, що паралельні ребру клина. Під шириною смуги при двопроменевій інтерференції \(\Delta y \) розуміється відстань між серединами сусідніх світлих смуг, що
+задовольняють умові максимуму. Максимальне значення інтенсивності \(I_\perp \) <span class="textup">(<a href="polarisation.html#eq:I_perp">6.17</a>)</span> досягається, коли
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                2𝜋
+                                                                                                                           𝛿=      (𝑛𝑒 − 𝑛𝑜 )𝑦𝜃 = (2𝑚 + 1)𝜋,
+                                                                                                                                 𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta = \frac {2\pi }{\lambda } (n_e - n_o)y\theta = (2m + 1)\pi ,
+\end{equation*}
+
+</p>
+
+<p>
+де \(y \) — висота перерізу клина від його ребра; \(\theta = 4,72&apos; = 1,3279\cdot 10^{-4} \)&nbsp;рад; \(m = 0,1,2,\ldots \) — порядок інтерференції. Розглянемо умови для двох сусідніх максимумів, наприклад порядків \(m \) та \(m + 1 \) на висотах \(y_m \) та
+\(y_{m+1} \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                             2𝜋
+                                                                                                                                (𝑛𝑒 − 𝑛𝑜 )𝑦𝑚 𝜃 = (2𝑚 + 1)𝜋,
+                                                                                                                              𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {2\pi }{\lambda }(n_e - n_o) y_m\theta = (2m + 1)\pi ,
+\end{equation*}
+
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                         2𝜋
+                                                                                                                            (𝑛𝑒 − 𝑛𝑜 )𝑦𝑚+1 𝜃 = (2(𝑚 + 1) + 1)𝜋.
+                                                                                                                          𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {2\pi }{\lambda }(n_e - n_o) y_{m + 1}\theta = (2(m + 1) + 1)\pi .
+\end{equation*}
+
+</p>
+
+<p>
+Віднімаючи перший вираз від другого та враховуючи, що \(\Delta y = y_{m + 1} - y_m \), отримуємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                     𝜆
+                                                                                                                         Δ𝑦 =               = 2000 мкм = 2 мм
+                                                                                                                                (𝑛𝑒 − 𝑛𝑜 )𝜃
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta y = \frac {\lambda }{(n_e - n_o)\theta } = 2000\ \text {мкм} = 2\ \text {мм}
+\end{equation*}
+
+</p>
+
+</div>
+<!--
+...... section Задачі для самостійного розв’язку ......
+-->
+<h4 id="autosec-727"><span class="sectionnumber">&#xA7;&#x202F;6.4&#x2003;</span>Задачі для самостійного розв’язку </h4>
+<a id="main-html-autopage-727"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-431"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.1.</span></span> <a id="autoid-432" ></a ><a id="LWR-ht-problem:6.{1}"></a>Як можна отримати лінійно поляризоване світло з природного світла, частково поляризованого,
+циркулярно поляризованого та еліптично поляризованого?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-433"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.2.</span></span> <a id="autoid-434" ></a ><a id="LWR-ht-problem:6.{2}"></a>Що являє собою поляризатор, який працює на відбитті світла, на заломленні світла?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-435"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.3.</span></span> <a id="autoid-436" ></a ><a id="LWR-ht-problem:6.{3}"></a>Як буде змінюватися інтенсивність світла за аналізатором, що обертається навколо променя світла:
+природного, лінійно поляризованого, еліптично поляризованого, циркулярно поляризованого, частково поляризованого?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-437"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.4.</span></span> <a id="autoid-438" ></a ><a id="LWR-ht-problem:6.{4}"></a>Яким чином можна перетворити плоскополяризоване світло в циркулярно поляризоване та навпаки?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-439"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.5.</span></span> <a id="autoid-440" ></a ><a id="LWR-ht-problem:6.{5}"></a>Як можна експериментально відрізнити природне світло від циркулярно поляризованого та частково
+поляризоване світло від еліптичного поляризованого?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-441"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.6.</span></span> <a id="autoid-442" ></a ><a id="LWR-ht-problem:6.{6}"></a>Як можна отримати циркулярно поляризоване світло?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-443"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.7.</span></span> <a id="autoid-444" ></a ><a id="LWR-ht-problem:6.{7}"></a>Як відрізнити ліво- та правополяризоване по колу світло?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-445"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.8.</span></span> <a id="autoid-446" ></a ><a id="LWR-ht-problem:6.{8}"></a>Вітрове скло й фари автомашин забезпечуються поляроїдними плівками. Як повинні бути орієнтовані
+площини пропускання цих плівок, щоб водій міг добре бачити дорогу та не засліплюватися світлом фар зустрічних машин?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-447"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.9.</span></span> <a id="autoid-448" ></a ><a id="LWR-ht-problem:6.{9}"></a>Як повинна вирізатися фазова пластинка з двопроменезаломлюючого кристалу?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-449"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.10.</span></span> <a id="autoid-450" ></a ><a id="LWR-ht-problem:6.{10}"></a>Чому двопроменезаломлююча пластинка, яка розташована між поляризатором та аналізатором, при
+освітлення білим світлом має кольорове забарвлення? При якому положенні аналізатора відносно пластинки кольорове забарвлення не буде спостерігатися?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-451"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.11.</span></span> <a id="autoid-452" ></a ><a id="LWR-ht-problem:6.{11}"></a>Для чого потрібні компенсатори, зроблені з двопроменезаломлюючих кристалів?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-453"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.12.</span></span> <a id="autoid-454" ></a ><a id="LWR-ht-problem:6.{12}"></a>Як відрізнити пластинку кварцу, що вирізана перпендикулярно до його оптичної осі, від пластинки
+кварцу, що вирізана паралельно його осі?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-455"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.13.</span></span> <a id="autoid-456" ></a ><a id="LWR-ht-problem:6.{13}"></a>Як визначити з ліво- чи правообертаючого кварцу зроблена пластинка, яка вирізана перпендикулярно до
+його оптичної осі?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-457"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.14.</span></span> <a id="autoid-458" ></a ><a id="LWR-ht-problem:6.{14}"></a>У деяких установках для аналізу поляризованого світла воно пропускається крізь аналізатор, що
+рівномірно обертається з кутовою швидкістю \(\omega \), потім світло проектується на фотоприймач. На яку частоту має бути розрахований підсилювач фотоструму? На основі якого закону ця частота може бути визначена?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-459"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.15.</span></span> <a id="autoid-460" ></a ><a id="LWR-ht-problem:6.{15}"></a>Промінь монохроматичного природного світла падає під кутом \(45^\circ \) на поверхню скла.
+Визначити коефіцієнт відбиття та ступені поляризації відбитого та заломленого променів, коли показник заломлення скла дорівнює: а) \(1,5 \); б) \(1,62 \); в) \(1,73 \). <a href="answers.html#LWR-ht-solution:6.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-461"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.16.</span></span> <a id="autoid-462" ></a ><a id="LWR-ht-problem:6.{16}"></a>Під яким кутом до горизонту повинно знаходитися Сонце, щоб його промені, відбиті від поверхні озера,
+були найбільше поляризовані? Який при цьому ступінь поляризації заломленого променя? <a href="answers.html#LWR-ht-solution:6.{16}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-463"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.17.</span></span> <a id="autoid-464" ></a ><a id="LWR-ht-problem:6.{17}"></a>Промінь природного монохроматичного світла падає на поверхню скла під кутом Брюстера. Визначити
+кут падіння, коефіцієнт відбиття та степінь поляризації заломленого променя, коли показник заломлення скла дорівнює: а) \(1,5 \); б) \(1,62 \); в) \(1,73 \). <a href="answers.html#LWR-ht-solution:6.{17}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Закон Брюстера. Закон Малюса. ......
+-->
+<h5 id="autosec-745">Закон Брюстера. Закон Малюса.</h5>
+<a id="main-html-autopage-745"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-465"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.18.</span></span> <a id="autoid-466" ></a ><a id="LWR-ht-problem:6.{18}"></a>Жмуток природного світла, що йде у воді, відбивається від грані алмазу, що занурений у воду. При якому
+куті падіння \(\epsilon _\text {B} \) відбите світло повністю поляризоване? <a href="answers.html#LWR-ht-solution:6.{18}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-467"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.19.</span></span> <a id="autoid-468" ></a ><a id="LWR-ht-problem:6.{19}"></a>Жмуток природного світла падає на скляну (\(n = 1,6 \)) призму (рис.). Визначити двогранний кут
+\(\theta \) призми, якщо відбитий жмуток максимально поляризований.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-141"
+      class="lateximagesource"
+><!--
+𝜃
+--><img
+      src="main-html-images/image-141.svg"
+      alt="Рисунок 21"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{19}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-469"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.20.</span></span> <a id="autoid-470" ></a ><a id="LWR-ht-problem:6.{20}"></a>Алмазна призма знаходиться у деякому середовищі з показником заломлення \(n_1 \). Жмуток
+природного світла падає на призму так, як показано на рис. Визначити показник заломлення \(n_1 \) середовища, якщо відбитий жмуток максимально поляризований.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-142"
+      class="lateximagesource"
+><!--
+𝑛1         𝑛2
+     30∘
+--><img
+      src="main-html-images/image-142.svg"
+      alt="Рисунок 22"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{20}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-471"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.21.</span></span> <a id="autoid-472" ></a ><a id="LWR-ht-problem:6.{21}"></a>а) Паралельний жмуток природного світла падає на сферичну краплю води. Знайти кут \(\phi \) між
+відбитим та падаючим жмутками у точці \(A \) (рис. а).
+</p>
+
+<p>
+б) Жмуток природного світла падає на скляний шар (\(n = 1,54 \)). Знайти кут γ між заломленим та падаючим жмутками у точці \(A \) (рис. б).
+</p>
+
+<p>
+в) Жмуток природного світла, що падає на скляний шар, знаходиться у воді. Знайти кут \(\phi \) між відбитим та падаючим жмутками у точці \(A \) (рис. в). Показник заломлення скла прийняти рівним \(1,58 \).
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-143"
+      class="lateximagesource"
+><!--
+         𝜙
+
+
+     𝐴
+
+
+
+
+a)
+--><img
+   src="main-html-images/image-143.svg"
+   alt="Рисунок 23"
+   style=""
+   class="lateximage"
+></span> <span
+   id="lateximage-main-html-144"
+   class="lateximagesource"
+><!--
+     𝛾
+         𝐴
+
+
+
+
+б)
+--><img
+   src="main-html-images/image-144.svg"
+   alt="Рисунок 24"
+   style=""
+   class="lateximage"
+></span> <span
+   id="lateximage-main-html-145"
+   class="lateximagesource"
+><!--
+         𝜙
+
+
+     𝐴
+
+
+
+
+в)
+--><img
+      src="main-html-images/image-145.svg"
+      alt="Рисунок 25"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{21}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-473"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.22.</span></span> <a id="autoid-474" ></a ><a id="LWR-ht-problem:6.{22}"></a>У скільки разів послаблюється інтенсивність світла, що проходить крізь два ніколі, площини
+пропускання яких утворюють кут \(\alpha = 30^\circ \), якщо у кожному з ніколей окремо втрачається \(10\% \) інтенсивності світла, що на нього падає? <a href="answers.html#LWR-ht-solution:6.{22}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-475"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.23.</span></span> <a id="autoid-476" ></a ><a id="LWR-ht-problem:6.{23}"></a>У фотометрі одночасно розглядаються дві половини поля зору: у одній видно еталонну поверхню, що
+світиться з яскравістю \(L_1 = 5\cdot 10^3 \)&nbsp;кд/м\(^2\), у іншій — досліджувана поверхня, світло від якої проходить крізь два ніколі. Границя між двома половинами поля зору зникає, якщо другий ніколь повернути відносно першого на кут \(\alpha = 45^\circ \). Знайти
+яскравість \(L_2 \) досліджуваної поверхні, якщо відомо, що у кожному з ніколей інтенсивність падаючого на нього світла зменшується на \(8 \)&percnt;. <a href="answers.html#LWR-ht-solution:6.{23}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-477"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.24.</span></span> <a id="autoid-478" ></a ><a id="LWR-ht-problem:6.{24}"></a>При падінні природного світла на границю повітря-скло (\(n = 1,6 \)) під кутом \(58^\circ \)
+відбивається \(8,3 \)&percnt; падаючої енергії. Яка степінь поляризації відбитого та заломленого в склі світла? <a href="answers.html#LWR-ht-solution:6.{24}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-479"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.25.</span></span> <a id="autoid-480" ></a ><a id="LWR-ht-problem:6.{25}"></a>Промінь природного світла проходить крізь рідину, що налита у скляну посудину (\(n = 1,5 \)), і
+відбивається від його дна під кутом Брюстера \(42^\circ 37&apos; \). Визначити: а) показник заломлення рідини; б) під яким кутом повинен падати на дно посудини промінь світла, що йде з рідини, щоб відбулося повне внутрішнє відбиття? <a
+href="answers.html#LWR-ht-solution:6.{25}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-481"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.26.</span></span> <a id="autoid-482" ></a ><a id="LWR-ht-problem:6.{26}"></a>На бокову грань скляної призми (\(n = 1,5 \)) під кутом Брюстера падає жмуток монохроматичного
+світла, що лінійно поляризований у площині головного перерізу призми. Яким повинен бути заломлюючий кут призми, щоб світло пройшло крізь неї без втрат на відбиття? <a href="answers.html#LWR-ht-solution:6.{26}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-483"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.27.</span></span> <a id="autoid-484" ></a ><a id="LWR-ht-problem:6.{27}"></a>Яким повинен бути заломлюючий кут призми (\(n = 1,73 \)), щоб кути входу та виходу променя з
+призми були кутами повної поляризації? Чому дорівнює найменший кут відхилення променя призмою при такому заломлюючому куті? <a href="answers.html#LWR-ht-solution:6.{27}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-485"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.28.</span></span> <a id="autoid-486" ></a ><a id="LWR-ht-problem:6.{28}"></a>Чому дорівнює ступінь поляризації світла, що є сумішшю лінійно поляризованого та природного, якщо
+відношення \(\frac {I_\text {п}}{I_\text {пр}} \) дорівнює: а) \(0,5 \); б) \(1 \); в) \(2 \); г) \(5 \); д) \(10 \). <a href="answers.html#LWR-ht-solution:6.{28}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-487"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.29.</span></span> <a id="autoid-488" ></a ><a id="LWR-ht-problem:6.{29}"></a>При яких умовах промінь світла, що падає на бічну грань призми із заломлюючим кутом \(60^\circ \),
+проходить крізь неї без втрат на відбиття? <a href="answers.html#LWR-ht-solution:6.{29}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-489"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.30.</span></span> <a id="autoid-490" ></a ><a id="LWR-ht-problem:6.{30}"></a>Визначити кут повної поляризації для променя, відбитого від поверхні чорного скла (\(n = 1,65 \)).
+Яку долю інтенсивності природного світла відбиває скло? На який кут відносно площини поляризації відбитого променя потрібно повернути площину пропуску поляроїда (\(T_\text {пр} = 0,75 \)), щоб інтенсивність променя зменшилася ще вдвічі? <a
+href="answers.html#LWR-ht-solution:6.{30}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-491"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.31.</span></span> <a id="autoid-492" ></a ><a id="LWR-ht-problem:6.{31}"></a>Кут між площинами поляризатора та аналізатора складає \(45^\circ \). а) Як зміниться інтенсивність
+світла, що проходить крізь систему, якщо кут зменшити до \(30^\circ \)? б) Яким має бути цей кут, щоб інтенсивність світла на виході зменшилася у \(4 \) рази? <a href="answers.html#LWR-ht-solution:6.{31}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-493"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.32.</span></span> <a id="autoid-494" ></a ><a id="LWR-ht-problem:6.{32}"></a>Лінійно поляризоване світло інтенсивністю \(100 \)&nbsp;Вт/м<sup>2</sup> проходить послідовно
+крізь два поляризатора, площини пропускання яких утворюють з площиною поляризації світла кути \(\alpha _1 \) та \(\alpha _2 \) (за годинниковою стрілкою вздовж променя). Визначити інтенсивність світла, що проходить крізь систему, коли: а) \(\alpha _1 = 20^\circ \),
+\(\alpha _1 = 50^\circ \); б) \(\alpha _1 = 0^\circ \), \(\alpha _2 = 45^\circ \); в) \(\alpha _1 = -15^\circ \); \(\alpha _2 = 30^\circ \). <a href="answers.html#LWR-ht-solution:6.{32}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Кристалооптика та штучне подвійне променезаломлення ......
+-->
+<h5 id="autosec-774">Кристалооптика та штучне подвійне променезаломлення</h5>
+<a id="main-html-autopage-774"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-495"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.33.</span></span> <a id="autoid-496" ></a ><a id="LWR-ht-problem:6.{33}"></a>Жмуток неполяризованого монохроматичного світла (\(589 \)&nbsp;нм) падає на поверхню
+одновісного кристалу перпендикулярно до його оптичної осі. Знайти довжини хвиль та швидкості розповсюдження звичайного та незвичайного променів у кристалі: а) ісландського шпату (\(n_o =1,658 \), \(n_e= 1,486 \)); б) кварцу (\(n_o =1,54 \), \(n_e= 1,55 \)). Якого кольору
+будуть обидва промені у кристалі? <a href="answers.html#LWR-ht-solution:6.{33}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-497"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.34.</span></span> <a id="autoid-498" ></a ><a id="LWR-ht-problem:6.{34}"></a>Дві однопроменеві поляризаційні призми з повітряним прошарком виготовлені з ісландського шпату
+(\(n_o =1,658 \), \(n_e = 1,486 \)). У одній призмі оптична вісь перпендикулярна до площини падіння, в іншій — паралельна (рис.). а) Як буде поляризоване світло на виході з призм? б) Яка призма пропускає більше світла та у скільки разів? в) У яких межах повинен бути кут \(\alpha \),
+щоб з призм виходив тільки один промінь поляризованого світла?
+</p>
+<div class="center">
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+<a id="main-html-autopage-778"></a>
+<p>
+<span style="width:14pt; display:inline-block"><!----></span> <span
+      id="lateximage-main-html-146"
+      class="lateximagesource"
+><!--
+𝛼
+--><img
+      src="main-html-images/image-146.svg"
+      alt="(а)"
+      style=""
+      class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+</div>
+</div>
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+<a id="main-html-autopage-781"></a>
+<span style="width:14pt; display:inline-block"><!----></span>
+<p>
+<span
+      id="lateximage-main-html-147"
+      class="lateximagesource"
+><!--
+𝛼
+--><img
+      src="main-html-images/image-147.svg"
+      alt="(б)"
+      style=""
+      class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+</div>
+</div>
+
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{34}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-499"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.35.</span></span> <a id="autoid-500" ></a ><a id="LWR-ht-problem:6.{35}"></a>Двопроменева поляризаційна призма Воластона (рис.) зроблена з ісландського шпату (\(n_o =1,658
+\), \(n_e= 1,486 \)), кут \(\alpha = 15^\circ \). Розрахувати на який кут будуть розведені звичайний та незвичайний промені.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-148"
+      class="lateximagesource"
+><!--
+𝛼
+--><img
+      src="main-html-images/image-148.svg"
+      alt="Рисунок 28"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{35}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-501"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.36.</span></span> <a id="autoid-502" ></a ><a id="LWR-ht-problem:6.{36}"></a>Циркулярно поляризоване світло, що проходить крізь кварцеву фазову пластинку, розглядається через
+аналізатор, площина пропускання якого повернута на кут \(\alpha \) відносно оптичної осі пластинки. Визначити: а) інтенсивність світла, що проходить; б) при якому куті \(\alpha \) інтенсивність буде максимальна? мінімальна? <a
+href="answers.html#LWR-ht-solution:6.{36}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-503"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.37.</span></span> <a id="autoid-504" ></a ><a id="LWR-ht-problem:6.{37}"></a>Клин із одновісного кристалу розташований на шляху монохроматичного світла (\(500 \)&nbsp;нм),
+що поляризоване по колу. Оптична вісь клина паралельна його ребру. Світло, що пройшло крізь клин, розглядається через аналізатор, площина пропускання якого складає \(45^\circ \) з ребром клина. Визначити кількість світлих інтерференційних смуг, що спостерігаються на поверхні
+клина, максимальна товщина якого \(0,05 \)&nbsp;см, якщо цей клин зроблений з: а) кварцу; б) ісландського шпату. <a href="answers.html#LWR-ht-solution:6.{37}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-505"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.38.</span></span> <a id="autoid-506" ></a ><a id="LWR-ht-problem:6.{38}"></a>Кварцева фазова пластинка (\(n_e – n_o = 0,009 \)) розташована між схрещеними поляризатором
+та аналізатором, кут \(\alpha = 45^\circ \). Визначити мінімальну товщину пластинки, при якій одна лінія водню \(\lambda _1 = 6563 \)&nbsp;0.25A буде сильно ослаблена, а інша \(\lambda _2 = 4102\)&nbsp;0.25A буде мати максимальну інтенсивність. <a
+href="answers.html#LWR-ht-solution:6.{38}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-507"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.39.</span></span> <a id="autoid-508" ></a ><a id="LWR-ht-problem:6.{39}"></a><a id="prb:4.41"></a>Між схрещеними поляризатором та аналізатором, що освітлені вузьким
+жмутком неполяризованого монохроматичного світла (\(500 \)&nbsp;нм), встановлений горизонтально і нормально до променя кубик з плексигласу зі стороною \(a = 0,5 \)&nbsp;см. Площина поляризатора орієнтована під кутом \(45^\circ \) до горизонту. Кубик стискається силою \(F
+\) у вертикальному напрямі. Коефіцієнт фотопружності плексигласу складає \(2\cdot 10^{-11} \) м<sup>2</sup>/H. а) При якій силі тиску \(F \) світло вийде поляризованим по колу? б) Яка при цьому буде частина світла, що пройшла крізь систему? <a
+href="answers.html#LWR-ht-solution:6.{39}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-509"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.40.</span></span> <a id="autoid-510" ></a ><a id="LWR-ht-problem:6.{40}"></a>Умови задачі&nbsp;<a href="polarisation.html#prb:4.41">6.39</a>. а) Яка буде частина світла, що
+пройшла крізь систему, коли сила \(F = 62,5 \)&nbsp;Н? б) Якою вона стане, якщо аналізатор повернути на \(90^\circ \)? <a href="answers.html#LWR-ht-solution:6.{40}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-511"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.41.</span></span> <a id="autoid-512" ></a ><a id="LWR-ht-problem:6.{41}"></a>Визначити показник штучного подвійного променезаломлення (\(n_e – n_o = 0,009 \)) при
+спостереженні ефекту Керра у нітробензолі у електричному полі напруженістю \(3000 \)&nbsp;В/см. Стала Керра для нітробензолу при \(t = 20\)&nbsp;°C та \(\lambda = 589 \)&nbsp;нм дорівнює \(B = 2,2\cdot 10^{-12} \)&nbsp;м/В\(^2\). Знайти різницю фаз \(\delta \),
+що створюється коміркою Керра з довжиною пластин конденсатора \(d = 4 \)&nbsp;см. <a href="answers.html#LWR-ht-solution:6.{41}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-513"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.42.</span></span> <a id="autoid-514" ></a ><a id="LWR-ht-problem:6.{42}"></a>Комірка Керра з відстанню між електродами \(l = 1 \)&nbsp;мм заповнена нітробензолом та
+розміщена між поляризатором та аналізатором. Напрям електричного поля у конденсаторі складає кут \(45^\circ \) з площиною пропускання поляризатора. Система освітлюється неполяризованим монохроматичним світлом, для якого стала Керра \(B = 2,2\cdot 10^{-12}
+\)&nbsp;м/В<sup>2</sup>. Визначити довжину пластин конденсатора \(d \), якщо мінімальна напруга між ними, при якій інтенсивність світла на виході системи не змінюється при обертанні аналізатора, \(U = 1 \)&nbsp;кВ. <a
+href="answers.html#LWR-ht-solution:6.{42}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-515"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.43.</span></span> <a id="autoid-516" ></a ><a id="LWR-ht-problem:6.{43}"></a>Комірка Коттона-Муттона — плоска скляна кювета з ацетоном \(d = 2 \)&nbsp;см, розміщена у
+поперечному магнітному полі з напруженістю \(H = 3 \)&nbsp;кА/м. Стала Коттона-Муттона для ацетону при \(t = 20 \)&nbsp;°C та \(\lambda �= 578 \)&nbsp;нм складає \(C = 5,94\cdot 10^{-8} \)&nbsp;м/А<sup>2</sup>. Визначити: а) різницю фаз звичайного та
+незвичайного променів; б) частину природного монохроматичного світла, що проходить крізь систему поляризатор-комірка-аналізатор при \(\beta = 0 \) та \(\alpha = 45^\circ \). <a href="answers.html#LWR-ht-solution:6.{43}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-517"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.44.</span></span> <a id="autoid-518" ></a ><a id="LWR-ht-problem:6.{44}"></a><a id="prb:4.46"></a>Пластинка кварцу товщиною \(1 \)&nbsp;мм, вирізана перпендикулярно
+до його оптичної осі та розміщена між паралельними поляризатором та аналізатором, повертає при деякій довжині хвилі світла площину поляризації на кут \(20^\circ \). При якій найменшій товщині кварцевої пластинки природне світло даної довжини хвилі буде: а) повністю погашене; б)
+ослаблене у \(3 \) рази; в) найбільш яскравим? <a href="answers.html#LWR-ht-solution:6.{44}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-519"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.45.</span></span> <a id="autoid-520" ></a ><a id="LWR-ht-problem:6.{45}"></a>Умови задачі&nbsp;<a href="polarisation.html#prb:4.46">6.44</a>, тільки аналізатор та поляризатор
+схрещені. <a href="answers.html#LWR-ht-solution:6.{45}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-521"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.46.</span></span> <a id="autoid-522" ></a ><a id="LWR-ht-problem:6.{46}"></a>Стала Верде для сірководню при \(t = 0 \)&nbsp;°C та \(\lambda = 58\)&nbsp;нм дорівнює \(V =
+5,4626\cdot 10^{-2} \)&nbsp;кут.хв/А. а) Визначити кут повороту площини поляризації світла при проходженні крізь шар сірководню товщиною \(d = 1 \)&nbsp;см, що знаходиться у поздовжньому магнітному полі з напруженістю \(H = 0,79577\cdot 10^6 \)&nbsp;А/м.
+Комірка Верде розміщена між схрещеними поляризаторами. б) Яка частина природного світла проходить крізь систему? <a href="answers.html#LWR-ht-solution:6.{46}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-523"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.47.</span></span> <a id="autoid-524" ></a ><a id="LWR-ht-problem:6.{47}"></a>Деяка речовина розміщена у поздовжньому магнітному полі соленоїда, розташованого між
+паралельними поляризаторами. Довжина кювети з речовиною \(30 \)&nbsp;см. При протилежних напрямах магнітного поля напруженістю \(Н = 56,5\cdot 10^3 \)&nbsp;А/м кути повороту площини поляризації складають \(\phi _1 = +5^\circ 10&apos; \) та \(\phi _2 =
+-3^\circ 20&apos; \). Визначити: а) сталу Верде для речовини у трубці; б) при якому куті між площинами поляризаторів світло може проходити тільки у одному напрямі, тобто система служить оптичним вентилем?; в) яка при цьому повинна бути напруженість магнітного поля? <a
+href="answers.html#LWR-ht-solution:6.{47}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-525"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.48.</span></span> <a id="autoid-526" ></a ><a id="LWR-ht-problem:6.{48}"></a>Простір між дзеркалами інтерферометра Фабрі-Перо з роздільною здатністю \(R = \frac {\lambda
+}{\delta \lambda } = 10^8 \) заповнено хімічно чистим нітробензолом. При накладанні однорідного поперечного електричного поля нітробензол стає слабко анізотропним середовищем, причому оптична вісь співпадає з напрямом поля (ефект Керра). Інтерферометр освітлюється
+монохроматичним жмутком неполяризованого світла (\(\lambda = 600 \)&nbsp;нм). Оцінити мінімальну величину електричного поля, при якій на виході інтерферометра буде спостерігатися майже повністю лінійно поляризоване свтіло. Сталу Керра для нітробензолу прийняти рівною \(B
+= 2\cdot 10^{-5} \)&nbsp;од.&nbsp;СГСЕ.
+</p>
+
+<p>
+<em>Примітка</em>: Сталою Керра називають константу у виразі \(n_e - n_o = \lambda B E^2 \). <a href="answers.html#LWR-ht-solution:6.{48}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-527"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.49.</span></span> <a id="autoid-528" ></a ><a id="LWR-ht-problem:6.{49}"></a>Одну половину біпризми Френеля закрили пластинкою у чверть довжини хвилі. Знайти видність
+інтерференційних смуг, якщо джерело дає монохроматичне неполяризоване світло, яке можна розкласти на некогерентні взаємно перпендикулярно поляризовані хвилі. <a href="answers.html#LWR-ht-solution:6.{49}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-529"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.50.</span></span> <a id="autoid-530" ></a ><a id="LWR-ht-problem:6.{50}"></a>Визначити інтенсивність світла \(I \) у точці \(P \) екрану, на який падає монохроматичне лінійно
+поляризоване світло інтенсивністю \(I_0 \) , якщо на шляху поставити диск з оптично активною речовиною, що закриває півтори зони Френеля та повертає площину поляризації на кут \(90^\circ \). Відбиттям та поглинанням світла знехтувати. <a
+href="answers.html#LWR-ht-solution:6.{50}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-531"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.51.</span></span> <a id="autoid-532" ></a ><a id="LWR-ht-problem:6.{51}"></a>Паралельний жмуток неполяризованого монохроматичного світла падає на чвертьхвильову пластину.
+Інтенсивність світла у деякій точці спостереження \(P \) за пластинкою дорівнює \(I_0 \) . З пластинки вирізають диск, що закриває півтори зони Френеля для точки Р. Диск повернули навколо променя на кут \(\frac {\pi }{2} \) та поставили на місце. Якою стала інтенсивність \(I \) у
+точці\(P \)? <a href="answers.html#LWR-ht-solution:6.{51}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-533"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.52.</span></span> <a id="autoid-534" ></a ><a id="LWR-ht-problem:6.{52}"></a>З кристалічної півхвильової пластинки вирізані диски діаметром у одну та дві зони Френеля для точки \(P
+\). Диски вносять у жмуток світла щільно один до одного, так що у них співпадають: а) різнойменні головні напрями; б) однойменні головні напрями. При цьому, для світла, що поляризоване в одному з головних напрямів, ні амплітуда, ні фаза коливань не змінилася. У скільки разів зміниться
+інтенсивність світла тієї ж поляризації у випадках а) та б), якщо малий диск повернути на \(90^\circ \)? <a href="answers.html#LWR-ht-solution:6.{52}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-535"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.53.</span></span> <a id="autoid-536" ></a ><a id="LWR-ht-problem:6.{53}"></a>У непрозорому екрані, на який нормально падає плоска лінійно поляризована хвиля з інтенсивністю
+\(I_0 \), вирізано круглий отвір розміром в одну зону Френеля для деякої точки спостереження, що лежить на осі системи. В отвір вставлена чвертьхвильова пластинка у формі напівдисків, однойменні осі яких орієнтовані взаємно перпендикулярно. Напрям коливань хвилі, що падає, складає
+\(45^\circ \) з головними напрямами пластинок у обох випадках. Яка інтенсивність коливань у точці спостереження? <a href="answers.html#LWR-ht-solution:6.{53}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-537"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.54.</span></span> <a id="autoid-538" ></a ><a id="LWR-ht-problem:6.{54}"></a>Паралельний жмуток лінійно поляризованого світла з довжиною хвилі \(\lambda = 5000
+\)&nbsp;0.25A та вектором \(\vect {E}_0 \), що лежить в площині рис., нормально падає на три отвори, що закриті однаковими подвійнопроменезаломлюючими чвертьхвильовими пластинками. Причому крайні отвори закриті однаково орієнтованими пластинками так, що вектор \(\vect
+{E}_0 \) співпадає з одним з головних напрямів цих пластинок, а середня пластинка повернута відносно них на \(90^\circ \). Інтерференційна картина розглядається на екрані за допомогою лінзи з фокусною відстанню \(f = 1 \)&nbsp;м. Знайти розподіл інтенсивності у фокальній
+площині лінзи, вважаючи розмір отворів нехтовно малим у порівнянні з відстанню \(d \) між ними (\(d = 1 \)&nbsp;см). Визначити видність \(V \) інтерференційної картини, а також її період \(\lambda \).
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-149"
+      class="lateximagesource"
+><!--
+𝐄0
+             Екран
+
+
+     𝑑
+
+
+
+
+         𝑓
+--><img
+      src="main-html-images/image-149.svg"
+      alt="Рисунок 29"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:6.{54}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-539"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.55.</span></span> <a id="autoid-540" ></a ><a id="LWR-ht-problem:6.{55}"></a>Паралельний жмуток поляризованого по колу монохроматичного світла падає на ґратку з періодом \(d \)
+та шириною отворів \(b = {d}/2 \). Кожний отвір перекритий двома смужками поляроїда однакової ширини \(b/2 \) зі взаємно перпендикулярними дозволеними напрямами. Яка поляризація у нульовому та бокових дифракційних максимумах (\(\pm 1 \)-ому, \(\pm 2 \)-ому, \(\ldots \))?
+<a href="answers.html#LWR-ht-solution:6.{55}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-541"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 6.56.</span></span> <a id="autoid-542" ></a ><a id="LWR-ht-problem:6.{56}"></a>Як зміниться роздільна здатність дифракційної ґратки, якщо одну її половину прикрити поляроїдом, що
+орієнтований паралельно штрихам ґратки, а іншу — поляроїдом, орієнтованим перпендикулярно до штрихів? Чи буде залежати роздільна сила ґратки від поляризації світла, що падає? <a href="answers.html#LWR-ht-solution:6.{56}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

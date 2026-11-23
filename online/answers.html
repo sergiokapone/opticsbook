@@ -1,0 +1,3358 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Відповіді</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-812"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Відповіді">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Відповіді ......
+-->
+<h3 id="autosec-814">Відповіді</h3>
+<a id="main-html-autopage-814"></a>
+<a id="main-html-autofile-8"></a>
+<!--
+...... section <a href=main-html.html#??>??</a> ......
+-->
+<h4 id="autosec-815"><a href="main-html.html#??">??</a></h4>
+<a id="main-html-autopage-815"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{10}"></a><a id="solution1.{10}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{10}">1.10.</a></b> а) \(22,68\) мм; б) \(13,65\) мм; в) \(9,06\) мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{11}"></a><a id="solution1.{11}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{11}">1.11.</a></b> а) \(6,36\) мм; б) \(5,77\) мм
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{12}"></a><a id="solution1.{12}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{12}">1.12.</a></b> \(n_2\vect {r}_2 = n_1\vect {r}_0 - \left ( n_1 (\vect {r}_0 \cdot \vect {N}) + \sqrt {n_2^2
+- n_1^2 + n_1^2 (\vect {r}_0 \cdot \vect {N})^2} \right )\vect {N} \)
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{14}"></a><a id="solution1.{14}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{14}">1.14.</a></b> \(16,3\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{15}"></a><a id="solution1.{15}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{15}">1.15.</a></b> а) \(11,4\) см; б) \(9,13\) см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{16}"></a><a id="solution1.{16}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{16}">1.16.</a></b> \(41^\circ 15&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{17}"></a><a id="solution1.{17}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{17}">1.17.</a></b> Не може.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{18}"></a><a id="solution1.{18}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{18}">1.18.</a></b> \(h_{\min } = \frac {a\cos \phi }{\sin ^2\phi \left ( \frac {1}{\sqrt {n_1^2 - \sin ^2\phi }}
+- \frac {1}{\sqrt {n_2^2 - \sin ^2\phi }} \right ) }\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{19}"></a><a id="solution1.{19}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{19}">1.19.</a></b> \(6^\circ 57&apos;4&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{20}"></a><a id="solution1.{20}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{20}">1.20.</a></b> \(-4^\circ 47&apos;15&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{21}"></a><a id="solution1.{21}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{21}">1.21.</a></b> \(82^\circ 49&apos;09&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{22}"></a><a id="solution1.{22}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{22}">1.22.</a></b> \(8^\circ 32&apos;40&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{23}"></a><a id="solution1.{23}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{23}">1.23.</a></b> \(-10^\circ 08&apos;27&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{24}"></a><a id="solution1.{24}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{24}">1.24.</a></b> \(\sigma _{0_\text {ч}} = 30^\circ 38&apos;07&apos;&apos;\); \(\sigma _{0_\text {ф}} = 33^\circ
+27&apos;09&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{25}"></a><a id="solution1.{25}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{25}">1.25.</a></b> \(1^\circ 12&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{26}"></a><a id="solution1.{26}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{26}">1.26.</a></b> \(10\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{27}"></a><a id="solution1.{27}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{27}">1.27.</a></b> \(40\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{28}"></a><a id="solution1.{28}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{28}">1.28.</a></b> \(60\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{29}"></a><a id="solution1.{29}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{29}">1.29.</a></b> а) \(f = \frac {\beta L}{1 - \beta ^2} = 10\)&nbsp;см; б) \(f = \frac {\beta _1\beta _2 L}{\beta _2
+- \beta _1} = 7.5\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{31}"></a><a id="solution1.{31}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{31}">1.31.</a></b> \(6\)&nbsp;м.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{32}"></a><a id="solution1.{32}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{32}">1.32.</a></b> \(-20\) см; \(3\) см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{38}"></a><a id="solution1.{38}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{38}">1.38.</a></b> \(15\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{39}"></a><a id="solution1.{39}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{39}">1.39.</a></b> \(48\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{40}"></a><a id="solution1.{40}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{40}">1.40.</a></b> \(2,08\)&nbsp;мм/с.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{41}"></a><a id="solution1.{41}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{41}">1.41.</a></b> \(3,84\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{42}"></a><a id="solution1.{42}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{42}">1.42.</a></b> \(n = 2\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{43}"></a><a id="solution1.{43}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{43}">1.43.</a></b> \(-0,75\)&nbsp;дптр
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{44}"></a><a id="solution1.{44}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{44}">1.44.</a></b> \(n = 1,4\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{45}"></a><a id="solution1.{45}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{45}">1.45.</a></b> \(\frac {f_1}{f_2} = \frac {n}{n - 1}\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{46}"></a><a id="solution1.{46}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{46}">1.46.</a></b> Фокусна відстань системи \(f = \frac {f_1f_2}{f_1 + f_2 - l}\). Відстань головних площин \(H\) та \(H&apos;\)
+системи від першої та другої лінз відповідно дорівнюють: \(|O_1H| = \frac {f_1l}{l - f_1 - f_2}\), \(|O_1H&apos;| = \frac {f_2l}{l - f_1 - f_2}\), відповідно.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{48}"></a><a id="solution1.{48}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{48}">1.48.</a></b> \(-1,33\)&nbsp;дптр.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{49}"></a><a id="solution1.{49}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{49}">1.49.</a></b> \(24\)&nbsp;дптр.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{50}"></a><a id="solution1.{50}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{50}">1.50.</a></b> \(-8\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{51}"></a><a id="solution1.{51}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{51}">1.51.</a></b> \(-14\)&nbsp;дптр.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{52}"></a><a id="solution1.{52}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{52}">1.52.</a></b> \(20\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{53}"></a><a id="solution1.{53}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{53}">1.53.</a></b> \(6\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{54}"></a><a id="solution1.{54}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{54}">1.54.</a></b> \(6\)&nbsp;мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{55}"></a><a id="solution1.{55}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{55}">1.55.</a></b> \(100\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{56}"></a><a id="solution1.{56}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{56}">1.56.</a></b> \(\Gamma = 250\); \(a = 10,5\)&nbsp;мм
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{57}"></a><a id="solution1.{57}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{57}">1.57.</a></b> \(2\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{58}"></a><a id="solution1.{58}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{58}">1.58.</a></b> \(80\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{59}"></a><a id="solution1.{59}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{59}">1.59.</a></b> \(7,5\)&nbsp;мкм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{60}"></a><a id="solution1.{60}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{60}">1.60.</a></b> Може. Обернене зображення даватиме дво-опукла лінза Пряме зображення даватиме опукло-увігнута лінза. Товщина таких лінз
+визначається, З урахуванням правила знаків, як
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                        𝑛
+                                                                                                                                 𝑑=       (𝑅 − 𝑅2 ).
+                                                                                                                                       𝑛−1 1
+
+-->
+
+<p>
+
+\begin{equation*}
+d = \frac {n}{n - 1} (R_1 - R_2).
+\end{equation*}
+
+</p>
+
+<p>
+Збільшення такої лінзи (з урахуванням правила знаків):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                             𝑅1
+                                                                                                                                        Γ=      .
+                                                                                                                                             𝑅2
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma = \frac {R_1}{R_2}.
+\end{equation*}
+
+</p>
+
+<p>
+Для опукло-впуклої лінзи, яка дає пряме зображення, має бути \(|R_1| &gt; |R_2|\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{61}"></a><a id="solution1.{61}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{61}">1.61.</a></b> \(12\)
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{62}"></a><a id="solution1.{62}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{62}">1.62.</a></b> 1) до об’єктива на \(1\)&nbsp;мм; 2) від об’єктива на \(9\)&nbsp;мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{63}"></a><a id="solution1.{63}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{63}">1.63.</a></b> \(30,7\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{64}"></a><a id="solution1.{64}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{64}">1.64.</a></b> \(h = v f&apos;_\text {об} \frac {\tau }{\delta } = 2500\)&nbsp;м.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{65}"></a><a id="solution1.{65}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{65}">1.65.</a></b> <em>Підказка</em>: Скористатись співвідношеннями <span class="textup">(<a
+href="geomopt.html#eq:Phi_of_thick_lens">1.17</a>)</span> або <span class="textup">(<a href="geomopt.html#eq:Phi_of_thick_lens2">1.17а</a>)</span>. Закріпивши скельця за допомогою каучуку в трубчастому стволі і заповнивши простір між ними водою,
+можна отримати товсту водяну лінзу, яка слугуватиме зоровою трубою за умови телескопічності \(\Phi = 0\), для чого відстань між лінзами має бути
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                           𝑛             4/3
+                                                                                                                     𝑑=      (𝑅 − 𝑅2 ) ≈     (40 − 16) = 96 см.
+                                                                                                                          𝑛−1 1          1/3
+
+-->
+
+<p>
+
+\begin{equation*}
+d = \frac {n}{n - 1}(R_1 - R_2) \approx \frac {4/3}{1/3}(40-16) = 96\ \text {см}.
+\end{equation*}
+
+</p>
+
+<p>
+Збільшення такої труби
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                         𝑅1
+                                                                                                                                    Γ=      = 2.5
+                                                                                                                                         𝑅2
+
+-->
+
+<p>
+
+\begin{equation*}
+\Gamma = \frac {R_1}{R_2} = 2.5
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:1.{66}"></a><a id="solution1.{66}"></a><b><a href="geomopt.html#LWR-ht-problem:1.{66}">1.66.</a></b> <em>Підказка</em>: Наповнивши пляшку водою і закоркувавши, так щоб не було бульбашки, через циліндричну частину
+пляшки, яку потрібно тримати паралельно до поверхні землі, сфокусувати сонячне проміння на листку паперу. Така циліндрична лінза дасть зображення у вигляді тонкої смужки сонячного світла на папері в напрямку прямих сонячних променів. За допомогою рулетки знайти радіус пляшки та
+фокусну відстань \(f&apos;\), яка відраховується від осі пляшки до сфокусованого зображення на папері.
+</p>
+
+<p>
+Показник заломлення знайдеться як:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                                                           2𝑓′
+                                                                                                                                    𝑛=           .
+                                                                                                                                         2𝑓′ − 𝑅
+
+-->
+
+<p>
+
+\begin{equation*}
+n = \frac {2f&apos;}{2f&apos; - R}.
+\end{equation*}
+
+</p>
+
+<p>
+Має бути
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                         4𝑅
+                                                                                                                                  𝑛≈          = 4/3.
+                                                                                                                                       4𝑅 − 𝑅
+-->
+
+<p>
+
+\begin{equation*}
+n \approx \frac {4R}{4R - R} = 4/3.
+\end{equation*}
+
+</p>
+
+</div>
+<!--
+...... section <a href=main-html.html#??>??</a> ......
+-->
+<h4 id="autosec-816"><a href="main-html.html#??">??</a></h4>
+<a id="main-html-autopage-816"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{6}"></a><a id="solution2.{6}"></a><b><a href="photometry.html#LWR-ht-problem:2.{6}">2.6.</a></b> \(1\)&nbsp;Вт/кд; \(12,1\)&nbsp;лм/Вт.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{7}"></a><a id="solution2.{7}"></a><b><a href="photometry.html#LWR-ht-problem:2.{7}">2.7.</a></b> \(\frac {\Phi }{\Phi _0} = \frac {1}{1 + k_\text {п}\frac {S - S_1}{S_1}}\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{8}"></a><a id="solution2.{8}"></a><b><a href="photometry.html#LWR-ht-problem:2.{8}">2.8.</a></b> \(51\)&nbsp;мкА.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{9}"></a><a id="solution2.{9}"></a><b><a href="photometry.html#LWR-ht-problem:2.{9}">2.9.</a></b> Не зміниться.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{10}"></a><a id="solution2.{10}"></a><b><a href="photometry.html#LWR-ht-problem:2.{10}">2.10.</a></b> \(12\)&nbsp;с.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{11}"></a><a id="solution2.{11}"></a><b><a href="photometry.html#LWR-ht-problem:2.{11}">2.11.</a></b> \(3,2\)&nbsp;лк; \(2,4\)&nbsp;лк.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{12}"></a><a id="solution2.{12}"></a><b><a href="photometry.html#LWR-ht-problem:2.{12}">2.12.</a></b> \(18,3\)&nbsp;м.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{13}"></a><a id="solution2.{13}"></a><b><a href="photometry.html#LWR-ht-problem:2.{13}">2.13.</a></b> \(0,707\)&nbsp;м.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{14}"></a><a id="solution2.{14}"></a><b><a href="photometry.html#LWR-ht-problem:2.{14}">2.14.</a></b> \(2\)&nbsp;клм; \(8\)&nbsp;клк; \(2,5\)&nbsp;ккд/м\(^2\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{15}"></a><a id="solution2.{15}"></a><b><a href="photometry.html#LWR-ht-problem:2.{15}">2.15.</a></b> \(E = \pi B\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{16}"></a><a id="solution2.{16}"></a><b><a href="photometry.html#LWR-ht-problem:2.{16}">2.16.</a></b> \(E = \pi B\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{17}"></a><a id="solution2.{17}"></a><b><a href="photometry.html#LWR-ht-problem:2.{17}">2.17.</a></b> \(B = \frac {E}{\pi \sin ^2\frac {\alpha }{2}} = 1,5\)&nbsp;Гкд/м\(^2\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{18}"></a><a id="solution2.{18}"></a><b><a href="photometry.html#LWR-ht-problem:2.{18}">2.18.</a></b> по діагоналі куба; \(I_{\max } = \sqrt 3 Ba^2 = 350\)&nbsp;кд.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{19}"></a><a id="solution2.{19}"></a><b><a href="photometry.html#LWR-ht-problem:2.{19}">2.19.</a></b> 1) \(63\)&nbsp;кд; 2) \(30\)&nbsp;кд.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{20}"></a><a id="solution2.{20}"></a><b><a href="photometry.html#LWR-ht-problem:2.{20}">2.20.</a></b> \(E = \frac {I_0h^2}{(h^2 + r^2)^2} = 1\)&nbsp;лк.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{21}"></a><a id="solution2.{21}"></a><b><a href="photometry.html#LWR-ht-problem:2.{21}">2.21.</a></b> \(3\)&nbsp;м.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{22}"></a><a id="solution2.{22}"></a><b><a href="photometry.html#LWR-ht-problem:2.{22}">2.22.</a></b> \(97\)&nbsp;лк; \(73\)&nbsp;лк; \(23\)&nbsp;кд/м\(^2\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:2.{23}"></a><a id="solution2.{23}"></a><b><a href="photometry.html#LWR-ht-problem:2.{23}">2.23.</a></b> \(0,02\).
+</p>
+</div>
+<!--
+...... section <a href=main-html.html#??>??</a> ......
+-->
+<h4 id="autosec-817"><a href="main-html.html#??">??</a></h4>
+<a id="main-html-autopage-817"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{8}"></a><a id="solution3.{8}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{8}">3.8.</a></b> а) \(n_e=1.6169\); б) \(\frac {d n}{d\lambda } =-0,1069\)&nbsp;м\(^{-1}\) в) \(u = 1,85\cdot
+10^{10}\)&nbsp;см/с, \(v = 1,79\cdot 10^{10}\)&nbsp;см/с.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{9}"></a><a id="solution3.{9}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{9}">3.9.</a></b> а) \(n_{f&apos;} = 1,5756\), \(n_e = 1,5710\) , \(n_{C&apos;} = 1,5665\); б) \(\frac {\Delta n}{\Delta \lambda
+} = 0,055\)&nbsp;м\(^{-1}\) в) \(\frac {\Delta \sigma _0}{\Delta \lambda } = 0,0898\)&nbsp;рад\(\cdot \)м\(^{-1}\); г) \(A = 1,5551\), \(B = 0,0047\)&nbsp;мкм\(^2\); д) \(v_e = 1,91\cot 10^{10}\)&nbsp;см/с, \(u = 1,87\cdot 10^{10}\)&nbsp;
+см/с.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{11}"></a><a id="solution3.{11}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{11}">3.11.</a></b> <em>Підказка</em>: Використайте формули <span class="textup">(<a
+href="dispersion.html#eq:epsilon">3.5</a>)</span>, <span class="textup">(<a href="dispersion.html#eq_dispersio:e=n^2">3.7</a>)</span> та <span class="textup">(<a href="dispersion.html#eq_dispersion: n">3.8</a>)</span>.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{12}"></a><a id="solution3.{12}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{12}">3.12.</a></b> \(N = 2\cdot 10^9\) см\(^{-3}\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{13}"></a><a id="solution3.{13}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{13}">3.13.</a></b> \(N = 2,4\cdot 10^7\)&nbsp;см\(^{-1}\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{14}"></a><a id="solution3.{14}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{14}">3.14.</a></b> \(n - 1 = - 5,5\cdot 10^{-7}\)
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:3.{15}"></a><a id="solution3.{15}"></a><b><a href="dispersion.html#LWR-ht-problem:3.{15}">3.15.</a></b> \(v = 0,61c\), \(u = 0,65c\).
+</p>
+</div>
+<!--
+...... section <a href=main-html.html#??>??</a> ......
+-->
+<h4 id="autosec-818"><a href="main-html.html#??">??</a></h4>
+<a id="main-html-autopage-818"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{8}"></a><a id="solution4.{8}"></a><b><a href="interference.html#LWR-ht-problem:4.{8}">4.8.</a></b> а) \(1,2087 \); \(0,227 \)&nbsp;мкм; б) \(93,1 \) &percnt;; \(96,49 \) &percnt;; в) \(3,39 \) &percnt;.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{9}"></a><a id="solution4.{9}"></a><b><a href="interference.html#LWR-ht-problem:4.{9}">4.9.</a></b> \(d = 3,1\)&nbsp;мкм, \(R=0,978 \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{10}"></a><a id="solution4.{10}"></a><b><a href="interference.html#LWR-ht-problem:4.{10}">4.10.</a></b> Показник заломлення матеріалу покриття \(n_1 = \sqrt {n_2} = 1,265 \). Мінімальна товщина одношарового покриття
+\(d_{\min } = \frac {1}{n_1}\frac \lambda 4 = 0,11\)&nbsp;мкм. Коефіцієнт проходження світла без покриття:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                                       2
+                                                                                                                                            𝑛0 − 𝑛2 2
+                                                                                                               𝑇𝐼 = (1 − 𝑅02 )2 = [1 − (            ) ] ≈ 0.896.
+                                                                                                                                            𝑛0 + 𝑛2
+
+-->
+
+<p>
+
+\begin{equation*}
+T_I = (1 - R_{02})^2 = \left [ 1 - \left ( \frac {n_0 - n_2}{n_0 + n_2}\right )^2 \right ]^2 \approx 0.896.
+\end{equation*}
+
+</p>
+
+<p>
+Коефіцієнт проходження світла з покриттям:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                                   2                  2
+                                                                                                                                        𝑛0 − 𝑛 1 2         𝑛 − 𝑛2 2
+                                                                                               𝑇𝐼′ = (1 − 𝑅01 )2 (1 − 𝑅12 )2 = [1 − (            ) ] [1 − ( 1       ) ] ≈ 0, 944.
+                                                                                                                                        𝑛0 + 𝑛 1           𝑛1 + 𝑛 2
+
+-->
+
+<p>
+
+\begin{equation*}
+T&apos;_I = (1 - R_{01})^2 (1 - R_{12})^2 = \left [ 1 - \left ( \frac {n_0 - n_1}{n_0 + n_1}\right )^2 \right ]^2 \left [ 1 - \left ( \frac {n_1 - n_2}{n_1 + n_2}\right )^2 \right ]^2 \approx 0,944.
+\end{equation*}
+
+</p>
+
+<p>
+Втрати на відбиття складають відповідно:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                               𝑅𝐼 = 1 − 𝑇𝐼 = 0, 104,       𝑅𝐼′ = 1 − 𝑇𝐼′ = 0, 054,
+
+-->
+
+<p>
+
+\begin{equation*}
+R_I = 1 - T_I = 0,104, \quad R&apos;_I = 1- T&apos;_I = 0,054,
+\end{equation*}
+
+</p>
+
+<p>
+тобто зменшуються майже удвічі.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{11}"></a><a id="solution4.{11}"></a><b><a href="interference.html#LWR-ht-problem:4.{11}">4.11.</a></b> \(E = 5 \)&nbsp;В/м; \(\omega = \pi \cdot 10^{15}\)&nbsp;рад/с; \(\phi _0 = 0,205\pi \); \(E = 5\sin
+(\pi (10^{15} t + 0.205)) \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{12}"></a><a id="solution4.{12}"></a><b><a href="interference.html#LWR-ht-problem:4.{12}">4.12.</a></b> <em>Підказки</em>.
+</p>
+<ul class="enumerate" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">1.</span> Скористатися комплексною формою подання \(E_m\) при \(x = 0\).
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">2.</span> Скористатися формулами для суми членів скінченної (а) і нескінченної (б) спадаючих геометричних прогресій.
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">3.</span> Визначити \(E_{0_2} \) множенням комплексної амплітуди на спряжений їй вираз й скористатися формулою Ейлера.
+</p>
+</li>
+</ul>
+
+<p>
+а) \(E_0 = E_{0_1} \frac {\sin \frac {N\delta }{2}}{\sin \frac {\delta }{2}} \), \(I = I_1 \left ( \frac {\sin \frac {N\delta }{2}}{\sin \frac {\delta }{2}}\right )^2 \); б) \(E_0 = E_{0_1} \frac 1{2\sin \frac {\delta
+}{2}} \), \(I = I_1 \frac 1{4\sin ^2\frac {\delta }{2}} \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{13}"></a><a id="solution4.{13}"></a><b><a href="interference.html#LWR-ht-problem:4.{13}">4.13.</a></b> \(500 \) нм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{14}"></a><a id="solution4.{14}"></a><b><a href="interference.html#LWR-ht-problem:4.{14}">4.14.</a></b> \(1,000865 \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{15}"></a><a id="solution4.{15}"></a><b><a href="interference.html#LWR-ht-problem:4.{15}">4.15.</a></b> а) \(0,13 \) мкм; \(0,09 \) мкм; б) не зміниться.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{16}"></a><a id="solution4.{16}"></a><b><a href="interference.html#LWR-ht-problem:4.{16}">4.16.</a></b> а) \(0,24 \) мкм; \(0,12 \) мкм; б) \(0,12 \) мкм; \(0,24 \) мкм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{17}"></a><a id="solution4.{17}"></a><b><a href="interference.html#LWR-ht-problem:4.{17}">4.17.</a></b> а) \(589 \) нм; б) \(673 \) нм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{18}"></a><a id="solution4.{18}"></a><b><a href="interference.html#LWR-ht-problem:4.{18}">4.18.</a></b> \(3,54 \) мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{19}"></a><a id="solution4.{19}"></a><b><a href="interference.html#LWR-ht-problem:4.{19}">4.19.</a></b> \(1,56 \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{20}"></a><a id="solution4.{20}"></a><b><a href="interference.html#LWR-ht-problem:4.{20}">4.20.</a></b> \(1,00038 \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{21}"></a><a id="solution4.{21}"></a><b><a href="interference.html#LWR-ht-problem:4.{21}">4.21.</a></b> а) \(r_m^{\text {світлого}} = \sqrt {\frac {R_1R_2}{n_2(R_1 - R_2)} (2m-1)\frac \lambda 2 }\); б)
+\(r_m^{\text {темного}} = \sqrt {\frac {R_1R_2}{n_2(R_1 - R_2)} m\lambda }\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{23}"></a><a id="solution4.{23}"></a><b><a href="interference.html#LWR-ht-problem:4.{23}">4.23.</a></b> \(0,541 \) мкм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{24}"></a><a id="solution4.{24}"></a><b><a href="interference.html#LWR-ht-problem:4.{24}">4.24.</a></b> \(1,5 \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{25}"></a><a id="solution4.{25}"></a><b><a href="interference.html#LWR-ht-problem:4.{25}">4.25.</a></b> \(\frac {\Delta \lambda }{\lambda } = \frac 1{980}\); \(\Delta \lambda = 6,02\)&nbsp;0.25A.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{26}"></a><a id="solution4.{26}"></a><b><a href="interference.html#LWR-ht-problem:4.{26}">4.26.</a></b> \(N = \frac {dD^2}{35nf^2\lambda } = 2\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{27}"></a><a id="solution4.{27}"></a><b><a href="interference.html#LWR-ht-problem:4.{27}">4.27.</a></b> \(D_{\min } = \frac {36nf^2\lambda }{D^2} = 0,81\)&nbsp;мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{28}"></a><a id="solution4.{28}"></a><b><a href="interference.html#LWR-ht-problem:4.{28}">4.28.</a></b> \(a = \frac {f\lambda }{ \Delta x} = 0,06\)&nbsp;мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{29}"></a><a id="solution4.{29}"></a><b><a href="interference.html#LWR-ht-problem:4.{29}">4.29.</a></b> \(\frac {\Delta l}{l} = \frac {2ha\sqrt {n^2 - 1}}{\lambda } = 0,75\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{30}"></a><a id="solution4.{30}"></a><b><a href="interference.html#LWR-ht-problem:4.{30}">4.30.</a></b> Видимим є лише нульовий порядок: спочатку при відбитті від передньої грані при \(\Delta x = 0 \), потім від задньої грані
+при \(\Delta x = 2dn = 2 \)&nbsp; см. Наступні порядки інтерференції — спадаючої інтенсивності.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{31}"></a><a id="solution4.{31}"></a><b><a href="interference.html#LWR-ht-problem:4.{31}">4.31.</a></b> \(V = \frac {\sin \frac {\pi b d}{\lambda l}}{\frac {\pi b d}{\lambda l}}\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{32}"></a><a id="solution4.{32}"></a><b><a href="interference.html#LWR-ht-problem:4.{32}">4.32.</a></b> \(D \approx \frac {\lambda }{\alpha } = 0,05\)&nbsp;мм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{33}"></a><a id="solution4.{33}"></a><b><a href="interference.html#LWR-ht-problem:4.{33}">4.33.</a></b> \(l \frac {fD\alpha }{\lambda } \approx 100\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{34}"></a><a id="solution4.{34}"></a><b><a href="interference.html#LWR-ht-problem:4.{34}">4.34.</a></b> \(m = \frac {\Delta }{\lambda } \approx 360\) (де \(\Delta = 2h\sqrt {n^2 - \sin ^2\phi }\) —
+різниця ходу променів), кут сходження променів в силу симетрії приблизно дорівнює апертурі інтерференції:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                              𝐿
+                                                                                                                        Ω=      tg 𝜓 cos2 𝜙 = 2 ⋅ 10−4 ,
+                                                                                                                              ℎ
+
+-->
+
+<p>
+
+\begin{equation*}
+\Omega = \frac {L}{h} \tg \psi \cos ^2\phi = 2\cdot 10^{-4},
+\end{equation*}
+
+</p>
+
+<p>
+де \(\psi \) — кут заломлення, ширина інтерференційних смуг, \(\Delta \approx \frac {\lambda }{\omega } = 2,8\)&nbsp;см, граничний розмір джерела \(b \approx \Delta \approx 2,8\)&nbsp;см. Допустима немонохроматичність \(\Delta \lambda = \frac
+{\lambda }{m} = 1,6 \)&nbsp;нм.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{35}"></a><a id="solution4.{35}"></a><b><a href="interference.html#LWR-ht-problem:4.{35}">4.35.</a></b> \(m_{\max } \approx 1000\), \(m_{\min } \approx 720 \). \(\Delta \lambda \le 0,5 \)&nbsp;нм. Джерело
+світла може мати будь-які розміри.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{36}"></a><a id="solution4.{36}"></a><b><a href="interference.html#LWR-ht-problem:4.{36}">4.36.</a></b> 1) \(\Delta x \approx 10^{-3}\)&nbsp;см; 2) \(|x| \le 0,25\)&nbsp;см (область локалізації смуг); 3) \(m_{\max }
+= 250\), \(m_{\min } = 0\), \(N \approx 500\), 4) \(\Delta \lambda = 20\)&nbsp;0.25A; 5) \(b \le 10^{-3}\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{37}"></a><a id="solution4.{37}"></a><b><a href="interference.html#LWR-ht-problem:4.{37}">4.37.</a></b> 1) \(L = \frac {D}{4\theta (n - 1)} = 1\)&nbsp;м; 2) \(\Delta \lambda = \frac {\lambda }{m_{\max }}
+= 5\)&nbsp;нм, де \(m_{\max } = 100\); 3) \(\psi \le \frac {2\lambda }{D} = 5\cdot 10^{-5} = 0.18&apos;&apos;\).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{38}"></a><a id="solution4.{38}"></a><b><a href="interference.html#LWR-ht-problem:4.{38}">4.38.</a></b> 1) \(L = \frac {D - a}{2\alpha }\), де \(\alpha = \frac {a}{f} = 10^{-2}\), \(\Delta x = \frac
+{\lambda }{\alpha } = 5\cdot 10^{-3}\)&nbsp;см, \(N = 200\); 2) \(m_{\max } = 100\), \(\Delta \lambda = \frac {\lambda }{m_{\max }} = 5\)&nbsp;нм; 3) \(b \le \frac {2\lambda f}{D - a} = 2,5\cdot 10^{-3}\)&nbsp;см.
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{39}"></a><a id="solution4.{39}"></a><b><a href="interference.html#LWR-ht-problem:4.{39}">4.39.</a></b> \(V(L) = \left | \frac {\sin (0,1\pi L)}{0,1\pi L}\right |\), смуги розмиваються при \(L =
+10m\)&nbsp;см, де \(m = 1, 2, 3, \ldots \).
+</p>
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:4.{40}"></a><a id="solution4.{40}"></a><b><a href="interference.html#LWR-ht-problem:4.{40}">4.40.</a></b> а) В центрі кілець максимальний порядок інтерференції. Із збільшенням номеру \(k\) порядок їх інтерференції \(m \) зменшується
+\(\frac {dk}{dm} &lt; 0\). б) кутова відстань між кільцями зменшується із зменшенням порядку інтерференції \(\frac {\Delta \epsilon &apos;_2}{dm} &gt; 0 \).
+</p>
+</div>
+<!--
+...... section <a href=difraction.html#Difraction>Дифракція</a> ......
+-->
+<h4 id="autosec-819"><a href="difraction.html#Difraction">Дифракція</a></h4>
+<a id="main-html-autopage-819"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{7}"></a><a id="solution5.{7}"></a><b><a href="difraction.html#LWR-ht-problem:5.{7}">5.7.</a></b> а) \(1 \)&nbsp;мм; б) \(0,71 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{8}"></a><a id="solution5.{8}"></a><b><a href="difraction.html#LWR-ht-problem:5.{8}">5.8.</a></b>
+</p>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td class="tdl tvertbarl tvertbarr" style="border-left: 1px solid black; border-right: 1px solid black">\(m\)</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">1</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">2</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">3</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">4</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">5</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">6</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">7</td>
+<td class="tdl tvertbarr" style="border-right: 1px solid black">8</td>
+</tr>
+
+<tr class="hline">
+<td class="tdl tvertbarl tvertbarr" style="border-left: 1px solid black; border-right: 1px solid black">\(b_m\), см</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">200</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">100</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">66</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">50</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">40</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">33</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">28,6</td>
+<td class="tdl tvertbarr" style="border-right: 1px solid black">25</td>
+</tr>
+
+<tr class="hline">
+<td class="tdl tvertbarl tvertbarr" style="border-left: 1px solid black; border-right: 1px solid black">\(I_m\)</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">\(I_0\)</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">0</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">\(I_0\)</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">0</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">\(I_0\)</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">0</td>
+<td colspan="1" class="tdl tvertbarr" style="border-right: 1px solid black">\(I_0\)</td>
+<td class="tdl tvertbarr" style="border-right: 1px solid black">0</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdl"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdl"></td>
+</tr>
+</table>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{9}"></a><a id="solution5.{9}"></a><b><a href="difraction.html#LWR-ht-problem:5.{9}">5.9.</a></b> \(15 \) см.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{10}"></a><a id="solution5.{10}"></a><b><a href="difraction.html#LWR-ht-problem:5.{10}">5.10.</a></b> 1) \(9/16\cdot I_0 \); 2) \(1/4\cdot I_0 \); 3) \(1/16\cdot I_0 \); 4) \(1/4\cdot I_0; \) 5) \(25/16\cdot I_0 \);
+6) \(9/4\cdot I_0 \); 7) \(49/16\cdot I_0 \); 8) \(9/4\cdot I_0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{11}"></a><a id="solution5.{11}"></a><b><a href="difraction.html#LWR-ht-problem:5.{11}">5.11.</a></b> 1) \(I = 0 \) 2) \(I = 1/4\cdot I_0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{12}"></a><a id="solution5.{12}"></a><b><a href="difraction.html#LWR-ht-problem:5.{12}">5.12.</a></b> \(I = 0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{13}"></a><a id="solution5.{13}"></a><b><a href="difraction.html#LWR-ht-problem:5.{13}">5.13.</a></b> Інтенсивність збільшиться в \(5 \) разів.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{14}"></a><a id="solution5.{14}"></a><b><a href="difraction.html#LWR-ht-problem:5.{14}">5.14.</a></b> Електричне поле в діелектрику максимальне на осі пучка на такій відстані від поверхні, з якої діаметр пучка сприймається як
+діаметр першої зони Френеля.
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                                             𝐷2 𝑛
+                                                                                                                        𝑏=        = 100 см,
+                                                                                                                             4𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+b = \frac {D^2n}{4\lambda } = 100\ \text {см},
+\end{equation*}
+
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                                         4 8𝜋𝑆        В
+                                                                                                                   𝐸=          = 1200    .
+                                                                                                                         3√ 𝑐         см
+
+-->
+
+<p>
+
+\begin{equation*}
+E = \frac 43 \sqrt {\frac {8\pi S}{c}} = 1200\ \frac {\text {В}}{\text {см}}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{15}"></a><a id="solution5.{15}"></a><b><a href="difraction.html#LWR-ht-problem:5.{15}">5.15.</a></b> а) \(f&apos; = 90 \)&nbsp;см; б) \(r_1 = 0,672 \)&nbsp;мм; в) \(f&apos; =119,7 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{16}"></a><a id="solution5.{16}"></a><b><a href="difraction.html#LWR-ht-problem:5.{16}">5.16.</a></b>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+
+                                                                                                      𝑟12                2𝑚 + 1
+                                                                                             𝑓max =       = 8 м;   ℎ=             𝜆,   𝑚 = 0, 1, 2, … ,   𝐼max = 36𝐼0 .
+                                                                                                      𝜆                 𝑑2(𝑛 − 1)
+
+-->
+
+<p>
+
+\begin{equation*}
+f_{\max } = \frac {r_1^2}{\lambda } = 8\ \text {м}; \quad h = \frac {2m+1}{d2(n - 1)}\lambda , \quad m = 0, 1, 2, \ldots , \quad I_{\max } = 36 I_0.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{17}"></a><a id="solution5.{17}"></a><b><a href="difraction.html#LWR-ht-problem:5.{17}">5.17.</a></b>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                         √
+                                                                                                                         √    𝑚𝜆
+                                                                                                                    𝑟𝑚 = √ 1          .
+                                                                                                                           | + 1 − 2|
+                                                                                                                         √|𝑎   𝑏   𝑅|
+
+-->
+
+<p>
+
+\begin{equation*}
+r_m = \sqrt {\frac {m\lambda }{\left |\frac 1a + \frac 1b - \frac 2R \right |}}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{18}"></a><a id="solution5.{18}"></a><b><a href="difraction.html#LWR-ht-problem:5.{18}">5.18.</a></b> а) \(m_1 = 40 \); б) \(\delta l_0 = 5 \) см.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{19}"></a><a id="solution5.{19}"></a><b><a href="difraction.html#LWR-ht-problem:5.{19}">5.19.</a></b> \(d^{-1} = 500\) мм\(^{-1}\); \(\lambda _2 = 0,4099 \)&nbsp;мкм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{20}"></a><a id="solution5.{20}"></a><b><a href="difraction.html#LWR-ht-problem:5.{20}">5.20.</a></b> \(d = 5,013\cdot 10^{-4} \)&nbsp;см; \(\lambda _2 = 0,706 \)&nbsp;мкм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{21}"></a><a id="solution5.{21}"></a><b><a href="difraction.html#LWR-ht-problem:5.{21}">5.21.</a></b> а) Ні; б) Так
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{22}"></a><a id="solution5.{22}"></a><b><a href="difraction.html#LWR-ht-problem:5.{22}">5.22.</a></b> \(22,2 \)&nbsp;мкм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{23}"></a><a id="solution5.{23}"></a><b><a href="difraction.html#LWR-ht-problem:5.{23}">5.23.</a></b> \(h = \frac {2m-1}{2(n-1)}\lambda \), \(m = 1, 2, 3, \ldots \). Інтенсивність нульового головного максимуму
+дорівнює нулю.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{24}"></a><a id="solution5.{24}"></a><b><a href="difraction.html#LWR-ht-problem:5.{24}">5.24.</a></b> \(I = I_0\left ( \frac {\sin \left ( kNa\sin \frac \theta 2\right ) }{\sin \left ( ka\sin
+\frac \theta 2\right ) } \right )^2 \left ( \frac {\sin k\frac \Delta 2}{k\frac \Delta 2} \right )^2 \), де \(k = \frac {2\pi }{\lambda }\), \(\Delta = h (n-1) - a\sin \theta \). Напрямки на головні максимуми визначаються
+формулою: \(\sin \theta _{\min } = \frac {m\lambda }{a}\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{25}"></a><a id="solution5.{25}"></a><b><a href="difraction.html#LWR-ht-problem:5.{25}">5.25.</a></b> Роздільна здатність не зміниться, дисперсійна область зменшиться вдвічі.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{26}"></a><a id="solution5.{26}"></a><b><a href="difraction.html#LWR-ht-problem:5.{26}">5.26.</a></b> Для ока \(4,5\)&nbsp;км; для труби — \(56,5\)&nbsp;км.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{27}"></a><a id="solution5.{27}"></a><b><a href="difraction.html#LWR-ht-problem:5.{27}">5.27.</a></b> \(l = 52\)&nbsp;м; \(\phi _d = 0,055&apos;&apos;\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{28}"></a><a id="solution5.{28}"></a><b><a href="difraction.html#LWR-ht-problem:5.{28}">5.28.</a></b> \(\ell _{\min }\approx 1\)&nbsp;м.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{29}"></a><a id="solution5.{29}"></a><b><a href="difraction.html#LWR-ht-problem:5.{29}">5.29.</a></b> \(\frac {D^2}{f^2} \ge z^2\lambda ^2 \approx 0,25\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{30}"></a><a id="solution5.{30}"></a><b><a href="difraction.html#LWR-ht-problem:5.{30}">5.30.</a></b> \(\Gamma \ge \frac {D}{d}\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{31}"></a><a id="solution5.{31}"></a><b><a href="difraction.html#LWR-ht-problem:5.{31}">5.31.</a></b> \(\Gamma 2n \frac {L}{d}\sin u\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{32}"></a><a id="solution5.{32}"></a><b><a href="difraction.html#LWR-ht-problem:5.{32}">5.32.</a></b> \(L \approx \frac {D^2}{2,44 \lambda } \approx 1000\)&nbsp;км; \(S = \left ( 2,44\frac {\lambda
+}{D} \right )^2 = 1,5\cdot 10^{-12}\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{33}"></a><a id="solution5.{33}"></a><b><a href="difraction.html#LWR-ht-problem:5.{33}">5.33.</a></b> \(L_{\max } \approx 70\)&nbsp;км.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{34}"></a><a id="solution5.{34}"></a><b><a href="difraction.html#LWR-ht-problem:5.{34}">5.34.</a></b> \(T \approx 1,5\)&percnt;.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{35}"></a><a id="solution5.{35}"></a><b><a href="difraction.html#LWR-ht-problem:5.{35}">5.35.</a></b> \(R_\text {ІЧ} = 2\cdot 10^5\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{36}"></a><a id="solution5.{36}"></a><b><a href="difraction.html#LWR-ht-problem:5.{36}">5.36.</a></b> \(R_{\max } \approx \frac {fD}{\lambda d} = 5\cdot 10^5\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{37}"></a><a id="solution5.{37}"></a><b><a href="difraction.html#LWR-ht-problem:5.{37}">5.37.</a></b> \(\Delta \lambda = \frac {\lambda }{m} = \frac {\lambda ^2}{h(n-1)} = 0,5\)&nbsp;нм; \(R = mN =
+10^4\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{38}"></a><a id="solution5.{38}"></a><b><a href="difraction.html#LWR-ht-problem:5.{38}">5.38.</a></b> \(0,28\)&nbsp;нм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{39}"></a><a id="solution5.{39}"></a><b><a href="difraction.html#LWR-ht-problem:5.{39}">5.39.</a></b> \(31\)&nbsp;пм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:5.{40}"></a><a id="solution5.{40}"></a><b><a href="difraction.html#LWR-ht-problem:5.{40}">5.40.</a></b> \(506\)&nbsp;пм.
+</p>
+
+</div>
+<!--
+...... section <a href=main-html.html#??>??</a> ......
+-->
+<h4 id="autosec-821"><a href="main-html.html#??">??</a></h4>
+<a id="main-html-autopage-821"></a>
+
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{15}"></a><a id="solution6.{15}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{15}">6.15.</a></b> а) \(R = 0,0502 \); \(P_R = 0,8308 \); \(P_D = 0,0439 \); б) \(6,25 \% \); \(76,96 \% \); \(5,13 \% \); в) \(8,32 \%
+\); \(74,65 \% \); \(6,78 \% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{16}"></a><a id="solution6.{16}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{16}">6.16.</a></b> \(36^\circ 56&apos;20&apos;&apos; \); \(4,01 \% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{17}"></a><a id="solution6.{17}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{17}">6.17.</a></b> а) \(\epsilon _\text {Б} = 56^\circ 18&apos; 38&apos;&apos; \); \(R = 7,39 \% \); \(P_D = 7,98 \% \);
+б) \(\epsilon _\text {Б} = 58^\circ 18&apos; 49&apos;&apos; \); \(R = 10,04 \%\); \(R_D = 11,16 \% \); в) \(\epsilon _\text {Б} = 59^\circ 58&apos; 14&apos;&apos; \); \(R = 12,45 \%\); \(R_D = 14,23 \% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{18}"></a><a id="solution6.{18}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{18}">6.18.</a></b> \(61^\circ 12&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{19}"></a><a id="solution6.{19}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{19}">6.19.</a></b> \(32^\circ \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{20}"></a><a id="solution6.{20}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{20}">6.20.</a></b> \(1,52 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{21}"></a><a id="solution6.{21}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{21}">6.21.</a></b> а) \(106^\circ \); б) \(156^\circ \); в) \(100^\circ \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{22}"></a><a id="solution6.{22}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{22}">6.22.</a></b> В \(3,3 \) рази.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{23}"></a><a id="solution6.{23}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{23}">6.23.</a></b> \(23,6 \) ккд/м<sup>2</sup>.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{24}"></a><a id="solution6.{24}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{24}">6.24.</a></b> \(P_R = 1\); \(P_D = 9,05\% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{25}"></a><a id="solution6.{25}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{25}">6.25.</a></b> a) \(1,63 \); б) \(\epsilon _\text {пр} = \arcsin (tg42^\circ 37&apos;) = 66^\circ
+56&apos;18&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{26}"></a><a id="solution6.{26}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{26}">6.26.</a></b> \(\theta = 2(90 - \epsilon _\text {Б}) = 67^\circ 22&apos;48&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{27}"></a><a id="solution6.{27}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{27}">6.27.</a></b> \(\theta = 60^\circ 03&apos;32&apos;&apos; \); \(\sigma _A = 59^\circ 52&apos;56&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{28}"></a><a id="solution6.{28}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{28}">6.28.</a></b> а) \(0,047\); б) \(0,333\); в) \(0,500\); г) \(0,714\); д) \(0,833 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{29}"></a><a id="solution6.{29}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{29}">6.29.</a></b> Світло повинно бути лінійно поляризованим у площині падіння та на гранях призми повинно бути \(R_{\parallel } = 0 \) .
+Звідси випливає, що показник заломлення скла призми повинен бути \(n = 1,732 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{30}"></a><a id="solution6.{30}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{30}">6.30.</a></b> \(\epsilon _B = 58^\circ 46&apos;54&apos;&apos; \); \(\frac {I_\text {П}}{I_\text {пр}} = 0,107
+\); \(\phi = 35^\circ 15&apos;52&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{31}"></a><a id="solution6.{31}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{31}">6.31.</a></b> а) Зменшиться у \(1,5 \) рази; б) \(69^\circ 17&apos;43&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{32}"></a><a id="solution6.{32}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{32}">6.32.</a></b> \(I = I_0 \cos ^2 \alpha \cos ^2(\alpha _2 - \alpha _1) \); а) \(66,22 \)&nbsp;Вт/м<sup>2</sup>; б)
+\(50,0 \)&nbsp;Вт/м<sup>2</sup>; в) \(46,65 \)&nbsp;Вт/м<sup>2</sup>.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{33}"></a><a id="solution6.{33}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{33}">6.33.</a></b> а) \(\lambda _o = 355,2\)&nbsp;нм; \(\lambda _e = 396,4 \)&nbsp;нм; \(v_o = 1,809\cdot 10^{10}
+\)&nbsp;см/с; \(v_e = 2,019\cdot 10^{10}\)&nbsp;см/с; б) \(\lambda _o = 382,5 \)&nbsp;нм; \(\lambda _e = 380 \)&nbsp;нм; \(v_o = 1,948\cdot 10^{10} \)&nbsp;см/с; \(v_e = 1,935\cdot 10^{10}\)&nbsp;см/с;
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{34}"></a><a id="solution6.{34}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{34}">6.34.</a></b> а) З обох призм виходить незвичайний промінь, з першої — поляризований горизонтально, з другої — вертикально; б) друга
+призма пропускає у \(1,41 \) рази більше світла; в) \(\frac {1}{n_o} &lt; \sin \alpha &lt;\frac {1}{n_e} \); \(37^\circ 05&apos;41&apos;&apos;&lt;\alpha &lt;42^\circ 17&apos;42&apos;&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{35}"></a><a id="solution6.{35}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{35}">6.35.</a></b> \(\phi = 2(n_o - n_e)tg\alpha = 5^\circ 17&apos; \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{36}"></a><a id="solution6.{36}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{36}">6.36.</a></b> а) \(I = I_0(1 + 2\sin 2\alpha \sin \delta )\); б) кварц — додатній кристал (\(\delta &gt; 0 \)); при \(\alpha
+_1 = \frac {\pi }{4} \Rightarrow I_{\max } \), при \(\alpha _2 = \frac {3\pi }{4} \Rightarrow I_{\min }\).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{37}"></a><a id="solution6.{37}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{37}">6.37.</a></b> \(I = 2I_0(1 + \cos \delta ) \); \(m = d_{\max } \frac {n_e - n_o}{\lambda } \); а) \(10 \); б) \(172 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{38}"></a><a id="solution6.{38}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{38}">6.38.</a></b> \(\approx 0,07 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{39}"></a><a id="solution6.{39}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{39}">6.39.</a></b> а) \(F = \frac {\lambda a}{4k} = 31,25 \)&nbsp;Н; б) \(\frac {I_\perp }{I_\text {пр}} = 25\% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{40}"></a><a id="solution6.{40}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{40}">6.40.</a></b> а) \(\frac {I_\perp }{I_\text {пр}} = 0 \); б) \(\frac {I_\parallel }{I_\text {пр}} = 50\% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{41}"></a><a id="solution6.{41}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{41}">6.41.</a></b> \((n_e - n_o)&apos; = B\lambda E^2 = 0,12 \cdot 10^{-6} \); \(\delta = 2\pi BdE^2 = 2,85^\circ \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{42}"></a><a id="solution6.{42}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{42}">6.42.</a></b> \(d = 133,6 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{43}"></a><a id="solution6.{43}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{43}">6.43.</a></b> а) \(\delta = 2\pi cdH^2 = 3^\circ 50&apos;28&apos;&apos; \); б) \(\frac {I_H}{I_\text {пр}} =
+49,\% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{44}"></a><a id="solution6.{44}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{44}">6.44.</a></b> а) \(d = 4,5 \)&nbsp;мм; б) \(d = 1,76 \)&nbsp;мм; в) \(d = 9 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{45}"></a><a id="solution6.{45}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{45}">6.45.</a></b> а) \(d = 9 \)&nbsp;мм; б) \(d = 2,73 \)&nbsp;мм; в) \(d = 4,5 \)&nbsp;мм.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{46}"></a><a id="solution6.{46}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{46}">6.46.</a></b> а) \(\psi = VdH = 7^\circ 14&apos;42&apos;&apos; \); б) \(\frac {I_\perp }{I_\text {пр}} = 2\% \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{47}"></a><a id="solution6.{47}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{47}">6.47.</a></b> а) \(V = \frac {\phi _1 + \phi _2}{2dH} = 3,246 \cdot 10^{-3}\)&nbsp;кут.хв./А; б) \(\psi = 45^\circ
+\); в) \(H = 2,772\cdot 10^6 \)&nbsp;А/м.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{48}"></a><a id="solution6.{48}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{48}">6.48.</a></b> \(E_{\min } = \frac {1}{\sqrt {R\lambda B}} \approx 2,88 \)&nbsp;од.&nbsp;СГСЕ \(\approx 900
+\)&nbsp;В/см.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{49}"></a><a id="solution6.{49}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{49}">6.49.</a></b> \(\sqrt {2}/2 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{50}"></a><a id="solution6.{50}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{50}">6.50.</a></b> \(I = 3I_0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{51}"></a><a id="solution6.{51}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{51}">6.51.</a></b> \(I = 5I_0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{52}"></a><a id="solution6.{52}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{52}">6.52.</a></b> а) Інтенсивність світла збільшиться у \(25 \) разів; 2) Інтенсивність світла збільшиться у \(9 \) разів.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{53}"></a><a id="solution6.{53}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{53}">6.53.</a></b> \(I = 2I_0 \).
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{54}"></a><a id="solution6.{54}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{54}">6.54.</a></b> \(I(\theta ) = 3I_0 \left [1 + \frac {2}{3} \cos \left (\frac {4\pi d}{\lambda } \sin \theta
+\right )\right ] \), звідки \(V = \frac {2}{3} \); \(\Lambda = \frac {\lambda f}{2 d} = 2,5 \cdot 10^{-3} \)&nbsp;см.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{55}"></a><a id="solution6.{55}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{55}">6.55.</a></b> Повна різниця фаз світла, що приходить у максимум \(m \)-го між двома взаємно перпендикулярними коливаннями
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{6.}{26}\)</span>
+
+<!--
+
+                                                                                                                                   𝜋
+                                                                                                                           Δ𝜙𝑚 =     (𝑚 + 1).
+                                                                                                                                   2
+-->
+
+<p>
+
+\begin{equation*}
+\Delta \phi _m = \frac {\pi }{2}(m + 1) .
+\end{equation*}
+
+</p>
+
+<p>
+При \(m = 0 \), \(\Delta \phi _0 = \frac {\pi }{2} \) — кругова поляризація зі збереженням обертання світла, що падає; при \(m = \pm 1 \), \(\Delta \phi _1 = \pi \); \(\Delta \phi _{-1} = 0 \) — лінійно поляризоване світло; при \(m = \pm 2 \) — кругова
+поляризація з протилежним по відношенню до падаючого світла обертанням. У загальному випадку: у непарних максимумах світло лінійно поляризоване; при \(m = 0, \pm 4, \pm 8, \ldots \) кругова поляризація зі збереженням напряму обертання; при \(m = 2, \pm 6, \pm 10,
+\ldots \) кругова поляризація зі зворотнім обертанням.
+</p>
+
+</div>
+
+
+<div class="cb-answer">
+
+<p>
+<a id="LWR-ht-solution:6.{56}"></a><a id="solution6.{56}"></a><b><a href="polarisation.html#LWR-ht-problem:6.{56}">6.56.</a></b> Зменшиться вдвічі, незалежно від поляризації світла, що падає.
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

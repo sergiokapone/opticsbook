@@ -1,0 +1,5022 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Дифракція</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-493"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Дифракція">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Дифракція ......
+-->
+<h3 id="autosec-495"><span class="sectionnumber">5&#x2003;</span>Дифракція</h3>
+<a id="main-html-autopage-495"></a>
+<a id="main-html-autofile-6"></a>
+
+<a id="Difraction"></a>
+<!--
+...... section Основні поняття і закони ......
+-->
+<h4 id="autosec-496"><span class="sectionnumber">&#xA7;&#x202F;5.1&#x2003;</span>Основні поняття і закони</h4>
+<a id="main-html-autopage-496"></a>
+
+
+<p>
+<em>Дифракція</em> — це будь-яке відхилення при поширенні світла від законів геометричної оптики. Дифракція світла спостерігається при поширенні світлової хвилі в місцях з різкими локальними амплітудними або фазовими неоднорідностями (наприклад, при проходженні через отвори в
+екранах, поблизу меж непрозорих тіл, через структури з просторово модульованим показником заломлення тощо). Виявом дифракції є дифракційна картина, що є результатом інтерференції хвиль, які дифрагували під різними кутами на границях оптичних неоднорідностей.
+</p>
+
+<p>
+Явища дифракції відіграють важливу роль в роботі оптичних інструментів. Через обмеженість розмірів жмутків променів в будь-якому оптичному приладі, зображення, які створюються, мають дифракційне розмиття, що визначає теоретичну роздільну здатність приладу.
+</p>
+
+<figure id="autoid-325" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="_html/ext/pic-f5a2651bc3.svg" target="_blank" ><img
+   src="_html/ext/pic-f5a2651bc3.svg"
+   class="inlineimage"
+   alt="Рис. 5.1. Принцип Гюйгенса"
+></a>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.1. Принцип Гюйгенса
+
+</div>
+
+<a id="pic:Hughens_principle"></a>
+
+</div>
+
+</figure>
+
+<p>
+Максимально точне розв’язання дифракційних задач є предметом теорії дифракції, яка встановлює взаємозв’язок між розподілом електромагнітного поля у площині предметів і розподілом поля в довільній площині оптичної системи. Однак теорія дифракції виходить за межі даного посібника.
+</p>
+
+<p>
+Для розв’язання практичних дифракційних задач використовують наближені методи, які ґрунтуються на принципі Гюйгенса–Френеля, який став розвитком принципу Гюйгенса. Згідно з принципом Гюйгенса кожну точку хвильового фронту можна вважати центром вторинних сферичних хвиль,
+а положення хвильового фронту в наступний момент часу є визначається як огинаюча поверхня до вторинних хвиль (рис.&nbsp;<a href="difraction.html#pic:Hughens_principle">5.1</a>).
+</p>
+
+<p>
+Згідно з принципом Гюйгенса–Френеля кожна точка довільного хвильового фронту в даний момент часу, є джерелом вторинних <em>когерентних</em> сферичних хвиль, а хвильова поверхня в будь-який момент часу визначається за розподілом поля в результаті їх інтерференції.
+Математичне обґрунтування принципу Гюйгенса-Френеля було в подальшому дано Кірхгофом, який, зокрема, показав, що в якості поверхні вторинних джерел може бути вибрана не тільки поверхня хвильового фронту, але і будь-яка поверхня, до якої дійшла первинна хвиля. Принцип
+Гюйгенса-Френеля, який, хоча і є наближеним, дозволяє кількісно описати дифракційні явища, які спостерігаються на простих об’єктах.
+</p>
+
+<p>
+Розглянемо монохроматичну світлову хвилю довжиною \(\lambda \), яка поширюється в однорідному середовищі від джерела \(S \) у деяку точку спостереження \(P \) (рис.&nbsp;<a href="difraction.html#pic:Diffraction1">5.2</a>). Оточимо джерело сферичною поверхнею
+радіусом \(a \). Відповідно до принципу Гюйгенса-Френеля, кожна ділянка поверхні хвильового фронту розглядається як центр вторинного джерела. Коливання, що приходить від деякої ділянки \(d\sigma \) в точку \(P \) мають амплітуду:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                                                                             𝐴 −𝑖𝑘𝑟
+                                                                                                                                𝑑𝐸𝑃 = 𝐾(𝛼)     𝑒    𝑑𝜍,
+                                                                                                                                             𝑟
+-->
+
+<p>
+
+\begin{equation*}
+dE_P = K(\alpha ) \frac {A}{r} e^{-i k r} d\sigma ,
+\end{equation*}
+
+</p>
+
+<p>
+де \(A \) — величина, що визначається амплітудою світлової хвилі в місці знаходження елемента \(d\sigma \), \(k \) — хвильове число. Коефіцієнт \(K(\alpha ) \) залежить від кута: між нормаллю до елемента \(d\sigma \) і напрямом від \(d\sigma \) до точки \(P \). Френель
+припустив, що коефіцієнт \(K(\alpha ) \) монотонно зменшується зі зростанням кута \(\alpha \). Багато практично важливих дифракційних задач можна, розв’язувати не уточнюючи конкретного виду цієї залежності.
+</p>
+
+<figure id="autoid-326" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-89"
+    class="lateximagesource"
+><!--
+        𝑑𝜎   𝛼
+    𝑎            𝑟
+
+𝑆
+         𝑎           𝑏   𝑃
+--><img
+   src="main-html-images/image-89.svg"
+   alt="Рис. 5.2. Задача дифракції"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.2. Задача дифракції
+
+</div>
+
+<a id="pic:Diffraction1"></a>
+
+</div>
+
+</figure>
+
+<p>
+Результуюче коливання в точці \(P \) є суперпозицією коливань від усіх елементів \(d\sigma \) поверхні:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{0}\)</span>
+
+<!--
+
+                                                                                           ¨
+                                                                                                      𝐴 −𝑖𝑘𝑟
+                                                                                    𝐸𝑃 =       𝐾(𝛼)     𝑒    𝑑𝜍.                                                                               (5.1)                                              --><a id="eq:E_p"></a><!--
+                                                                                                      𝑟
+                                                                                           𝑆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:E_p} E_P = \iint \limits _{S}K(\alpha ) \frac {A}{r} e^{-i k r} d\sigma .
+\end{equation}
+
+</p>
+
+<p>
+Останній вираз є математичним формулюванням принципу Гюйгенса-Френеля. Для визначення коливання в точці \(P \), що лежить перед деякою поверхнею, треба знайти коливання, що надходять у цю точку від усіх елементів \(d\sigma \) поверхні і потім скласти їх з урахуванням амплітуд
+та фаз.
+</p>
+
+<p>
+Однак, у загальному випадку ця задача пов’язана із певними математичними труднощами. Розв’язання цієї задачі спрощується, якщо скористатися так званим методом зон Френеля.
+</p>
+<!--
+...... section Метод зон Френеля ......
+-->
+<h4 id="autosec-501"><span class="sectionnumber">&#xA7;&#x202F;5.2&#x2003;</span>Метод зон Френеля</h4>
+<a id="main-html-autopage-501"></a>
+
+
+<p>
+Згідно цього методу, фронт хвилі ділиться на кільцеві зони таким чином, щоб відстань від границь цих областей до точки спостереження дорівнювала \(b\), \(b + \frac \lambda 2\), &#x2026;, \(b + m\frac \lambda 2\), &#x2026;, відповідно (рис.&nbsp;<a
+href="difraction.html#pic:Diffraction2">5.3</a>). Ці кільцеві області називаються <em>зонами Френеля</em>.
+</p>
+
+<figure id="autoid-327" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-90"
+    class="lateximagesource"
+><!--
+                 𝑏+𝑚 𝜆
+    𝑅               2
+            𝑟𝑚
+𝑆                        𝑃
+        𝑎           𝑏
+--><img
+   src="main-html-images/image-90.svg"
+   alt="Рис. 5.3. Ілюстрація методу зон Френеля"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.3. Ілюстрація методу зон Френеля
+
+</div>
+
+<a id="pic:Diffraction2"></a>
+
+</div>
+
+</figure>
+
+<p>
+В рамках методу зон Френеля з простих геометричних міркувань можна знайти радіус \(r_{m}\)&nbsp;— радіус \(m\)-ї зони Френеля:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{1}\)</span>
+
+<!--
+
+
+                                                                                                 𝑎𝑏
+                                                                                   𝑟𝑚 = √𝑚𝜆         .                                                                                        (5.2)                                              --><a id="eq:Zone_Diameter"></a><!--
+                                                                                                𝑎+𝑏
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Zone_Diameter} r_{m}=\sqrt {m\lambda \frac {ab}{a+b}}.
+\end{equation}
+
+</p>
+
+<p>
+Площі зон (при малих \(m \)) виражаються формулою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{2}\)</span>
+
+<!--
+
+                                                                                                  𝑎𝑏
+                                                                                       𝑆𝑚 = 𝜋𝜆       .                                                                                               (5.3)                                           --><a id="eq:Zone_Area"></a><!--
+                                                                                                 𝑎+𝑏
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Zone_Area} S_m = \pi \lambda \frac {ab}{a + b}.
+\end{equation}
+
+</p>
+
+<p>
+Отже, площі зон Френеля приблизно однакові. Відстань від зони до точки \(P \) повільно зростає з номером зони \(m \). Кут \(\alpha \) в формулі <span class="textup">(<a href="difraction.html#eq:E_p">5.1</a>)</span> також зростає з \(m \). Все це призводить до того, що
+амплітуда \(E_m \) коливання, що збуджується \(m \)-ю зоною в точці \(P \), монотонно спадає зі зростанням \(m \), тобто, амплітуди коливань, що збуджуються в точці \(P \) зонами Френеля, утворюють монотонно спадну послідовність:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{3}\)</span>
+
+<!--
+
+
+                                                                                                                                    |𝐸1 | > |𝐸2 | > |𝐸3 | > … .
+
+-->
+
+<p>
+
+\begin{equation*}
+|E_1| &gt; |E_2| &gt; |E_3| &gt; \ldots .
+\end{equation*}
+
+</p>
+
+<p>
+Внаслідок монотонного зменшення \(E_m \) можна приблизно вважати, що
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{3}\)</span>
+
+<!--
+
+                                                                                                𝐸𝑚−1 + 𝐸𝑚+1
+                                                                                         𝐸𝑚 =                                                                                                                   (5.4)                                         --><a id="eq:avE"></a><!--
+                                                                                                     2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:avE} E_m = \frac {E_{m - 1} + E_{m + 1}}{2}
+\end{equation}
+
+</p>
+
+<p>
+Оскільки коливання від сусідніх зон проходять до точки \(P \) шляхи, що відрізняються на \(\frac \lambda 2 \), то в точку \(P \) вони приходять із протилежними фазами. Тоді результуюча амплітуда в точці \(P \) дорівнюватиме:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{4}\)</span>
+
+<!--
+
+
+                                                                              𝐸𝑃 = 𝐸 1 − 𝐸 2 + 𝐸 3 − 𝐸 4 + 𝐸 5 − … ,                                                                                    (5.5)                                           --><a id="eq:SumAmpl"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:SumAmpl} E_P = E_1 - E_2 + E_3 - E_4 + E_5 - \ldots ,
+\end{equation}
+
+</p>
+
+<p>
+де \(m \) — номер зони, \(E_m \) — амплітуда \(m \)-ї зони.
+</p>
+
+<p>
+Формулу <span class="textup">(<a href="difraction.html#eq:SumAmpl">5.5</a>)</span> можна записати у вигляді:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{5}\)</span>
+
+<!--
+
+                                                                                                                  𝐸1    𝐸         𝐸       𝐸        𝐸       𝐸         𝐸
+                                                                                                           𝐸𝑃 =      − ( 1 − 𝐸 2 + 3 ) + ( 3 − 𝐸4 + 5 ) + ( 5 − 𝐸 6 + 7 ) + … .
+                                                                                                                  2      2         2       2        2       2         2
+
+-->
+
+<p>
+
+\begin{equation*}
+E_P = \frac {E_1}{2} - \left (\frac {E_1}{2} - E_2 + \frac {E_3}{2} \right ) + \left (\frac {E_3}{2} - E_4 + \frac {E_5}{2} \right ) + \left (\frac {E_5}{2} - E_6 + \frac {E_7}{2} \right ) + \ldots .
+\end{equation*}
+
+</p>
+
+<p>
+При \(m \to \infty \) сума ряду <span class="textup">(<a href="difraction.html#eq:SumAmpl">5.5</a>)</span> зурахуванням <span class="textup">(<a href="difraction.html#eq:avE">5.4</a>)</span> дає \(E_P \approx \frac {E_1}{2} \), тобто амплітуда
+\(E_0 \), що створюється в точці \(P \) всією сферичною хвильовою поверхнею, дорівнює половині амплітуди, що створюється однією лише центральною зоною.
+</p>
+
+<p>
+Якщо на шляху хвильового фронту поставити перешкоду у вигляді отвору, який відкриває \(N\) зон Френеля, результуюча амплітуда в точці \(P\) буде визначатись як:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{5}\)</span>
+
+<!--
+
+
+                                                                             1 𝐸1 − 𝐸𝑁 ,     𝑁 = 2𝑚
+                                                                      𝐸𝑃 =    ⋅{                                                                                                   (5.6)                                                 --><a id="eq:Amplitide_of_holes"></a><!--
+                                                                             2 𝐸1 + 𝐸𝑁 ,     𝑁 = 2𝑚 + 1,
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Amplitide_of_holes} E_P =\frac 12\cdot \begin{cases} E_1 - E_N, \quad N = 2m \\ E_1 + E_N, \quad N = 2m+1, \end {cases}
+\end{equation}
+
+</p>
+
+<p>
+Якщо отвір відкриває парне число зон \(N = 2m\), то в точці \(P\) спостерігатиметься мінімум (темна пляма), а якщо отвір відкриває непарне число зон \(N = 2m + 1\) , то в точці \(P\) спостерігатиметься максимум (світла пляма), а навколо цієї точки чергуватимуться темні та світлі кільця.
+</p>
+
+<p>
+Якщо екран з отвором замінити непрозорим диском радіуса \(R\) (дифракція Френеля на круглому диску), амплітуда світлового вектора на екрані в точці \(P\) (в області геометричної тіні) дорівнюватиме:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{6}\)</span>
+
+<!--
+
+                                                                                        1
+                                                                                  𝐸𝑃 = ± 𝐸𝑚+1 ,                                                                                      (5.7)                                                --><a id="eq:Amplitide_of_disk"></a><!--
+                                                                                        2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Amplitide_of_disk} E_P = \pm \frac 12 E_{m+1},
+\end{equation}
+
+</p>
+
+<p>
+де \(m \) — число перших зон Френеля, закритих диском. Таким чином, в точці \(P\) буде завжди спостерігатиметься відмінна від нуля амплітуда. Якщо диск закриватиме невелике число зон Френеля, то в центрі екрану буде добре видно світлу пляму (<a
+href="https://www.youtube.com/watch?v=xHHhbR5evq0&amp;ab_channel=InstitutFresnel" target="_blank" >пляму Пуассона</a>).
+</p>
+
+<p>
+Оскільки сумарна амплітуда&nbsp;<span class="textup">(<a href="difraction.html#eq:SumAmpl">5.5</a>)</span> є знакозмінним рядом, то закривши парні, або непарні зони, можна значно підвищити амплітуду в точці \(P\). Для цього треба виготовити екран, який для деяких
+конкретних значень \(a\) та \(b\) відкривав би тільки парні або непарні зони. Тоді хвилі від відкритих зон надходили б у точку \(Р\) синфазно і інтерференційно підсилювали одну одну. Такий екран називають <a
+href="https://www.youtube.com/watch?v=aJ4NfUmg16c&amp;ab_channel=mynameismunka2" target="_blank" >зонною платівкою Френеля</a>. Переписавши формулу <span class="textup">(<a href="difraction.html#eq:Zone_Diameter">5.2</a>)</span>
+в вигляді
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{7}\)</span>
+
+<!--
+
+                                                                                           1  1 𝑚𝜆
+                                                                                             + = 2                                                                                                       (5.8)                                            --><a id="eq:Focuse"></a><!--
+                                                                                           𝑏  𝑎  𝑟𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Focuse} \frac 1b+\frac 1a=\frac {m\lambda }{r_{m}^{2}}
+\end{equation}
+
+</p>
+
+<p>
+отримаємо формулу для радіусів кілець зонної платівки Френеля. Порівнявши <span class="textup">(<a href="difraction.html#eq:Focuse">5.8</a>)</span> з формулою Гауса&nbsp;<span class="textup">(<a href="geomopt.html#eq:Gauss_a">1.25a</a>)</span>
+\(\frac 1b + \frac 1a = \frac 1f\), можна зробити висновок, що зонна платівка працює як лінза з фокусною відстанню
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{8}\)</span>
+
+<!--
+
+                                                                                                                                                    2
+                                                                                                                                                   𝑟𝑚
+                                                                                                                                             𝑓=       .                                                                                                                                      (5.9)
+                                                                                                                                                   𝑚𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+f=\frac {r^{2}_{m}}{m\lambda }.
+\end{equation}
+
+</p>
+
+<p>
+Зонна платівка Френеля, крім основного, має додаткові фокуси меншої інтенсивності, які утворюються для певних взаємних положень джерела і точки спостереження, при яких в кожне кільце потрапляють непарні кількості зон Френеля, тобто:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{9}\)</span>
+
+<!--
+
+                                                                                                                                            𝑓
+                                                                                                                                   𝑓дод =     ,   𝑝 = 3, 5, 7, … .
+                                                                                                                                            𝑝
+
+-->
+
+<p>
+
+\begin{equation*}
+f_\text {дод} = \frac {f}{p}, \quad p = 3, 5, 7,\ldots .
+\end{equation*}
+
+</p>
+<!--
+...... subsection Метод векторних діаграм ......
+-->
+<h5 id="autosec-505">Метод векторних діаграм</h5>
+<a id="main-html-autopage-505"></a>
+
+
+<p>
+Результат, представлений формулою <span class="textup">(<a href="difraction.html#eq:SumAmpl">5.5</a>)</span>, можна отримати за допомогою методу векторних діаграм. Використання цього методу надалі дозволить значно спростити багато міркувань та розрахунків.
+</p>
+
+<p>
+Суть метода полягає в зображенні хвилі у вигляді вектора \(\Delta \vect {E} \), довжина якого відповідає амплітуді хвилі, а кут одного вектора відносно іншого визначає відносну різницю їхніх фаз. Нехай амплітуда хвилі, яка розповсюджується до точки спостереження від першої зони
+Френеля, дорівнює \(E_{1} \). Якщо тепер розбити першу зону Френеля на \(p \) рівних підзон, то зсув фаз між коливаннями від сусідніх підзон становитиме \(\pi /p \). Тому на векторній діаграмі відповідні вектори коливань від сусідніх підзон будуть повернуті, кожен відносно
+попереднього, на кут \(\pi /p \) (рис.&nbsp;<a href="difraction.html#pic:p6">5.4а</a>). З геометричних міркувань очевидно, що вектори цих підзон є хордами, які стягують на півколі з діаметром \(E_{1} \) відповідний кут, а їх сума дасть вектор першої зони Френеля.
+</p>
+
+<p>
+Аналогічно обходяться і з наступними зонами Френеля. Зауважимо, що саме вихідна умова надходження у протифазі коливань хвиль від сусідніх зон Френеля зумовлює зображення їх протилежно напрямленими векторами з монотонно спадаючими амплітудами, сума яких дає вектор \(E_0 \).
+</p>
+
+<figure id="autoid-328" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-507"></a>
+
+<p>
+<span
+    id="lateximage-main-html-91"
+    class="lateximagesource"
+><!--
+𝐄1
+
+
+     𝜋/6
+
+                𝜋/6
+           Δ𝐄
+--><img
+   src="main-html-images/image-91.svg"
+   alt="(а) Випадок p = 6"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а) Випадок \(p = 6 \)
+
+</div>
+
+<a id="pic:p6"></a>
+
+<a id="sub@pic:p6"></a>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-510"></a>
+
+<p>
+<span
+    id="lateximage-main-html-92"
+    class="lateximagesource"
+><!--
+𝐶
+
+
+    𝐸0
+--><img
+   src="main-html-images/image-92.svg"
+   alt="(б) Амплітуда вільного простору"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б) Амплітуда вільного простору
+
+</div>
+
+<a id="pic:AFS"></a>
+
+<a id="sub@pic:AFS"></a>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.4. Суть методу векторних діаграм
+
+</div>
+
+</div>
+
+</figure>
+
+<p>
+При наближені ширини кільцевих підзон до нуля (кількість їх буде при цьому необмежено зростати) векторна діаграма набуде вигляду спіралі, що закручується до точки \(C \) (рис.&nbsp;<a href="difraction.html#pic:AFS">5.4б</a>). Довжина результуючого вектора \(\vec {AC} = E_0
+\) є амплітудою коливань, що збуджуються в точці \(P \) у випадку, якщо на шляху світла нема перешкод — так звана «амплітуда вільного простору».
+</p>
+
+<p>
+Деякі приклади визначення амплітуди результуючої хвилі показані на рис&nbsp;<a href="difraction.html#pic:vect_diagrams">5.5</a>.
+</p>
+<figure id="autoid-329" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-514"></a>
+
+<p>
+<span
+    id="lateximage-main-html-93"
+    class="lateximagesource"
+><!--
+     𝐸0
+
+
+𝐸0
+--><img
+   src="main-html-images/image-93.svg"
+   alt="(а) Відкрито половина першої зони Френеля: E_P 2 E_0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а) Відкрито половина першої зони Френеля: \(E_P \approx \sqrt 2 E_0 \)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-517"></a>
+
+<p>
+<span
+    id="lateximage-main-html-94"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-94.svg"
+   alt="(б) Відкрита 1-а зона Френеля: E_P = E_1 2E_0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б) Відкрита 1-а зона Френеля: \(E_P = E_1 \approx 2E_0 \)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-520"></a>
+
+<p>
+<span
+    id="lateximage-main-html-95"
+    class="lateximagesource"
+><!--
+𝐸0
+
+
+     𝐸0
+--><img
+   src="main-html-images/image-95.svg"
+   alt="(в) Відкрито півтори зони Френеля: : E_P 2 E_0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(в) Відкрито півтори зони Френеля: : \(E_P \approx \sqrt 2 E_0 \)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-523"></a>
+
+<p>
+<span
+    id="lateximage-main-html-96"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-96.svg"
+   alt="(г) Відкриті 1-а і 2-а зони Френеля: E_P 0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(г) Відкриті 1-а і 2-а зони Френеля: \(E_P \approx 0 \)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-526"></a>
+
+<p>
+<span
+    id="lateximage-main-html-97"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-97.svg"
+   alt="(д) Відкриті 1-а, 2-а і 3-я зони Френеля: : E_P E_1"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(д) Відкриті 1-а, 2-а і 3-я зони Френеля: : \(E_P \approx E_1 \)
+
+</div>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-529"></a>
+
+<p>
+<span
+    id="lateximage-main-html-98"
+    class="lateximagesource"
+><!--
+--><img
+   src="main-html-images/image-98.svg"
+   alt="(е) Відкриті всі зони Френеля: : E_P E_0"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(е) Відкриті всі зони Френеля: : \(E_P \approx E_0 \)
+
+</div>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.5. Приклади розрахунку амплітуд
+
+</div>
+
+<a id="pic:vect_diagrams"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Дифракційний критерій ......
+-->
+<h5 id="autosec-532">Дифракційний критерій</h5>
+<a id="main-html-autopage-532"></a>
+
+
+<p>
+Для того, щоб визначити характер дифракції користуються критерієм. Оскільки, вигляд дифракційної картини залежить від того скільки відкрито (або закрито) зон Френеля, то для визначення умов дифракції зручно ввести параметр:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{9}\)</span>
+
+<!--
+
+
+                                                                                        𝑅2
+                                                                                   𝑚=      ,                                                                                   (5.10)                                             --><a id="eq:m_number_of_zones"></a><!--
+                                                                                        𝜆𝑏
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:m_number_of_zones} m = \frac {R^2}{\lambda b},
+\end{equation}
+
+</p>
+
+<p>
+де \(R\)&nbsp;— характерні розміри перешкоди, \(b \) — відстань до області спостереження. За умови \(\frac {R^2}{\lambda b} \gg 1\) дифракційні ефекти незначні, і розподіл інтенсивності можна описати на основі геометричної оптики. Для \(\frac {R^2}{\lambda
+b}\approx 1\), отвір або екран перекривають декілька зон Френеля, і має місце дифракція Френеля. Для \(\frac {R^2}{\lambda b}\ll 1\) відкрита лише незначна частина першої зони Френеля&nbsp;— можна вважати хвильовий фронт плоским, тобто має місце дифракція в
+паралельних променях, або <em>дифракція Фраунгофера</em>.
+</p>
+<!--
+...... section Дифракція Фраунгофера на щілині ......
+-->
+<h4 id="autosec-533"><span class="sectionnumber">&#xA7;&#x202F;5.3&#x2003;</span>Дифракція Фраунгофера на щілині</h4>
+<a id="main-html-autopage-533"></a>
+
+
+<p>
+Нехай на нескінченно довгу щілину шириною \(b \) падає плоска монохроматична світлова хвиля, довжиною \(\lambda \) (рис.&nbsp;<a href="difraction.html#pic:Slot_Fraunhofer_difraction">5.6а</a>).
+</p>
+
+<p>
+Розіб’ємо відкриту частину хвильової поверхні на \(N \) вузьких зон однакової ширини. Коливання, що збуджуються кожною такою зоною, має однакову амплітуду \(\Delta \vect {E} \) і відстає по фазі від попереднього коливання на ту саму величину \(\frac {\delta }{N} \), що
+залежить від кута дифракції \(\phi \), який визначає напрямок на точку спостереження&nbsp;\(P \).
+</p>
+
+<p>
+Як видно з рис.&nbsp;<a href="difraction.html#pic:Slot_Fraunhofer_difraction">5.6а</a>, повна різниця фаз між крайніми променями, а отже, і між початковим та кінцевим векторами дорівнює \(\delta = \frac {2\pi \Delta }{\lambda } \), де \(\Delta = b\sin
+\phi \) — різниця ходу між крайніми променями. Векторна діаграма має вигляд, зображений на рис&nbsp;<a href="difraction.html#pic:vector_diagram_slot">5.6б</a>.
+</p>
+
+<figure id="autoid-330" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-535"></a>
+
+<p>
+<span
+    id="lateximage-main-html-99"
+    class="lateximagesource"
+><!--
+    𝑏
+
+        𝜙
+            Δ = 𝑏 sin 𝜙
+𝜙
+--><img
+   src="main-html-images/image-99.svg"
+   alt="(а)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а)
+
+</div>
+
+<a id="pic:Slot_Fraunhofer_difraction"></a>
+
+<a id="sub@pic:Slot_Fraunhofer_difraction"></a>
+
+</div>
+<div class="minipage" style="vertical-align:bottom ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-538"></a>
+
+<p>
+<span
+    id="lateximage-main-html-100"
+    class="lateximagesource"
+><!--
+                  𝛿
+
+
+
+
+    𝑅
+
+
+    𝛿
+        𝐄
+
+
+𝑅
+
+                      𝛿/𝑁
+
+            𝛿/𝑁
+--><img
+   src="main-html-images/image-100.svg"
+   alt="(б)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б)
+
+</div>
+
+<a id="pic:vector_diagram_slot"></a>
+
+<a id="sub@pic:vector_diagram_slot"></a>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.6. До виведення формули <span class="textup">(<a href="difraction.html#eq:Difraction_E_slot">5.11</a>)</span>
+
+</div>
+
+</div>
+
+</figure>
+
+<p>
+Нехай довжина ланцюжка векторів \(\Delta \vect {E} \) дорівнює \(E_0 \), а результуючий вектор \(\vect {E} \). Тоді, як видно з рис.&nbsp;<a href="difraction.html#pic:vector_diagram_slot">5.6б</a>, \(E_0 = R\delta \), \(E = 2R\sin \frac \delta 2 \).
+Виключаючи з цих рівнянь \(R \), отримаємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{10}\)</span>
+
+<!--
+
+                                                                                  sin 𝛿/2
+                                                                      𝐸 = 𝐸0              .                                                               (5.11)                                         --><a id="eq:Difraction_E_slot"></a><!--
+                                                                                    𝛿/2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_E_slot} E = E_0 \frac {\sin \delta /2}{\delta /2}.
+\end{equation}
+
+</p>
+
+<p>
+Інтенсивність світла в точках на екрані випливає з <span class="textup">(<a href="difraction.html#eq:Difraction_E_slot">5.11</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{11}\)</span>
+
+<!--
+
+                                                                                      𝜋𝑏
+                                                                            sin2 (         sin 𝜙)
+                                                                                      𝜆
+                                                                   𝐼 = 𝐼0                     2
+                                                                                                    ,                                                     (5.12)                                         --><a id="eq:Difraction_I_slot"></a><!--
+                                                                                 𝜋𝑏
+                                                                             (        sin 𝜙)
+                                                                                 𝜆
+
+-->
+
+<p>
+\begin{equation}
+\label {eq:Difraction_I_slot} I = I_0 \frac {\sin ^2\left ( {\frac {\pi b}{\lambda } \sin \phi }\right )}{\left ( \frac {\pi b}{\lambda } \sin \phi \right )^2},
+\end{equation}
+
+</p>
+
+<p>
+де \(I_0\) — інтенсивність падаючої хвилі, \(b\) — ширина щілини, \(\lambda \) — довжина хвилі, \(\phi \) — кут дифракції.
+</p>
+
+<p>
+Дифракційну картину Фраунгофера на щілині можна спостерігати на екрані у фокальній площині лінзи, направивши на отвір нормально плоску світлову хвилю. (рис.&nbsp;<a href="difraction.html#pic:slot">5.7</a>)
+</p>
+
+<figure id="autoid-331" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-101"
+    class="lateximagesource"
+><!--
+                                      𝑏
+
+
+
+                                      𝜙
+
+
+
+
+                                          𝐼
+
+
+
+                                          𝜙1                    Головний максимум
+
+                                               𝜙2
+𝑓′                                                             Додаткові максимуми
+                                                      𝜙3
+
+
+
+
+                                                                                         𝑥
+       𝜆
+     −3 𝑓   ′     𝜆
+                −2 𝑓   ′     𝜆
+                           −1 𝑓   ′   0               𝜆
+                                                    +1 𝑓   ′     𝜆
+                                                               +2 𝑓   ′        𝜆
+                                                                            +3 𝑓     ′
+       𝑏          𝑏          𝑏                        𝑏          𝑏             𝑏
+--><img
+   src="main-html-images/image-101.svg"
+   alt="Рис. 5.7. Дифракція Фраунгофера на щілині"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.7. Дифракція Фраунгофера на щілині
+
+</div>
+
+<a id="pic:slot"></a>
+
+</div>
+
+</figure>
+
+<p>
+Кутове положення мінімумів інтенсивності визначається з <span class="textup">(<a href="difraction.html#eq:Difraction_I_slot">5.12</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{12}\)</span>
+
+<!--
+
+
+                                                                            𝑏 sin 𝜙 = ±𝑚𝜆,                                                                                  (5.13)   --><a id="eq:Difraction_Slot_min"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_Slot_min} b\sin \phi =\pm m\lambda ,
+\end{equation}
+
+</p>
+
+<p>
+число мінімумів \(m = 1, 2, \ldots , \left [ \frac {b}{\lambda }\right ]\).
+</p>
+
+<p>
+Для інтенсивностей в максимумах з <span class="textup">(<a href="difraction.html#eq:Difraction_I_slot">5.12</a>)</span> можна отримати співвідношення:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{13}\)</span>
+
+<!--
+
+
+                                                                                                                                     2 2     2 2
+                                                                                                       𝐼0 ∶ 𝐼 1 ∶ 𝐼 2 ∶ … = 1 ∶ (      ) ∶(    ) ∶ … = 1 ∶ 0, 045 ∶ 0, 016 ∶ … .                                          (5.14)
+                                                                                                                                    3𝜋      5𝜋
+
+-->
+
+<p>
+
+\begin{equation}
+I_0:I_1:I_2:\ldots = 1:\left (\frac {2}{3\pi }\right )^2:\left (\frac {2}{5\pi }\right )^2:\ldots = 1:0,045:0,016:\ldots .
+\end{equation}
+
+</p>
+
+<p>
+Таким чином, центральний максимум значно перевищує за інтенсивністю решту максимумів; у ньому зосереджується основна частка світлового потоку, що проходить крізь щілину.
+</p>
+<!--
+...... section Дифракція Фраунгофера на круглому отворі ......
+-->
+<h4 id="autosec-545"><span class="sectionnumber">&#xA7;&#x202F;5.4&#x2003;</span>Дифракція Фраунгофера на круглому отворі</h4>
+<a id="main-html-autopage-545"></a>
+
+
+<p>
+Дифракція Фраунгофера на круглому отворі має велике практичне значення, так як в оптичних приладах оправи лінз і діафрагми мають круглу форму. Дифракційну картину Фраунгофера від круглого отвору можна спостерігати на екрані, який знаходиться у фокальній площині лінзи,
+поставленої за отвором, направивши на отвір плоску світлову хвилю.
+</p>
+
+<p>
+Дифракційна картина в фокальній площині має вигляд концентричних світлих і темних кілець з наступним розподілом інтенсивності:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{14}\)</span>
+
+<!--
+
+                                                                                                    2
+                                                                                     2𝐽1 (𝑘𝑟 sin 𝜙)
+                                                                          𝐼 = 𝐼0 (                  ) ,                                                                     (5.15)                                               --><a id="eq:Hole_I_Difraction"></a><!--
+                                                                                       𝑘𝑟 sin 𝜙
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Hole_I_Difraction} I = I_0 \left ( \frac {2J_1(kr\sin \phi )}{kr\sin \phi }\right )^2,
+\end{equation}
+
+</p>
+
+<p>
+де \(J_1(x) \) — функція Бесселя, \(k \)&nbsp;— хвильове число, \(\phi \) — кут дифракції, \(r \) — радіальна координата точки екрану.
+</p>
+
+<p>
+Графік функції&nbsp;<span class="textup">(<a href="difraction.html#eq:Hole_I_Difraction">5.15</a>)</span> зображено на рис.&nbsp;<a href="difraction.html#pic:Hole_I_Difraction">5.8</a>
+</p>
+
+<figure id="autoid-332" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-102"
+    class="lateximagesource"
+><!--
+ 1
+
+
+0.8
+
+
+0.6
+
+
+0.4
+
+
+0.2
+
+                            sin 𝜙
+             𝜆          𝜆
+      0.61       1.12
+             𝑅          𝑅
+--><img
+   src="main-html-images/image-102.svg"
+   alt="Рис. 5.8. Графік функції (5.15)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.8. Графік функції <span class="textup">(<a href="difraction.html#eq:Hole_I_Difraction">5.15</a>)</span>
+
+</div>
+
+<a id="pic:Hole_I_Difraction"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-333" class="table ">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;5.1. Числові дані графіку&nbsp;<span class="textup">(<a href="difraction.html#eq:Hole_I_Difraction">5.15</a>)</span>
+
+</div>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr class="hline">
+<td class="tdp tvertbarl tvertbarr tdcenter" style="background:#335883; border-left: 1px solid black; border-right: 1px solid black">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>Мінімуми</b></span>
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#335883; border-right: 1px solid black">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>Максимуми</b></span>
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#335883; border-right: 1px solid black">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>Відносна інтенсивність в максимумах</b></span>
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tvertbarl tvertbarr tdcenter" style="background:#D9E8F2; border-left: 1px solid black; border-right: 1px solid black">
+
+<p>
+\(0,61\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#D9E8F2; border-right: 1px solid black">
+
+<p>
+\(0 \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#D9E8F2; border-right: 1px solid black">
+
+<p>
+\(1 \)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tvertbarl tvertbarr tdcenter" style="background:#F2F7FB; border-left: 1px solid black; border-right: 1px solid black">
+
+<p>
+\(1,12\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#F2F7FB; border-right: 1px solid black">
+
+<p>
+\(0,81\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#F2F7FB; border-right: 1px solid black">
+
+<p>
+\(0,0175 \)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tvertbarl tvertbarr tdcenter" style="background:#D9E8F2; border-left: 1px solid black; border-right: 1px solid black">
+
+<p>
+\(1,62\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#D9E8F2; border-right: 1px solid black">
+
+<p>
+\(1,33\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#D9E8F2; border-right: 1px solid black">
+
+<p>
+\(0,0042 \)
+</p>
+</td>
+</tr>
+
+<tr class="hline">
+<td class="tdp tvertbarl tvertbarr tdcenter" style="background:#F2F7FB; border-left: 1px solid black; border-right: 1px solid black">
+
+<p>
+\(2,12\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#F2F7FB; border-right: 1px solid black">
+
+<p>
+\(1,85\frac \lambda R \)
+</p>
+</td>
+<td class="tdp tvertbarr tdcenter" style="background:#F2F7FB; border-right: 1px solid black">
+
+<p>
+\(0,0016 \)
+</p>
+</td>
+</tr>
+
+<tr class="hline" aria-hidden="true">
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+<td class="tdp tdcenter">
+
+</td>
+</tr>
+</table>
+
+</figure>
+
+<p>
+Інтенсивність головного максимуму становить 84&percnt; світлового потоку, який проходить через отвір. Центральний максимум, який носить назву «диск Ейрі» і має кутовий радіус \(0.61\frac {\lambda }{R}\), де \(R \) — радіус отвору, можна розглядати як дифракційне зображення
+точки.
+</p>
+<!--
+...... subsection Роздільна здатність оптичних приладів ......
+-->
+<h5 id="autosec-550">Роздільна здатність оптичних приладів</h5>
+<a id="main-html-autopage-550"></a>
+
+
+<p>
+За рахунок дифракції будь-яка, навіть вільна від геометричних аберацій, оптична система є дифракційно обмеженою, тобто її роздільна здатність визначається дифракційним розпливанням зображення точки.
+</p>
+
+<p>
+Так як кожен предмет складається з набору точок, то роздільну здатність визначають, як можливість оптичної системи створювати зображення цих точок так, щоб їх можна було відокремити одне від другого. Кількісний критерій оцінки того, наскільки дифракційні зображення (диски Ейрі) двох
+точок розділяються, є досить умовним. Прийнято користуватись критерієм Релея, згідно з яким зображення двох точкових джерел спостерігаються роздільно, якщо положення максимуму дифракційного зображення одного джерела співпадає з першим мінімумом зображення другого джерела. Це
+означає, що відстань між центрами зображення двох точкових джерел дорівнює радіусу кружка Ейрі (рис.&nbsp;<a href="difraction.html#pic:lupa_resolution">5.9</a>). Критерій Релея використовують також і для визначення спектральної роздільної здатності спектральних приладів.
+</p>
+
+<figure id="autoid-334" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-103"
+    class="lateximagesource"
+><!--
+𝜓гр
+
+
+
+
+      𝑓′
+--><img
+   src="main-html-images/image-103.svg"
+   alt="Рис. 5.9. До поняття роздільної здатності (формування дифракційного зображення двох точок, які розділяються за критерієм Релея)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.9. До поняття роздільної здатності (формування дифракційного зображення двох точок, які розділяються за критерієм Релея)
+
+</div>
+
+<a id="pic:lupa_resolution"></a>
+
+</div>
+
+</figure>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Основні формули</b>
+</p>
+
+<p>
+Кутова ширина диска Ейрі (за умови \(D \gg \lambda \)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{15}\)</span>
+
+<!--
+
+                                                                                                   𝜆
+                                                                                   𝛿𝜙0 = 1, 22       ,                                                                           (5.16)             --><a id="eq:delta_phi_0"></a><!--
+                                                                                                   𝐷
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:delta_phi_0} \delta \phi _0 = 1,22\frac {\lambda }{D},
+\end{equation}
+
+</p>
+
+<p>
+де \(D\) — діаметр отвору.
+</p>
+
+<p>
+Діаметр кружка Ейрі в фокальній площині об’єктива:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{16}\)</span>
+
+<!--
+
+                                                                                               𝜆 ′
+                                                                                 𝑑𝐸 = 2, 44      𝑓.                                                                            (5.17)              --><a id="eq:Eiri_diameter"></a><!--
+                                                                                               𝐷
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Eiri_diameter} d_E = 2,44\frac {\lambda }{D}f&apos;.
+\end{equation}
+
+</p>
+
+<p>
+Гранична кутова роздільна здатність дифракційно обмеженого об’єктива:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{17}\)</span>
+
+<!--
+
+                                                                                                         𝜆
+                                                                                        𝜓гр = 1, 22        ,                                                                              (5.18)           --><a id="eq:psi_b"></a><!--
+                                                                                                         𝐷
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:psi_b} \psi _\text {гр} = 1,22\frac {\lambda }{D},
+\end{equation}
+
+</p>
+
+<p>
+де \(D\) — діаметр отвору оправи, або вхідна зіниця об’єктива.
+</p>
+
+<p>
+Лінійна роздільна здатність мікроскопа визначається мінімальним розміром об’єкта спостереження в предметній площині об’єктива як
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{18}\)</span>
+
+<!--
+
+                                                                                                        𝜆
+                                                                                     ℓmin ≈ 0, 61            ,                                                                            (5.19)           --><a id="eq:l_min"></a><!--
+                                                                                                     𝑛 sin ᵆ
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:l_min} \ell _{\min } \approx 0,61 \frac {\lambda }{n\sin u},
+\end{equation}
+
+</p>
+
+<p>
+для предметів з підсвічуванням:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{19}\)</span>
+
+<!--
+
+                                                                                                  𝜆
+                                                                                 ℓmin ≈ 0, 5           ,                                                                        (5.20)             --><a id="eq:l_min_immers"></a><!--
+                                                                                               𝑛 sin ᵆ
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:l_min_immers} \ell _{\min } \approx 0,5 \frac {\lambda }{n\sin u},
+\end{equation}
+
+</p>
+
+<p>
+де \(n\sin u\) — числова апертура, \(u \) — апертурний кут об’єктива в просторі предметів, або передній апертурний кут, \(n \) — показник заломлення імерсійного середовища.
+</p>
+
+</div>
+<!--
+...... section Дифракційна ґратка ......
+-->
+<h4 id="autosec-554"><span class="sectionnumber">&#xA7;&#x202F;5.5&#x2003;</span>Дифракційна ґратка</h4>
+<a id="main-html-autopage-554"></a>
+
+
+<p>
+В загальному випадку дифракційною ґраткою називається оптичний елемент, пропускання і/або відбивання якого змінюються за періодичним законом. В залежності від характеру зміни оптичних характеристик, ґратки діляться на амплітудні, фазові або амплітудно/фазові. Крім того, ґратки
+можуть працювати на пропускання або відбивання падаючого випромінювання. Найпростіша амплітудна ґратка — це набір періодичних прозорих щілин в непрозорому екрані.
+</p>
+
+<p>
+Нехай, маємо дифракційну ґратку, яка має щілини шириною \(b\), розділені між собою непрозорими проміжками довжиною \(a\) (рис.&nbsp;<a href="difraction.html#pic:slots">5.10</a>). Періодом дифракційної ґратки називається величина
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{20}\)</span>
+
+<!--
+
+
+                                                                                                                                       𝑑 = 𝑎 + 𝑏.
+
+-->
+
+<p>
+
+\begin{equation*}
+d = a + b.
+\end{equation*}
+
+</p>
+
+<p>
+Джерело монохроматичного світла знаходиться в нескінченності, тому хвиля, що падає на дифракційні ґратку, плоска. Лінза, поміщена за ґраткою, збирає промені на екрані, розташованому в фокальній площині.
+</p>
+
+<figure id="autoid-335" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-104"
+    class="lateximagesource"
+><!--
+                                         𝑑           𝑎         𝑏
+
+
+
+                                                               𝜙
+
+
+
+
+                                     𝐼
+                           𝑚=0
+
+
+
+                𝑚 = −1                   𝑚 = +1
+
+𝑓′
+
+
+
+
+     𝑚 = −2                                              𝑚 = +2
+
+
+                                                                       𝑥
+       𝜆
+     −2 𝑓   ′     𝜆
+                −1 𝑓   ′         0       +1 𝑓
+                                             𝜆   ′         𝜆
+                                                         +2 𝑓      ′
+       𝑑          𝑑                          𝑑             𝑑
+--><img
+   src="main-html-images/image-104.svg"
+   alt="Рис. 5.10. Дифракція Фраунгофера на дифракційній ґратці"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.10. Дифракція Фраунгофера на дифракційній ґратці
+
+</div>
+
+<a id="pic:slots"></a>
+
+</div>
+
+</figure>
+
+<p>
+Інтенсивність світла в точках на екрані визначається формулою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{20}\)</span>
+
+<!--
+
+                                                                                       𝜋𝑏                          𝜋𝑑
+                                                                             sin2 (         sin 𝜙)       sin2 (𝑁         sin 𝜙)
+                                                                                       𝜆                            𝜆
+                                                                    𝐼 = 𝐼0                      2
+                                                                                                     ⋅                            ,                                        (5.21)   --><a id="eq:Difraction_I_slots"></a><!--
+                                                                                                            2     𝜋𝑑
+                                                                              (
+                                                                                  𝜋𝑏
+                                                                                       sin 𝜙)             sin (         sin 𝜙)
+                                                                                  𝜆                                𝜆
+
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_I_slots} I = I_0 \frac {\sin ^2\left ( {\frac {\pi b}{\lambda } \sin \phi }\right )}{\left ( \frac {\pi b}{\lambda } \sin \phi \right )^2} \cdot \frac {\sin ^2\left ( {N\ \frac {\pi
+d}{\lambda } \sin \phi }\right )}{\sin ^2\left ( \frac {\pi d}{\lambda } \sin \phi \right )},
+\end{equation}
+
+</p>
+
+<p>
+де \(N\) — кількість штрихів, \(\phi \) — кут дифракції.
+</p>
+
+<p>
+Дифракційна картина від ґратки є результат дифракції хвиль від кожної щілини і інтерференції хвиль від різних щілин.
+</p>
+
+<p>
+Напрямки, в яких коливання від сусідніх щілин підсилюють один одного, називаються головними максимумами та визначаються умовою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{21}\)</span>
+
+<!--
+
+                                                                                                                  𝑑
+                                                                    𝑑 sin 𝜙 = ±𝑚𝜆,              𝑚 = 0, 1, 2, … , [ ]                                                      (5.22)    --><a id="eq:Difraction_main_max"></a><!--
+                                                                                                                  𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_main_max} d\sin \phi =\pm m\lambda , \quad m = 0, 1, 2, \ldots , \left [\frac {d}{\lambda }\right ]
+\end{equation}
+
+</p>
+
+<p>
+де \(m\) — порядок головного максимуму, \(\left [\frac {d}{\lambda }\right ]\) — найбільший порядок головного максимуму.
+</p>
+
+<p>
+<em>Додаткові мінімуми</em> розташовані між головними максимумами та розділені між собою додатковими максимумами:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{22}\)</span>
+
+<!--
+
+                                                                                            𝑘
+                                                                 𝑑 sin 𝜙 = ± (𝑚 +             ) 𝜆,       𝑘 = 1, 2, … , 𝑁 − 1.                                              (5.23)   --><a id="eq:Difraction_add_min"></a><!--
+                                                                                            𝑁
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_add_min} d\sin \phi =\pm \left (m + \frac {k}{N}\right ) \lambda , \quad k = 1, 2, \ldots , N - 1.
+\end{equation}
+
+</p>
+
+<p>
+де \(k\) — порядковий номер додаткового мінімуму.
+</p>
+
+<p>
+На інтерференційну картину також впливає розподіл інтенсивності від дифракції на щілині, <em>головні мінімуми</em> спостерігаються в напрямках, що визначаються умовою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{23}\)</span>
+
+<!--
+
+                                                                                                                   𝑏
+                                                                   𝑏 sin 𝜙 = ±𝑚′ 𝜆,             𝑚′ = 0, 1, 2, … , [ ] .                                                   (5.24)    --><a id="eq:Difraction_main_min"></a><!--
+                                                                                                                   𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_main_min} b\sin \phi = \pm m&apos;\lambda , \quad m&apos; = 0, 1, 2, \ldots , \left [ \frac {b}{\lambda }\right ].
+\end{equation}
+
+</p>
+
+<p>
+При падінні випромінювання під кутом \(\psi \) формула&nbsp;<span class="textup">(<a href="difraction.html#eq:Difraction_main_max">5.22</a>)</span> ґратки набуває вигляду:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{24}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝑑(sin 𝜙 − sin 𝜓) = ±𝑚𝜆.                                                            (5.25)
+
+-->
+
+<p>
+
+\begin{equation}
+d(\sin \phi - \sin \psi ) = \pm m \lambda .
+\end{equation}
+
+</p>
+
+<p>
+При цьому максимально можливий порядок дифракції збільшується удвічі.
+</p>
+<!--
+...... subsection Спектральні характеристики дифракційної ґратки. ......
+-->
+<h5 id="autosec-558">Спектральні характеристики дифракційної ґратки.</h5>
+<a id="main-html-autopage-558"></a>
+
+
+<p>
+Як випливає з формули <span class="textup">(<a href="difraction.html#eq:Difraction_main_max">5.22</a>)</span>, положення головних максимумів (крім нульового) залежить від довжини хвилі \(\lambda \). Тому ґратка здатна розкладати випромінювання в спектр, тобто є
+спектральним приладом. Якщо на ґратку падає немонохроматичне випромінювання, то кожному порядку дифракції (тобто при кожному значенні \(m\)) виникає спектр досліджуваного випромінювання, причому фіолетова частина спектру розташовується ближче до максимуму нульового
+порядку. Максимум нульового порядку залишається незабарвленим (рис.&nbsp;<a href="difraction.html#pic:slotd_dispersion">5.11</a>).
+</p>
+
+<figure id="autoid-336" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-105"
+    class="lateximagesource"
+><!--
+        𝐼
+
+
+
+        𝜙
+
+                 𝜆   𝜆 + 𝛿𝜆
+    ′   𝜙 + 𝛿𝜙
+𝑓
+
+
+
+
+                              𝑥
+                 𝑓′ 𝛿𝜙
+--><img
+   src="main-html-images/image-105.svg"
+   alt="Рис. 5.11. Дисперсія дифракційної ґратки"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.11. Дисперсія дифракційної ґратки
+
+</div>
+
+<a id="pic:slotd_dispersion"></a>
+
+</div>
+
+</figure>
+
+
+<div class="cb-theory">
+
+<p>
+<b>Формули для спектральних характеристик дифракційної ґратки</b>
+</p>
+
+<p>
+Кутова дисперсія ґратки:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{25}\)</span>
+
+<!--
+
+                                                                    𝛿𝜙     𝑚           𝑚
+                                                             𝐷=        =         =             .                                                            (5.26)              --><a id="eq:Difraction_angular_dispersion"></a><!--
+                                                                    𝛿𝜆   𝑑 cos 𝜃   √𝑑2 − (𝑚𝜆)2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_angular_dispersion} D = \frac {\delta \phi }{\delta \lambda } = \frac {m}{d\cos \theta } = \frac {m}{\sqrt {d^2 - (m\lambda )^2}}.
+\end{equation}
+
+</p>
+
+<p>
+Лінійна дисперсія
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{26}\)</span>
+
+<!--
+
+
+                                                                    𝑓′ 𝛿𝜙    𝑓′ 𝑚        𝑓′ 𝑚
+                                                             𝐷𝑙 =         =         =             ,                                                          (5.27)             --><a id="eq:Difraction_linear_dispersion"></a><!--
+                                                                     𝛿𝜆     𝑑 cos 𝜃   √𝑑2 − (𝑚𝜆)2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_linear_dispersion} D_l = \frac {f&apos;\delta \phi }{\delta \lambda } = \frac {f&apos;m}{d\cos \theta } = \frac {f&apos;m}{\sqrt {d^2 - (m\lambda )^2}},
+\end{equation}
+
+</p>
+
+<p>
+де \(f&apos;\) — задня фокусна відстань об’єктива приладу.
+</p>
+
+<p>
+Роздільна здатність ґратки:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{27}\)</span>
+
+<!--
+
+                                                                                𝜆
+                                                                          𝑅=      = 𝑚𝑁.                                                                       (5.28)             --><a id="eq:Difraction_Slots_resolution"></a><!--
+                                                                               𝛿𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_Slots_resolution} R = \frac {\lambda }{\delta \lambda } = mN.
+\end{equation}
+
+</p>
+
+<p>
+Інтервал довжин хвиль \(\Delta \lambda \), в межах якого ще не перекриваються спектри сусідніх порядків, називається областю вільної дисперсії, яка визначається за формулою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{28}\)</span>
+
+<!--
+
+                                                                                    𝜆
+                                                                             Δ𝜆 =     .                                                                         (5.29)            --><a id="eq:Difraction_free_dispersion"></a><!--
+                                                                                    𝑚
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Difraction_free_dispersion} \Delta \lambda = \frac {\lambda }{m}.
+\end{equation}
+
+</p>
+
+</div>
+<!--
+...... subsection Дифракція рентгенівських променів на кристалічній ґратці. ......
+-->
+<h5 id="autosec-562">Дифракція рентгенівських променів на кристалічній ґратці.</h5>
+<a id="main-html-autopage-562"></a>
+
+
+<p>
+Дифракція рентгенівських променів на кристалічній ґратці використовується в рентгенівській спектроскопії і рентгеноструктурному аналізі. Умовою інтерференційного підсилення променів, відбитих від паралельних атомних площин (рис.&nbsp;<a
+href="difraction.html#pic:X-ray_difraction">5.12</a>), є умова Брега-Вульфа:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{29}\)</span>
+
+<!--
+
+
+                                                                                   2𝑑 sin 𝛼 = ±𝑚𝜆                                                                                     (5.30)                                               --><a id="eq:Brag-Wolf"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Brag-Wolf} 2d\sin \alpha = \pm m\lambda
+\end{equation}
+
+</p>
+
+<p>
+де \(d\) — відстань між атомними площинами, \(\alpha \) — кут ковзання світла.
+</p>
+
+<figure id="autoid-337" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-106"
+    class="lateximagesource"
+><!--
+    𝛼   𝛼
+
+𝑑
+--><img
+   src="main-html-images/image-106.svg"
+   alt="Рис. 5.12. До виведення умови Брега-Вульфа (5.30)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;5.12. До виведення умови Брега-Вульфа <span class="textup">(<a href="difraction.html#eq:Brag-Wolf">5.30</a>)</span>
+
+</div>
+
+<a id="pic:X-ray_difraction"></a>
+
+</div>
+
+</figure>
+
+<p>
+Дифракція рентгенівських променів від кристалів використовується для дослідження спектрального складу рентгенівського випромінювання (рентгенівська спектроскопія) та для вивчення структури кристалів (рентгеноструктурний аналіз).
+</p>
+
+<p>
+Визначаючи напрямки максимумів, що утворюються при дифракції досліджуваного рентгенівського випромінювання від кристалів з відомою структурою можна обчислити довжини хвиль. Спочатку для визначення довжин хвиль були використані кристали кубічної системи, причому
+міжплощинні відстані визначалися за густиною та відносною молекулярною масою кристала.
+</p>
+<!--
+...... section Приклади розв’язування задач ......
+-->
+<h4 id="autosec-566"><span class="sectionnumber">&#xA7;&#x202F;5.6&#x2003;</span>Приклади розв’язування задач</h4>
+<a id="main-html-autopage-566"></a>
+
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 28.</b> На діафрагму із круглим отвором діаметром \(6 \) мм нормально падає плоска монохроматична хвиля (\(600 \)&nbsp;нм). За діафрагмою на відстані \(3 \)&nbsp;м від неї знаходиться екран спостереження. а) Скільки зон Френеля вкладаються в отворі діафрагми? б)
+Яким буде центр дифракційної картини на екрані: темним або світлим? в) Інтенсивність світла в центрі картини в порівнянні з інтенсивністю при відсутності екрана. г) При якому радіусі отвору діафрагми в центрі картини буде найбільш темна пляма? д) Яким буде центр тіні на екрані, якщо
+діафрагму з отвором замінити непрозорим диском того ж діаметра? е) На які відстані потрібно відсунути екран спостереження від диска, щоб інтенсивність світла в плямі Пуассона була не менше, ніж у попередньому пункті.
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-107"
+    class="lateximagesource"
+><!--
+    𝑃
+
+
+
+
+𝑏
+--><img
+   src="main-html-images/image-107.svg"
+   alt="Рисунок 20"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+а) Число зон Френеля, що укладаються в отворі діафрагми, визначаємо по формулі <span class="textup">(<a href="difraction.html#eq:m_number_of_zones">5.10</a>)</span> при \(a \to \infty \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{30}\)</span>
+
+<!--
+
+
+                                                                                               𝑅2
+                                                                                          𝑚=      .                                                                                          (5.31)                                                --><a id="eq_in_prb:m"></a><!--
+                                                                                               𝑏𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_in_prb:m} m = \frac {R^2}{b\lambda }.
+\end{equation}
+
+</p>
+
+<p>
+б) Амплітуду поля в точці \(P\) при \(m = 5\) знаходимо за формулою <span class="textup">(<a href="difraction.html#eq:Amplitide_of_holes">5.6</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝐸(𝑃) = 𝐸1 + 𝐸5 .
+
+-->
+
+<p>
+
+\begin{equation*}
+E(P) = E_1 + E_5.
+\end{equation*}
+
+</p>
+
+<p>
+Оскільки вона не дорівнює нулю, у точці \(P \) буде світла пляма.
+</p>
+
+<p>
+в) За відсутності діафрагми амплітуда світлового вектора в точці \(P \) дорівнює \(\frac 12 E_1 \), а відповідна їй інтенсивність дорівнює \(I_0 \). Оскільки \(m = 5 \) невелике, \(E_5 \) буде незначно менше \(E_1 \) і можна прийняти \(E(P) = E_1 + E_5 \approx 2 E_1 \).
+Таким чином, за рахунок дифракції на отворі діафрагми амплітуда \(E(P) \) зросла майже вдвічі. Отже, інтенсивність повинна зрости в \(4 \) рази (\(I_p = 4I_0\)).
+</p>
+
+<p>
+г) Відповідно до формули <span class="textup">(<a href="difraction.html#eq:Amplitide_of_holes">5.6</a>)</span> у точці \(P \) буде темно при парному числі зон, що відкриті отвором діафрагми, а найбільш темно при найменшому їхньому числі (\(m = 2 \)).
+</p>
+
+<p>
+Радіус отвору діафрагми визначаємо з формули <span class="textup">(<a href="difraction.html#eq_in_prb:m">5.31</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                                   𝑅 = √𝑚𝑏𝜆 = 1, 89 мм.
+
+-->
+
+<p>
+
+\begin{equation*}
+R = \sqrt {mb\lambda } = 1,89\ \text {мм}.
+\end{equation*}
+
+</p>
+
+<p>
+д) Амплітуда світлового вектора в центрі дифракційної картини за непрозорим диском при \(m = 5 \) закритих їм зон Френеля визначається по формулі <span class="textup">(<a href="difraction.html#eq:Amplitide_of_disk">5.7</a>)</span>. Оскільки \(E_6 \) за абсолютним
+значенням не набагато менше \(E_1 \), у точці \(P \) буде світла пляма (пляма Пуассона) з інтенсивністю, трохи меншою за \(I_0 \).
+</p>
+
+<p>
+е) Оскільки амплітуди \(E_6 \) повільно спадають зі зростанням \(m \), інтенсивність світла в плямі Пуассона не менше, ніж у попередньому випадку, і буде спостерігатися при цілих \(m &lt; 5 \), тобто при \(m = 1, 2, 3, 4 \). Відповідні ним значення відстані \(b \) від диска до екрана
+визначаємо з формули:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                                                𝑅2
+                                                                                                                                         𝑏𝑚 =      .
+                                                                                                                                                𝑚𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+b_m = \frac {R^2}{m\lambda }.
+\end{equation*}
+
+</p>
+
+<p>
+Обчислення дають: \(b_4 = 3,75 \)&nbsp;м; \(b_3 = 5 \)&nbsp;м; \(b_2 = 7,5 \)&nbsp;м; \(b_1 = 15 \)&nbsp;м. Таким чином, найбільш світло в плямі Пуассона буде при \(m = 1 \) і \(b = 15 \)&nbsp;м, коли \(E(P) = 0,5E_1 \).
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 29.</b> На відстані від точкового джерела \(S \) електромагнітної хвилі нескінчений ідеально відбиваючий екран АВ (рис.). Використовуючи векторну діаграму, знайти як зміниться інтенсивність відбитої хвилі у точці \(S \), якщо з екрана вирізати диск \(CD \) з центром в основі
+перпендикуляра, опущеного з \(S \) на площину екрана, та змістити цей диск у напрямі до джерела на одну дванадцяту довжини хвилі? Площа диска складає одну третину від площі першої зони Френеля. Як зміниться результат, якщо зміщення виконати у зворотному напрямі на ту ж величину?
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-108"
+    class="lateximagesource"
+><!--
+        𝐵
+
+
+
+
+    𝐷
+
+
+✺
+𝑆
+
+    𝐶
+
+
+
+
+        𝐴
+--><img
+   src="main-html-images/image-108.svg"
+   alt="Рисунок 21"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Коливання від усіх зон Френеля зображуються вектором \(OC \) (див. рис.).
+</p>
+
+<p>
+Коливання від третини першої зони — вектором \(OA \). Вектор \(AC \) відповідає коливанню, що викликане хвилями, які відбились від зовнішньої частини екрану, розташованої за отвором \(CD \).
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-109"
+    class="lateximagesource"
+><!--
+𝐶
+
+
+
+
+     𝐴
+
+
+
+𝑂
+
+
+
+
+    𝐴′
+--><img
+   src="main-html-images/image-109.svg"
+   alt="Рисунок 22"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Ці три вектори утворюють рівносторонній трикутник, якщо знехтувати зменшенням радіуса витка спіралі на одному обороті. При зміщенні центрального диска до джерела на \(\frac {\lambda }{12} \) фаза відбитої ним хвилі збільшиться на \(2\frac {2\pi }{12} = \frac {\pi
+}{3} \), і коливання зобразиться вектором, який рівний та протилежно напрямлений вектору \(AC \). Інтенсивність всієї відбитої хвилі у точці \(S \) дорівнюватиме нулю. При зміщенні диска \(CD \) у протилежний бік фаза коливання \(OA \) зменшиться на \(\frac {\pi }{3} \) і вектор
+\(OA \) повернеться у положення \(OC \).
+</p>
+
+<p>
+Результуюче коливання знайдеться додаванням векторів \(AC \) та \(OC \). Таким чином знайдемо, що амплітуда коливань у точці \(S \) збільшиться у \(\sqrt {3}\) рази, а інтенсивність – втричі.
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 30.</b> Плоска монохроматична хвиля (\(0,569 \)&nbsp;мкм) нормально падає на екран із щілиною шириною \(2 \)&nbsp;мкм. а) Скільки спостерігається додаткових максимумів у дифракційній картині? б) Яка кутова ширина зображення джерела світла? в) Яка лінійна
+ширина цього зображення на екрані, якщо воно створене лінзою з фокусною відстанню \(1 \)&nbsp;м?
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Див. рис.&nbsp;<a href="difraction.html#pic:slot">5.7</a>. а) Число додаткових максимумів \(k\) повинне бити на одиницю менше числа мінімумів.
+</p>
+
+<p>
+Максимальне мінімумів з <span class="textup">(<a href="difraction.html#eq:Difraction_Slot_min">5.13</a>)</span> дорівнює цілій частині від \(\left [ \frac {b}{\lambda }\right ] \), а тому, число додаткових максимумів:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                 𝑏         2
+                                                                                                                              𝑘=[ ]−1=[        ] − 1 = 2.
+                                                                                                                                 𝜆      0, 569
+
+-->
+
+<p>
+
+\begin{equation*}
+k = \left [ \frac {b}{\lambda }\right ] - 1 = \left [ \frac {2}{0,569}\right ] - 1 = 2.
+\end{equation*}
+
+</p>
+
+<p>
+Тобто, видимими є три перших мінімуми й два додаткових максимуми з обох сторін від головного.
+</p>
+
+<p>
+б) Кутова ширина дифракційного зображення джерела дорівнює кутовій ширині головного максимуму:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                                𝜆
+                                                                                                                          𝛿𝜙0 = 2𝜙1 = 2 arcsin ( ) = 34∘ 15′ 19″ .
+                                                                                                                                                𝑏
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \phi _0 = 2\phi _1 = 2\arcsin \left ( \frac {\lambda }{b} \right ) = 34^\circ 15&apos;19&apos;&apos;.
+\end{equation*}
+
+</p>
+
+<p>
+в) Лінійна ширина дифракційного зображення — це відстань між \(m= +1\) та \(m = -1\) мінімумами, тобто
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                                        𝜆
+                                                                                                                             Δ𝑥 = 2𝑓′ tg 𝜙1 = 2𝑓′         = 61, 6 см.
+                                                                                                                                                        𝑏
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta x = 2f&apos;\tg \phi _1 = 2f&apos;\frac {\lambda }{b} = 61,6\ \text {см}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 31.</b> Дифракційна ґратка освітлюється нормально падаючим паралельним пучком світла (\(500 \)&nbsp;нм). Відстань між першими головними максимумами, спроектованими лінзою (\(f&apos; = 1 \)&nbsp;см) на екран, дорівнює \(20,2 \)&nbsp;см. База ґратки \(B =
+10 \)&nbsp;см. Визначити: а) період ґратки; б) число штрихів на \(1 \)&nbsp;мм; в) кутову й лінійну ширину головного максимуму; г) кутову й лінійну дисперсії ґратки в спектрі першого порядку; д) роздільну здатність ґратки в спектрі першого порядку.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Див. рис.&nbsp;<a href="difraction.html#pic:slots">5.10</a>.
+</p>
+
+<p>
+а) З умови головних максимумів дифракційної ґратки <span class="textup">(<a href="difraction.html#eq:Difraction_main_max">5.22</a>)</span> при \(m = 1 \)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                                 𝜆
+                                                                                                                                          𝑑=        .
+                                                                                                                                                 𝜙1
+
+-->
+
+<p>
+
+\begin{equation*}
+d = \frac {\lambda }{\phi _1}.
+\end{equation*}
+
+</p>
+
+<p>
+З рис. \(\sin \phi _1 \approx \tg \phi _1 = \frac {\Delta x_1}{f&apos;}\), звідки \(2\lambda \frac {f&apos;}{\Delta x_1} = 4,95\)&nbsp;мкм.
+</p>
+
+<p>
+Кут дифракції, під яким видно перший головний максимум \(\phi _1 = \arcsin \left ( \frac {\lambda }{d}\right ) = 5,798^\circ \), малий, тому умова \(\sin \phi _1 \approx \tg \phi _1\) задовольняється.
+</p>
+
+<p>
+б) Число штрихів на \(1 \)&nbsp;мм ґратки
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                       1
+                                                                                                                                         = 202 мм-1 .
+                                                                                                                                       𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac 1{d} = 202\ \text {мм\textsuperscript {-1}}.
+\end{equation*}
+
+</p>
+
+<p>
+в) Кутова ширина головного максимуму (для якого \(m = 0\)) — це кут між напрямками на найближчі до нього мінімуми (для яких \(k = \pm 1\)) \(\delta \phi _0 = 2*\phi _{\min }\). Положення мінімумів знаходимо з формули <span class="textup">(<a
+href="difraction.html#eq:Difraction_add_min">5.23</a>)</span>. Отже:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                                         1
+                                                                                                                                                 (0 +        𝜆)
+                                                                                                                                  sin 𝜙min = (          𝑁
+                                                                                                                                                                  ).
+                                                                                                                                                    𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+\sin \phi _{\min } = \left ( \frac {\left (0 + \frac {1}{N} \lambda \right )}{d} \right ) .
+\end{equation*}
+
+</p>
+
+<p>
+Оскільки кутова ширина мала \(\sin \phi _{\min } \approx \phi _{\min }\), одержуємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                             2𝜆   2𝜆
+                                                                                                                           𝛿𝜙0 = 2𝜙min =≈       =    = 2, 06″ ,
+                                                                                                                                             𝑁𝑑   𝐵
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \phi _0 =2\phi _{\min } = \approx \frac {2\lambda }{Nd} = \frac {2\lambda }{B} = 2,06&apos;&apos;,
+\end{equation*}
+
+</p>
+
+<p>
+де \(B = Nd\) — база ґратки.
+</p>
+
+<p>
+Лінійна ширина головного максимуму на екрані \(d\ell = f&apos;\delta \phi _0 = 0,01 \)&nbsp;мм.
+</p>
+
+<p>
+г) Кутову дисперсію (див. рис.&nbsp;<a href="difraction.html#pic:slotd_dispersion">5.11</a>) визначаємо за формулою <span class="textup">(<a href="difraction.html#eq:Difraction_angular_dispersion">5.26</a>)</span> при \(m = 1\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                               𝛿𝜙       𝑚
+                                                                                                                         𝐷=       =             = 0, 2 рад/мкм.
+                                                                                                                               𝛿𝜆   √𝑑2 − (𝑚𝜆)2
+
+-->
+
+<p>
+
+\begin{equation*}
+D = \frac {\delta \phi }{\delta \lambda } = \frac {m}{\sqrt {d^2 - (m\lambda )^2}} = 0,2\ \text {рад/мкм}.
+\end{equation*}
+
+</p>
+
+<p>
+Лінійна дисперсія
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                                  𝐷𝜆 = 𝑓𝐷 = 0, 2 см/мкм.
+
+-->
+
+<p>
+
+\begin{equation*}
+D_{\lambda } = f D = 0,2\ \text {см/мкм}.
+\end{equation*}
+
+</p>
+
+<p>
+в) Роздільну здатність визначаємо за формулою <span class="textup">(<a href="difraction.html#eq:Difraction_Slots_resolution">5.28</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                             𝐵
+                                                                                                                               𝑅 = 𝑚𝑁 = 𝑚      = 2, 02 ⋅ 105 .
+                                                                                                                                             𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+R = m N = m \frac {B}{d} = 2,02\cdot 10^5.
+\end{equation*}
+
+</p>
+
+<p>
+Границя спектрального розділення ґратки:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+                                                                                                                                       𝜆
+                                                                                                                                𝛿𝜆 =     = 0, 247 ⋅ 105 мкм.
+                                                                                                                                       𝑅
+-->
+
+<p>
+
+\begin{equation*}
+\delta \lambda = \frac {\lambda }{R} = 0,247\cdot 10^5\ \text {мкм}.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 32.</b> Знайти роздільну здатність інтерферометра Фабрі-Перо.
+</p>
+
+<p>
+<em>Вказівка</em>: Для розділення двох спектральних ліній \(\lambda \) та \(\lambda + \delta \lambda \) необхідно, щоб в інтерференційній картині, яку дає інтерферометр, ці лінії були розведені на відстань не меншу півширини лінії.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Побудуємо хід променів для двох монохроматичних хвиль з довжинами \(\lambda \) та \(\lambda + \delta \lambda \), які падають на інтерферометр під різними кутами.
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-110"
+    class="lateximagesource"
+><!--
+𝑑
+--><img
+   src="main-html-images/image-110.svg"
+   alt="Рисунок 23"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+</div>
+
+<p>
+Умова максимуму при багатопроменевій інтерференції для променів, що пройшли крізь плоско-паралельний прошарок в інтерферометрі Фабрі-Перо визначається з формули <span class="textup">(<a href="interference.html#eq:delta=max_manyrays">4.18</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{31}\)</span>
+
+<!--
+
+
+                                                                                                                               2𝑑 cos 𝜖′2 = 𝑚𝜆,                                                                                                     (5.32)
+
+-->
+
+<p>
+
+\begin{equation}
+2d\cos \epsilon &apos;_2 = m\lambda ,
+\end{equation}
+
+</p>
+
+<p>
+де \(\Delta \) — різниця ходу, \(d\) — товщина повітряного прошарку між посрібненими поверхнями, \(\epsilon &apos;_2\) — кут падіння на нижню посріблену поверхню (див. рис.).
+</p>
+
+<p>
+Побудуємо розподіл інтенсивності на екрані для двох \(\lambda \) та \(\lambda + \delta \lambda \) за формулою <span class="textup">(<a href="interference.html#eq:I_traversed">4.17</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                     𝐼𝑇            (1 − 𝑅)2
+                                                                                                                        =                    𝜋
+                                                                                                                                                         ,
+                                                                                                                     𝐼0   (1 − 𝑅) + 4𝑅 sin2 ( 𝑑 cos 𝜖′ )
+                                                                                                                                 2
+                                                                                                                                               𝜆       2
+
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {I_T}{I_0} = \frac {(1-R)^2}{(1-R)^2 + 4R\sin ^2\left ( \frac {\pi }{\lambda } d\cos \epsilon &apos;_2 \right ) },
+\end{equation*}
+
+</p>
+
+<p>
+де \(I_0\) — інтенсивність падаючого світла, \(I_T\) — інтенсивність світла, що пройшло крізь інтерферометр.
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-111"
+    class="lateximagesource"
+><!--
+        1
+
+
+
+
+𝐼/𝐼0
+       0.5
+
+
+
+
+        0
+             −0.4   −0.3   −0.2   −0.1     0       0.1   0.2   0.3   0.4
+                                         cos 𝜖′2
+--><img
+   src="main-html-images/image-111.svg"
+   alt="Рисунок 24"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Розглянемо детально максимум \(m\)-го порядку для двох довжин хвиль, для яких виконується умова вказівки, тобто дві сусідні лінії розведені на відстань півширини лінії, яку позначимо \(2\delta \), де \(\delta \) — це зсув фаз, при якому інтенсивність хвилі зменшується вдвічі (див. <span
+class="textup">(<a href="interference.html#eq:manyrays_I_ddelta">4.21</a>)</span>).
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-112"
+    class="lateximagesource"
+><!--
+        1
+
+
+
+
+𝐼/𝐼0
+       0.5
+
+
+
+
+                       2𝛿
+        0
+             0.2             0.3   0.4
+                   cos 𝜖′2
+--><img
+   src="main-html-images/image-112.svg"
+   alt="Рисунок 25"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+В цьому випадку:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                                      𝑚𝜆      𝑚(𝜆 + 𝛿𝜆)
+                                                                                                                            cos 𝜙 =      +𝛿 =           − 𝛿,
+                                                                                                                                      𝑑           𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+\cos \phi = \frac {m\lambda }{d} + \delta = \frac {m(\lambda + \delta \lambda )}{d} - \delta ,
+\end{equation*}
+
+</p>
+
+<p>
+з <span class="textup">(<a href="interference.html#eq:manyrays_I_ddelta">4.21</a>)</span>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                                             𝜋√𝑅 𝜆
+                                                                                                                                       𝛿≈             .
+                                                                                                                                             1 − 𝑅 2𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \approx \frac {\pi \sqrt {R}}{1-R}\frac {\lambda }{2d}.
+\end{equation*}
+
+</p>
+
+<p>
+Звідки роздільна здатність:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                                            𝜆   𝑚𝜋√𝑅
+                                                                                                                                      𝑅=      =         .
+                                                                                                                                           𝛿𝜆   (1 − 𝑅)
+
+-->
+
+<p>
+
+\begin{equation*}
+R = \frac {\lambda }{\delta \lambda } = \frac {m \pi \sqrt {R}}{(1-R) }.
+\end{equation*}
+
+</p>
+
+<p>
+Цей вираз можна записати у тому ж вигляді, що і для дифракційної ґратки,. для дифракційної ґратки \(R = mN\), а тому роль ефективного числа штрихів грає величина:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{5.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                                                𝜋√𝑅
+                                                                                                                                       𝑁еф =           .
+                                                                                                                                               (1 − 𝑅)
+
+-->
+
+<p>
+
+\begin{equation*}
+N_\text {еф} = \frac { \pi \sqrt {R}}{(1-R) }.
+\end{equation*}
+
+</p>
+
+</div>
+<!--
+...... section Задачі для самостійного розв’язку ......
+-->
+<h4 id="autosec-585"><span class="sectionnumber">&#xA7;&#x202F;5.7&#x2003;</span>Задачі для самостійного розв’язку </h4>
+<a id="main-html-autopage-585"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-338"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.1.</span></span> <a id="autoid-339" ></a ><a id="LWR-ht-problem:5.{1}"></a>Чому світла пляма Пуассона в центрі круглої тіні від непрозорого диска на екрані спостерігається рідко?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-340"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.2.</span></span> <a id="autoid-341" ></a ><a id="LWR-ht-problem:5.{2}"></a>Сутність властивості подібності дифракції. Що характеризує параметр дифракції?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-342"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.3.</span></span> <a id="autoid-343" ></a ><a id="LWR-ht-problem:5.{3}"></a>Будова зонно-фазової пластинки. Її перевага перед зонною пластинкою Френеля.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-344"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.4.</span></span> <a id="autoid-345" ></a ><a id="LWR-ht-problem:5.{4}"></a>Як зміниться кутова ширина основного максимуму в дифракційній картині за щілиною при зменшенні
+вдвічі: а) ширини щілини; б) довжини хвилі?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-346"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.5.</span></span> <a id="autoid-347" ></a ><a id="LWR-ht-problem:5.{5}"></a>Як виражається умова головних максимумів дифракційної ґратки при падінні на неї плоскої хвилі під
+кутом, відмінним від нуля?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-348"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.6.</span></span> <a id="autoid-349" ></a ><a id="LWR-ht-problem:5.{6}"></a>Шляхи підвищення роздільної здатності: а) дифракційних граток; б) об’єктивів телескопів; в) об’єктивів
+мікроскопів.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Дифракція Френеля ......
+-->
+<h5 id="autosec-592">Дифракція Френеля</h5>
+<a id="main-html-autopage-592"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-350"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.7.</span></span> <a id="autoid-351" ></a ><a id="LWR-ht-problem:5.{7}"></a>Дифракційна картина спостерігається на відстані 4 м від точкового джерела (\(\lambda = 5\cdot
+10^{-7}\)&nbsp;м). Посередині між джерелом і екраном встановлена діафрагма із круглим отвором. При якому радіусі отвору центр світлого кола на екрані буде: а) найбільш темним; б) найбільш світлим? <a href="answers.html#LWR-ht-solution:5.{7}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-352"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.8.</span></span> <a id="autoid-353" ></a ><a id="LWR-ht-problem:5.{8}"></a>Плоска монохроматична хвиля (\(0,5\) мкм) з інтенсивністю \(I_0\) нормально падає на діафрагму із
+круглим отвором діаметра \(2\)&nbsp;мм. а) Знайти відстань \(b_1\), \(b_2\), \(b_3\), &#x2026;від діафрагми до точок \(P1\), \(P_2\), \(P_3\), &#x2026;на осі твору, для яких в отворі укладається \(1\), \(2\), \(3\), &#x2026;зон Френеля. б) Побудувати приблизно графік залежності
+\(I_p(b)\). <a href="answers.html#LWR-ht-solution:5.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-354"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.9.</span></span> <a id="autoid-355" ></a ><a id="LWR-ht-problem:5.{9}"></a>Паралельний монохроматичний пучок світла (\(0,6\)&nbsp;мкм) падає нормально на діафрагму із
+круглим отвором діаметра \(1,2\)&nbsp;м. На відстані \(15\)&nbsp;см за діафрагмою на осі отвору спостерігається темна пляма. На яку мінімальну відстань \(\Delta b\) необхідно зміститися від цієї точки уздовж осі отвору, віддаляючись від нього, щоб у центрі дифракційної картини знову
+спостерігалася темна пляма? <a href="answers.html#LWR-ht-solution:5.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-356"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.10.</span></span> <a id="autoid-357" ></a ><a id="LWR-ht-problem:5.{10}"></a>На шляху плоскої монохроматичної хвилі встановлюється непрозора ширма із секторним вирізом.
+Дифракційна картина, що створюється нею спостерігається на екрані, розташованому за ширмою на деякій відстані у точці \(P\). Інтенсивність світла в точці \(P\) за відсутності ширми дорівнює \(I_0\). Знайти інтенсивність світла в точці \(P\) при різних типах ширм, зображених на рис. Радіуси
+закруглень на ширмах 5 – 8 збігаються з радіусом першої зони Френеля.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-113"
+      class="lateximagesource"
+><!--
+1   2   3   4
+
+
+
+
+5   6   7   8
+--><img
+      src="main-html-images/image-113.png"
+      alt="Рисунок 26"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-358"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.11.</span></span> <a id="autoid-359" ></a ><a id="LWR-ht-problem:5.{11}"></a>Між точковим монохроматичним джерелом світла й точкою спостереження перпендикулярно до лінії,
+яка з’єднує їх, помістили екран, що складається із секторів двох кругів (див. рис.). Радіус одного з них дорівнює радіусу \(1\)-ї зони Френеля, іншого — радіусу \(2\)-ї зони Френеля. Визначити інтенсивність світла в точці спостереження, якщо за відсутності екрана вона дорівнює \(I_0\).
+Розглянути екрани, зображені на рис. 1 та 2.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-114"
+      class="lateximagesource"
+><!--
+1   2
+--><img
+      src="main-html-images/image-114.svg"
+      alt="Рисунок 27"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-360"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.12.</span></span> <a id="autoid-361" ></a ><a id="LWR-ht-problem:5.{12}"></a>Вдалині від точкового джерела \(S\) розміщений нескінченний ідеально відбиваючий екран. З екрана
+видалений диск діаметром \(d_1 = 2r_1\sqrt {\nfrac 23}\), де \(r_1\) — радіус \(1\)-ї зони Френеля, і поставлений інший діаметром \(d_2 = \frac {d_1}{\sqrt 2}\) . Знайти інтенсивність \(I\) відбитої хвилі в точці \(S\), якщо диск діаметром \(d_2\) розміщений в площині
+екрана. <a href="answers.html#LWR-ht-solution:5.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-362"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.13.</span></span> <a id="autoid-363" ></a ><a id="LWR-ht-problem:5.{13}"></a>На білій стіні спостерігають тінь від прямолінійного краю \(AB\) непрозорого екрану, який освітлюють
+паралельним монохроматичним жмутком променів, перпендикулярним до екрану (\(\lambda = 5000\)&nbsp;0.25A). Площини стіни й екрана паралельні, відстань між ними \(b = 4\)&nbsp;м. На краю екрана виточене заглиблення, що має форму півкола радіусом \(r = 1\)&nbsp;мм
+(рис.). Як зміниться інтенсивність світла в точці стіни, що є геометричною тінню центра \(O\) відповідного кола, в порівнянні з інтенсивністю в тій же точці, коли заглиблення не було?
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-115"
+      class="lateximagesource"
+><!--
+𝐴   𝑂       𝐵
+        𝑟
+--><img
+      src="main-html-images/image-115.png"
+      alt="Рисунок 28"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{13}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-364"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.14.</span></span> <a id="autoid-365" ></a ><a id="LWR-ht-problem:5.{14}"></a>Паралельний жмуток монохроматичного світла нормально падає з повітря на плоску поверхню
+діелектрика. Визначити максимальну величину напруженості електричного поля у діелектрику \(E_{\max }\). Оцінити відстань \(l\) від поверхні діелектрика до точки, у якій поле максимальне. Діаметр світлового жмутка \(D = 0,1\)&nbsp;см, довжина світлової хвилі у повітрі \(\lambda
+= 0,5\)&nbsp;мкм, інтенсивність світла у жмутку \(І = 1\)&nbsp;кВт/см\(^2\), показник заломлення діелектрика \(n = 2\). <a href="answers.html#LWR-ht-solution:5.{14}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-366"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.15.</span></span> <a id="autoid-367" ></a ><a id="LWR-ht-problem:5.{15}"></a>Радіус п’ятого кільця зонної пластинки для монохроматичної сферичної хвилі (\(500\)&nbsp;нм)
+дорівнює \(1,5\)&nbsp;мм. Визначити: а) фокусну відстань зонної пластинки; б) радіус першого кільця пластинки; в) що відбудеться, якщо простір за пластинкою заповнити водою? <a href="answers.html#LWR-ht-solution:5.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-368"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.16.</span></span> <a id="autoid-369" ></a ><a id="LWR-ht-problem:5.{16}"></a>Зонна пластинка, вирізана зі скла з показником заломлення \(n \), являє собою тіло обертання, переріз
+якого показано на рис. Пластинка поміщена в непрозору оправу. Радіуси сходів \(r_1 = 2\)&nbsp;мм, \(r_2 = 4\)&nbsp;мм, \(r_3 = 6\)&nbsp;мм. Товщина сходів \(h\) однакова. Визначити максимальну фокусну відстань \(f_{\max }\) пластинки для світла з довжиною хвилі
+\(\lambda = 500\)&nbsp;нм. Указати, при якій товщині \(h\) інтенсивність у фокусі буде найбільшою. Який максимальний виграш в інтенсивності буде давати така система?
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-116"
+      class="lateximagesource"
+><!--
+                      𝑟3
+                 𝑟2
+            𝑟1
+
+
+
+        ℎ
+    ℎ
+ℎ
+--><img
+      src="main-html-images/image-116.svg"
+      alt="Рисунок 29"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{16}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-370"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.17.</span></span> <a id="autoid-371" ></a ><a id="LWR-ht-problem:5.{17}"></a>Потрібно виготовити відбиваючу зонну пластинку на ввігнутому сферичному дзеркалі з кільцевими
+зонами Френеля. Знайти радіус \(m \)-ї зони \(r_m \), якщо джерело світла й точка спостереження розташовані на осі дзеркала на відстанях \(a \) й \(b \) відповідно від його вершини, причому \(a \le R \le b \), \(r_m \ll a \), де \(R \) — радіус кривизни поверхні дзеркала. <a
+href="answers.html#LWR-ht-solution:5.{17}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Дифракція Фраунгофера ......
+-->
+<h5 id="autosec-616">Дифракція Фраунгофера</h5>
+<a id="main-html-autopage-616"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-372"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.18.</span></span> <a id="autoid-373" ></a ><a id="LWR-ht-problem:5.{18}"></a>На щілину шириною \(2\cdot 10^{-3} \)&nbsp;см нормально падає плоска хвиля
+(\(5000\)&nbsp;0.25A). а) Знайти число мінімумів. б) Визначити ширину дифракційного зображення джерела на екрані, віддаленому від щілини на \(1\)&nbsp;м. в). При якій ширині щілини ширина зображення на екрані буде дорівнює \(15\)&nbsp;см? <a
+href="answers.html#LWR-ht-solution:5.{18}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-374"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.19.</span></span> <a id="autoid-375" ></a ><a id="LWR-ht-problem:5.{19}"></a>При нормальному падінні пучка світла на дифракційну ґратку жовта лінія натрію (\(589\)&nbsp;нм) у
+спектрі першого порядку видна під кутом дифракції \(17^\circ 08&apos;\). Деяка інша лінія в спектрі другого порядку видна під кутом \(24^\circ 12&apos;\). Визначити число штрихів на \(1\)&nbsp;мм ґратки й довжину хвилі другої лінії. <a
+href="answers.html#LWR-ht-solution:5.{19}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-376"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.20.</span></span> <a id="autoid-377" ></a ><a id="LWR-ht-problem:5.{20}"></a>Дифракційна ґратка освітлюється нормально падаючим світлом від <span
+      id="lateximage-main-html-117"
+      class="lateximagesource"
+><!--
+He
+--><img
+      src="main-html-images/AA2C070847A3230D2F9F014375B1DAB5.svg"
+      alt="\ce{He}"
+      style=""
+      class="lateximage"
+></span>-розрядної трубки. Відлік по лімбу гоніометра положень фіолетової лінії (\(0,389\)&nbsp;мкм) у спектрах першого порядку по обидві сторони від нульового максимуму дали значення \(27^\circ 33&apos;\) і \(36^\circ 27&apos; \). Відлік по лімбу для червоної лінії в
+спектрах першого порядку дали відповідно \(23^\circ 54&apos; \) і \(40^\circ 06&apos; \). Визначити період ґратки й довжину хвилі червоної лінії в спектрі гелію.
+</p>
+
+<p>
+<em>Вказівка</em>. Спочатку визначити кут по лімбу для нульового максимуму, а від нього вже відраховувати кути дифракції. <a href="answers.html#LWR-ht-solution:5.{20}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-378"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.21.</span></span> <a id="autoid-379" ></a ><a id="LWR-ht-problem:5.{21}"></a>Дифракційна ґратка освітлюється нормально падаючим білим світлом (\(400\ldots 760\))&nbsp;нм.
+Чи будуть взаємно перекриватися спектри: а) першого й другого порядків? б) другого й третього порядків? <a href="answers.html#LWR-ht-solution:5.{21}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-380"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.22.</span></span> <a id="autoid-381" ></a ><a id="LWR-ht-problem:5.{22}"></a>Чому дорівнює період ґратки шириною \(3 \)&nbsp;см, якщо вона може розділити в спектрі першого
+порядку спектральні лінії калію \(404,4 \)&nbsp;нм і \(404,7 \)&nbsp;нм? <a href="answers.html#LWR-ht-solution:5.{22}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-382"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.23.</span></span> <a id="autoid-383" ></a ><a id="LWR-ht-problem:5.{23}"></a>Прозора періодична структура, профіль якої зображений на рис., освітлюється зверху плоскою
+монохроматичною хвилею, що падає нормально на верхню границю. Ширина уступів і впадин структури однакова. При заданому показнику заломлення \(n \) підібрати глибину \(h \) таким чином, щоб головні фраунгоферові дифракційні максимуми \(1 \)-го порядку мали найбільшу
+інтенсивність. Яка при цьому інтенсивність нульового головного максимуму?
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-118"
+      class="lateximagesource"
+><!--
+ℎ
+--><img
+      src="main-html-images/image-118.svg"
+      alt="Рисунок 30"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{23}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-384"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.24.</span></span> <a id="autoid-385" ></a ><a id="LWR-ht-problem:5.{24}"></a>Розрахувати та проаналізувати дифракційну картину за нормального падіння світла на пилкоподібну
+ґратку (рис.). Ґратку виготовлено із скла з показником заломлення \(n \). Кількість зубців дорівнює \(N \), \(a \gg h \), довжина хвилі світла \(\lambda \).
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-119"
+      class="lateximagesource"
+><!--
+    𝑎
+
+ℎ
+--><img
+      src="main-html-images/image-119.svg"
+      alt="Рисунок 31"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{24}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Роздільна здатність оптичних приладів. Спектральні прилади ......
+-->
+<h5 id="autosec-632">Роздільна здатність оптичних приладів. Спектральні прилади</h5>
+<a id="main-html-autopage-632"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-386"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.25.</span></span> <a id="autoid-387" ></a ><a id="LWR-ht-problem:5.{25}"></a>Чи змінюється роздільна здатність і дисперсійна область дифракційної ґратки, якщо, закріпивши
+нерухомо трубу, у яку спостерігаються дифракційні спектри, закрити через одну щілини ґратки? <a href="answers.html#LWR-ht-solution:5.{25}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-388"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.26.</span></span> <a id="autoid-389" ></a ><a id="LWR-ht-problem:5.{26}"></a>На якій найбільшій відстані можна розрізнити два стовпи, які знаходяться на відстані \(1 \)&nbsp;м
+один від одного? а) неозброєним оком, діаметр зіниці ока прийняти рівним \(3 \)&nbsp;мм; б) за допомогою зорової труби, діаметр об’єктива якої дорівнює \(38 \)&nbsp;мм; в) обчислити кутовий діаметр плями дифракції для ока й зорової труби. <a
+href="answers.html#LWR-ht-solution:5.{26}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-390"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.27.</span></span> <a id="autoid-391" ></a ><a id="LWR-ht-problem:5.{27}"></a>Яка найменша відстань між двома точками на Місяці може розділити телескоп з діаметром об’єктива 5
+м? Довжину хвилі прийняти рівної \(0,55 \)&nbsp;мкм, а середня відстань від Землі до Місяця \(3,684\cdot 10^8 \)&nbsp;м. Визначити кутовий діаметр плями дифракції телескопа. <a href="answers.html#LWR-ht-solution:5.{27}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-392"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.28.</span></span> <a id="autoid-393" ></a ><a id="LWR-ht-problem:5.{28}"></a>При аерофотографуванні місцевості використовується об’єктив з фокусною відстанню \(f = 10
+\)&nbsp;см і діаметром \(D = 5 \)&nbsp;см. Зйомка ведеться на фотоплівку, що має роздільну здатність \(R = 100 \)&nbsp;мм\(^{-1}\). Визначити, які деталі місцевості можуть бути розрізненні на фотографіях, якщо зйомка велася з висоти \(h = 10 \)&nbsp;км. <a
+href="answers.html#LWR-ht-solution:5.{28}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-394"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.29.</span></span> <a id="autoid-395" ></a ><a id="LWR-ht-problem:5.{29}"></a>Сучасні фотоплівки здатні розділяти до \(z = 10^4 \)&nbsp;ліній/см. Яку світлосилу (тобто
+відношення квадратів діаметра \(D \) і фокусної відстані \(f \)) повинен мати об’єктив фотоапарата, щоб повністю використовувати роздільну здатність плівки? <a href="answers.html#LWR-ht-solution:5.{29}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-396"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.30.</span></span> <a id="autoid-397" ></a ><a id="LWR-ht-problem:5.{30}"></a>Яким повинне бути збільшення зорової труби для того, щоб повністю використовувати роздільну
+здатність її об’єктива? <a href="answers.html#LWR-ht-solution:5.{30}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-398"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.31.</span></span> <a id="autoid-399" ></a ><a id="LWR-ht-problem:5.{31}"></a>Яким повинне бути збільшення мікроскопа, щоб повністю використовувати роздільну здатність його
+об’єктива? <a href="answers.html#LWR-ht-solution:5.{31}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-400"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.32.</span></span> <a id="autoid-401" ></a ><a id="LWR-ht-problem:5.{32}"></a>У принципі можна побудувати телескоп як завгодно високої роздільної здатності без об’єктива,
+замінивши об’єктив круглим отвором. Яка повинна бути довжина \(L \) такого телескопа, щоб він мав ту ж роздільну здатність, що й звичайний телескоп з діаметром об’єктива \(D = 1 \)&nbsp;м? Чому буде дорівнює світлосила \(S \) такого телескопа? <a
+href="answers.html#LWR-ht-solution:5.{32}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-402"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.33.</span></span> <a id="autoid-403" ></a ><a id="LWR-ht-problem:5.{33}"></a>Випромінювання лазера безперервної дії на довжині хвилі \(\lambda = 0,63 \) мкм потужністю \(N
+= 10 \)&nbsp;мВт направляється на супутник за допомогою телескопа, об’єктив якого має діаметр \(D = 30 \)&nbsp;см. Світло, відбите супутником, вловлюється іншим таким же телескопом і фокусується на фотоприймачі із граничною чутливістю \(N_\text {пор} = 10^{-14}
+\)&nbsp;Вт. Оцінити максимальну відстань \(L_{\max } \) до супутника, на якому відбитий сигнал ще може бути виявлений. Поверхня супутника рівномірно розсіює падаюче світло з коефіцієнтом відбиття \(R = 0,9 \). Діаметр супутника \(d = 20 \)&nbsp;см. <a
+href="answers.html#LWR-ht-solution:5.{33}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-404"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.34.</span></span> <a id="autoid-405" ></a ><a id="LWR-ht-problem:5.{34}"></a>За допомогою інтерферометра Фабрі-Перо досліджується виділена системою фільтрів ділянка спектру
+шириною \(\Delta \lambda = 0,2 \)&nbsp;нм. Мінімальна різниця довжин хвиль сусідніх спектральних ліній \(\delta \lambda = 0,001 \)&nbsp;нм. Оцінити максимальне значення коефіцієнта пропускання \(T = 1- R\) (де \(T\) — коефіцієнт відбиття дзеркал за енергією), при
+якому розділяються сусідні лінії. <a href="answers.html#LWR-ht-solution:5.{34}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Роздільна здатність оптичних приладів. Спектральні прилади ......
+-->
+<h5 id="autosec-643">Роздільна здатність оптичних приладів. Спектральні прилади</h5>
+<a id="main-html-autopage-643"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-406"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.35.</span></span> <a id="autoid-407" ></a ><a id="LWR-ht-problem:5.{35}"></a>Визначити роздільну здатність спектрометра інфрачервоного діапазоні, що працює за наступним
+принципом. Випромінювання ІЧ-джерела, що досліджується, у діапазоні \(\lambda _\text {ІЧ} = 3\)&nbsp;мкм змішується у нелінійному кристалі з випромінюванням аргонового лазера. При цьому виникає випромінювання на сумарній частоті, що лежить у оптичному діапазоні.
+Останнє аналізується за допомогою інтерферометра Фабрі-Перо, дзеркала якого відстоять один від одного на відстані \(L = 1 \)&nbsp;см та мають коефіцієнт відбиття за інтенсивністю \(\rho = 0,9 \). <a href="answers.html#LWR-ht-solution:5.{35}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-408"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.36.</span></span> <a id="autoid-409" ></a ><a id="LWR-ht-problem:5.{36}"></a>На інтерферометр Фабрі-Перо, що складається з двох однакових дзеркал, падає жмуток світла з
+довжиною хвилі \(\lambda \approx 0,5 \)&nbsp;мкм. Інтерференційну картину спостерігають у фокальній площині лінзи діаметром \(D = 2,5 \)&nbsp;см з фокусною відстанню \(f = 10 \)&nbsp;см, вона має вигляд концентричних кілець. Перше кільце має діаметр \(d = 1
+\)&nbsp;см. Оцінити максимальну роздільну здатність спектрального приладу за цих умов. <a href="answers.html#LWR-ht-solution:5.{36}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-410"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.37.</span></span> <a id="autoid-411" ></a ><a id="LWR-ht-problem:5.{37}"></a>Десять тонких скляних плоскопаралельних пластинок товщиною \(h = 1 \)&nbsp;мм з показником
+заломлення \(n = 1,5 \) зібрані у стопку, що являє собою «драбину» (рис.). Така структура в оптиці називається ешелоном. Висота сходинок однакова. На ешелон нормально падає паралельний жмуток світла. Спостерігається дифракційна картина Фраунгофера у світлі, що пройшло.
+Визначити дисперсійну область \(\Delta \lambda \) та роздільну здатність \(R \) ешелону в околі хвилі \(\lambda = 500 \)&nbsp;нм. Оцінити допустиме відхилення товщини \(\Delta h \) плоскопаралельних пластинок при їх виготовленні.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-120"
+      class="lateximagesource"
+><!--
+ℎ
+--><img
+      src="main-html-images/image-120.svg"
+      alt="Рисунок 32"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:5.{37}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Дифракція на кристалічній ґратці ......
+-->
+<h5 id="autosec-650">Дифракція на кристалічній ґратці</h5>
+<a id="main-html-autopage-650"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-412"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.38.</span></span> <a id="autoid-413" ></a ><a id="LWR-ht-problem:5.{38}"></a>На грань кристалу кам’яної солі падає паралельний жмуток рентгенівського випромінювання
+(\(\lambda = 147 \)&nbsp;пм). Визначити відстань \(d \) між атомними площинами кристалу, якщо дифракційний максимум другого порядку спостерігається, коли випромінювання падає під кутом \(\theta = 31^\circ 30&apos; \) до поверхні кристалу. <a
+href="answers.html#LWR-ht-solution:5.{38}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-414"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.39.</span></span> <a id="autoid-415" ></a ><a id="LWR-ht-problem:5.{39}"></a>Яка довжина хвилі \(\lambda \) монохроматичного рентгенівського випромінювання, що падає на
+кристал кальциту, якщо дифракційний максимум першого порядку спостерігається, коли кут \(\theta \) між напрямами випромінювання, що падає, та гранню кристала дорівнює \(3^\circ \)? Відстань \(d \) між атомними площинами кристала прийняти рівним \(0,3 \)&nbsp;нм. <a
+href="answers.html#LWR-ht-solution:5.{39}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-416"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 5.40.</span></span> <a id="autoid-417" ></a ><a id="LWR-ht-problem:5.{40}"></a>Паралельний жмуток рентгенівського випромінювання падає на грань кристалу. Під кутом \(\theta =
+65^\circ \) до площини грані спостерігається максимум першого порядку. Відстань \(d \) між атомними площинами кристалу \(280 \)&nbsp;пм. Визначити довжину хвилі \(\lambda \) рентгенівського випромінювання. <a
+href="answers.html#LWR-ht-solution:5.{40}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>

@@ -24,3 +24,15 @@ TEST.parable2.gnuplot
 TEST.pdf
 TEST.pgf-plot.gnuplot
 TEST.pgf-plot.table
+
+# HTML build (html/build-html.ps1)
+_html/
+html/logs/
+html/cache/
+html/node_modules/
+html/_test/
+__pycache__/
+build-error.txt
+/lwarp*
+/main-html*
+/comment_*.cut

@@ -1,0 +1,5006 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Оптика. Практичний курс — Інтерференція</title>
+<link rel="stylesheet" type="text/css" href="assets/conspect.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+   subequations: "0",
+   section: "",
+   loader: {
+     load: ['[tex]/tagformat', '[tex]/textmacros'],
+   },
+   startup: {
+     ready() {
+       // These would be replaced by import commands if you wanted to make
+       // a proper extension.
+       const Configuration = MathJax._.input.tex.Configuration.Configuration;
+       const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+       const Macro = MathJax._.input.tex.Symbol.Macro;
+       const TexError = MathJax._.input.tex.TexError.default;
+       const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+       const expandable = MathJax._.util.Options.expandable;
+
+        // Insert the replacement string into the TeX string, and check
+        // that there haven't been too many maxro substitutions (prevents
+        // infinite loops).
+        const useArgument = (parser, text) => {
+          parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+          parser.i = 0;
+          if (++parser.macroCount > parser.configuration.options.maxMacros) {
+            throw new TexError('MaxMacroSub1',
+            'MathJax maximum macro substitution count exceeded; ' +
+            'is there a recursive macro call?');
+          }
+        }
+
+        // Create the command map for:
+        //     \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+        new CommandMap('Lwarp-macros', {
+          ifstar: 'IfstarFunction',
+          ifnextchar: 'IfnextcharFunction',
+          ifblank: 'IfblankFunction',
+          ifstrequal: 'IfstrequalFunction',
+          gsubstitute: 'GsubstituteFunction',
+          seteqnumber: 'SeteqnumberFunction'
+        }, {
+          // This function implements an ifstar macro.
+          IfstarFunction(parser, name) {
+             const resultstar = parser.GetArgument(name);
+             const resultnostar = parser.GetArgument(name);
+             const star = parser.GetStar();                 // true if there is a *
+             useArgument(parser, star ? resultstar : resultnostar);
+          },
+
+          // This function implements an ifnextchar macro.
+          IfnextcharFunction(parser, name) {
+             let whichchar = parser.GetArgument(name);
+             if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+               // $ syntax highlighting
+               whichchar = String.fromCodePoint(parseInt(whichchar));
+             }
+             const resultnextchar = parser.GetArgument(name);
+             const resultnotnextchar = parser.GetArgument(name);
+             const gotchar = (parser.GetNext() === whichchar);
+             useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+          },
+
+          // This function implements an ifblank macro.
+          IfblankFunction(parser, name) {
+             const blankarg = parser.GetArgument(name);
+             const resultblank = parser.GetArgument(name);
+             const resultnotblank = parser.GetArgument(name);
+             const isblank = (blankarg.trim() == "");
+             useArgument(parser, isblank ? resultblank : resultnotblank);
+          },
+
+          // This function implements an ifstrequal macro.
+          IfstrequalFunction(parser, name) {
+             const strequalfirst = parser.GetArgument(name);
+             const strequalsecond = parser.GetArgument(name);
+             const resultequal = parser.GetArgument(name);
+             const resultnotequal = parser.GetArgument(name);
+             const isequal = (strequalfirst == strequalsecond);
+             useArgument(parser, isequal ? resultequal : resultnotequal);
+          },
+
+          // This function implements a gsub macro.
+          GsubstituteFunction(parser, name) {
+             const gsubfirst = parser.GetArgument(name);
+             const gsubsecond = parser.GetArgument(name);
+             const gsubthird = parser.GetArgument(name);
+             let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+             useArgument(parser, gsubresult);
+          },
+
+          // This function modifies the equation numbers.
+          SeteqnumberFunction(parser, name) {
+              // Get the macro parameters
+              const star = parser.GetStar();                  // true if there is a *
+              const optBrackets = parser.GetBrackets(name);   // contents of optional brackets
+              const newsubequations = parser.GetArgument(name); // the subequations argument
+              const neweqsection = parser.GetArgument(name); // the eq section argument
+              const neweqnumber = parser.GetArgument(name);   // the eq number argument
+              MathJax.config.subequations=newsubequations ;   // a string with boolean meaning
+              MathJax.config.section=neweqsection ;           // a string with numeric meaning
+              parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+          }
+
+        });
+
+        // Create the Lwarp-macros package
+        Configuration.create('Lwarp-macros', {
+          handler: {macro: ['Lwarp-macros']}
+        });
+
+        MathJax.startup.defaultReady();
+
+        // For forward references:
+        MathJax.startup.input[0].preFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              MathJax.config.subequations = math.inputData.recompile.subequations;
+              MathJax.config.section = math.inputData.recompile.section;
+          }
+        });
+        MathJax.startup.input[0].postFilters.add(({math}) => {
+          if (math.inputData.recompile){
+              math.inputData.recompile.subequations = MathJax.config.subequations;
+              math.inputData.recompile.section = MathJax.config.section;
+          }
+        });
+
+          // For \left, \right with unicode-math:
+          const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+          const {Symbol} = MathJax._.input.tex.Symbol;
+          const {MapHandler} = MathJax._.input.tex.MapHandler;
+          const delimiter = MapHandler.getMap('delimiter');
+          delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+          delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+          delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+          delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+          delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+          delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+          delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+          delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+          delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+          delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+          delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+          delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+          delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+          delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+          delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+          delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+          delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+          delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+          delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+          delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+          delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+          delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+          delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+          delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+          delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+          delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+          delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+          delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+          delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+          delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+          delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+          delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+          delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+          delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+          delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+          delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+          delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+          delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+          delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+    }     // ready
+  },      // startup
+
+  tex: {
+    packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+    tags: "ams",
+         tagformat: {
+             number: function (n) {
+                 if(MathJax.config.subequations==0)
+                      return(MathJax.config.section + n);
+                 else
+                      return(MathJax.config.section + String.fromCharCode(96+n));
+             },
+         },
+  }
+}
+</script>
+
+<script
+    id="MathJax-script"
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="main-html-autopage-362"></a>
+<div class="pagegrid">
+
+
+<nav class="topnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+<span class="sidetocthetitle">Оптика. Практичний курс</span>
+</p>
+
+<p class="sidetoc-meta"><a href="../index.html">Про посібник</a><span aria-hidden="true">·</span><a href="../OpticsProblems.pdf">PDF</a></p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="main-html.html" class="linkhome" >
+Головна</a>
+</p>
+
+<p>
+<a href="preface.html#autosec-6" class="tocchapter" >
+Передмова</a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-9" class="tocpart" >
+<span class="sectionnumber">I</span><span class="toctitle">&#x2003;Геометрична оптика та фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-10" class="tocchapter" >
+<span class="sectionnumber">1</span><span class="toctitle">&#x2003;Геометрична оптика</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-11" class="tocsection" >
+<span class="sectionnumber">1.1</span><span class="toctitle">&#x2003;Застосування основних законів</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-83" class="tocsection" >
+<span class="sectionnumber">1.2</span><span class="toctitle">&#x2003;Центровані оптичні системи. Оптичні прилади</span></a>
+</p>
+
+
+<p>
+<a href="geomopt.html#autosec-174" class="tocsection" >
+<span class="sectionnumber">1.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-257" class="tocchapter" >
+<span class="sectionnumber">2</span><span class="toctitle">&#x2003;Фотометрія</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-258" class="tocsection" >
+<span class="sectionnumber">2.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-287" class="tocsection" >
+<span class="sectionnumber">2.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="photometry.html#autosec-294" class="tocsection" >
+<span class="sectionnumber">2.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-327" class="tocpart" >
+<span class="sectionnumber">II</span><span class="toctitle">&#x2003;Фізична оптика</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-328" class="tocchapter" >
+<span class="sectionnumber">3</span><span class="toctitle">&#x2003;Дисперсія</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-329" class="tocsection" >
+<span class="sectionnumber">3.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-345" class="tocsection" >
+<span class="sectionnumber">3.2</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="dispersion.html#autosec-346" class="tocsection" >
+<span class="sectionnumber">3.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-364" class="tocchapter" >
+<span class="sectionnumber">4</span><span class="toctitle">&#x2003;Інтерференція</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-365" class="tocsection" >
+<span class="sectionnumber">4.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-422" class="tocsection" >
+<span class="sectionnumber">4.2</span><span class="toctitle">&#x2003;Приклади розв’язку задач</span></a>
+</p>
+
+
+<p>
+<a href="interference.html#autosec-432" class="tocsection" >
+<span class="sectionnumber">4.3</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-495" class="tocchapter" >
+<span class="sectionnumber">5</span><span class="toctitle">&#x2003;Дифракція</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-496" class="tocsection" >
+<span class="sectionnumber">5.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-501" class="tocsection" >
+<span class="sectionnumber">5.2</span><span class="toctitle">&#x2003;Метод зон Френеля</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-533" class="tocsection" >
+<span class="sectionnumber">5.3</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на щілині</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-545" class="tocsection" >
+<span class="sectionnumber">5.4</span><span class="toctitle">&#x2003;Дифракція Фраунгофера на круглому отворі</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-554" class="tocsection" >
+<span class="sectionnumber">5.5</span><span class="toctitle">&#x2003;Дифракційна ґратка</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-566" class="tocsection" >
+<span class="sectionnumber">5.6</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="difraction.html#autosec-585" class="tocsection" >
+<span class="sectionnumber">5.7</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-656" class="tocchapter" >
+<span class="sectionnumber">6</span><span class="toctitle">&#x2003;Поляризація та оптична анізотропія</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-657" class="tocsection" >
+<span class="sectionnumber">6.1</span><span class="toctitle">&#x2003;Основні поняття і закони</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-715" class="tocsection" >
+<span class="sectionnumber">6.2</span><span class="toctitle">&#x2003;Штучне подвійне променезаломлення</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-720" class="tocsection" >
+<span class="sectionnumber">6.3</span><span class="toctitle">&#x2003;Приклади розв’язування задач</span></a>
+</p>
+
+
+<p>
+<a href="polarisation.html#autosec-727" class="tocsection" >
+<span class="sectionnumber">6.4</span><span class="toctitle">&#x2003;Задачі для самостійного розв’язку </span></a>
+</p>
+
+
+<p>
+<a href="answers.html#autosec-814" class="tocchapter" >
+Відповіді</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-824" class="tocchapter" >
+Додатки</a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-825" class="tocsection" >
+<span class="sectionnumber">А</span><span class="toctitle">&#x2003;Шкала електромагнітних хвиль</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-830" class="tocsection" >
+<span class="sectionnumber">Б</span><span class="toctitle">&#x2003;Математичні формули та співвідношення</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-835" class="tocsection" >
+<span class="sectionnumber">В</span><span class="toctitle">&#x2003;Фотометричні дані</span></a>
+</p>
+
+
+<p>
+<a href="appendices.html#autosec-840" class="tocsection" >
+<span class="sectionnumber">Г</span><span class="toctitle">&#x2003;Фізичні константи</span></a>
+</p>
+
+
+<p>
+<a href="bibliography.html#autosec-846" class="tocchapter" >
+Література</a>
+</p>
+
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer" data-pagefind-body data-pagefind-meta="title[data-title]" data-title="Інтерференція">
+
+
+<section class="textbody">
+
+<h1 data-pagefind-ignore>Оптика. Практичний курс</h1>
+
+<!--MathJax customizations:-->
+<div data-nosnippet
+   style="display:none"
+>
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\TextOrMath }[2]{#2}\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\require {colortbl}\)
+
+\(\let \LWRorigcolumncolor \columncolor \)
+
+\(\renewcommand {\columncolor }[2][named]{\LWRorigcolumncolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigrowcolor \rowcolor \)
+
+\(\renewcommand {\rowcolor }[2][named]{\LWRorigrowcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\let \LWRorigcellcolor \cellcolor \)
+
+\(\renewcommand {\cellcolor }[2][named]{\LWRorigcellcolor [#1]{#2}\LWRabsorbtwooptions }\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\let \symnormal \mathit \)
+
+\(\let \symliteral \mathrm \)
+
+\(\let \symbb \mathbb \)
+
+\(\let \symbbit \mathbb \)
+
+\(\let \symcal \mathcal \)
+
+\(\let \symscr \mathscr \)
+
+\(\let \symfrak \mathfrak \)
+
+\(\let \symsfup \mathsf \)
+
+\(\let \symsfit \mathit \)
+
+\(\let \symbfsf \mathbf \)
+
+\(\let \symbfup \mathbf \)
+
+\(\newcommand {\symbfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symbfcal \mathcal \)
+
+\(\let \symbfscr \mathscr \)
+
+\(\let \symbffrak \mathfrak \)
+
+\(\let \symbfsfup \mathbf \)
+
+\(\newcommand {\symbfsfit }[1]{\boldsymbol {#1}}\)
+
+\(\let \symup \mathrm \)
+
+\(\let \symbf \mathbf \)
+
+\(\let \symit \mathit \)
+
+\(\let \symtt \mathtt \)
+
+\(\let \symbffrac \mathbffrac \)
+
+\(\newcommand {\mathfence }[1]{\mathord {#1}}\)
+
+\(\newcommand {\mathover }[1]{#1}\)
+
+\(\newcommand {\mathunder }[1]{#1}\)
+
+\(\newcommand {\mathaccent }[1]{#1}\)
+
+\(\newcommand {\mathbotaccent }[1]{#1}\)
+
+\(\newcommand {\mathalpha }[1]{\mathord {#1}}\)
+
+\(\def\upAlpha{\unicode{x0391}}\)
+
+\(\def\upBeta{\unicode{x0392}}\)
+
+\(\def\upGamma{\unicode{x0393}}\)
+
+\(\def\upDigamma{\unicode{x03DC}}\)
+
+\(\def\upDelta{\unicode{x0394}}\)
+
+\(\def\upEpsilon{\unicode{x0395}}\)
+
+\(\def\upZeta{\unicode{x0396}}\)
+
+\(\def\upEta{\unicode{x0397}}\)
+
+\(\def\upTheta{\unicode{x0398}}\)
+
+\(\def\upVartheta{\unicode{x03F4}}\)
+
+\(\def\upIota{\unicode{x0399}}\)
+
+\(\def\upKappa{\unicode{x039A}}\)
+
+\(\def\upLambda{\unicode{x039B}}\)
+
+\(\def\upMu{\unicode{x039C}}\)
+
+\(\def\upNu{\unicode{x039D}}\)
+
+\(\def\upXi{\unicode{x039E}}\)
+
+\(\def\upOmicron{\unicode{x039F}}\)
+
+\(\def\upPi{\unicode{x03A0}}\)
+
+\(\def\upVarpi{\unicode{x03D6}}\)
+
+\(\def\upRho{\unicode{x03A1}}\)
+
+\(\def\upSigma{\unicode{x03A3}}\)
+
+\(\def\upTau{\unicode{x03A4}}\)
+
+\(\def\upUpsilon{\unicode{x03A5}}\)
+
+\(\def\upPhi{\unicode{x03A6}}\)
+
+\(\def\upChi{\unicode{x03A7}}\)
+
+\(\def\upPsi{\unicode{x03A8}}\)
+
+\(\def\upOmega{\unicode{x03A9}}\)
+
+\(\def\itAlpha{\unicode{x1D6E2}}\)
+
+\(\def\itBeta{\unicode{x1D6E3}}\)
+
+\(\def\itGamma{\unicode{x1D6E4}}\)
+
+\(\def\itDigamma{\mathit{\unicode{x03DC}}}\)
+
+\(\def\itDelta{\unicode{x1D6E5}}\)
+
+\(\def\itEpsilon{\unicode{x1D6E6}}\)
+
+\(\def\itZeta{\unicode{x1D6E7}}\)
+
+\(\def\itEta{\unicode{x1D6E8}}\)
+
+\(\def\itTheta{\unicode{x1D6E9}}\)
+
+\(\def\itVartheta{\unicode{x1D6F3}}\)
+
+\(\def\itIota{\unicode{x1D6EA}}\)
+
+\(\def\itKappa{\unicode{x1D6EB}}\)
+
+\(\def\itLambda{\unicode{x1D6EC}}\)
+
+\(\def\itMu{\unicode{x1D6ED}}\)
+
+\(\def\itNu{\unicode{x1D6EE}}\)
+
+\(\def\itXi{\unicode{x1D6EF}}\)
+
+\(\def\itOmicron{\unicode{x1D6F0}}\)
+
+\(\def\itPi{\unicode{x1D6F1}}\)
+
+\(\def\itRho{\unicode{x1D6F2}}\)
+
+\(\def\itSigma{\unicode{x1D6F4}}\)
+
+\(\def\itTau{\unicode{x1D6F5}}\)
+
+\(\def\itUpsilon{\unicode{x1D6F6}}\)
+
+\(\def\itPhi{\unicode{x1D6F7}}\)
+
+\(\def\itChi{\unicode{x1D6F8}}\)
+
+\(\def\itPsi{\unicode{x1D6F9}}\)
+
+\(\def\itOmega{\unicode{x1D6FA}}\)
+
+\(\def\upalpha{\unicode{x03B1}}\)
+
+\(\def\upbeta{\unicode{x03B2}}\)
+
+\(\def\upvarbeta{\unicode{x03D0}}\)
+
+\(\def\upgamma{\unicode{x03B3}}\)
+
+\(\def\updigamma{\unicode{x03DD}}\)
+
+\(\def\updelta{\unicode{x03B4}}\)
+
+\(\def\upepsilon{\unicode{x03F5}}\)
+
+\(\def\upvarepsilon{\unicode{x03B5}}\)
+
+\(\def\upzeta{\unicode{x03B6}}\)
+
+\(\def\upeta{\unicode{x03B7}}\)
+
+\(\def\uptheta{\unicode{x03B8}}\)
+
+\(\def\upvartheta{\unicode{x03D1}}\)
+
+\(\def\upiota{\unicode{x03B9}}\)
+
+\(\def\upkappa{\unicode{x03BA}}\)
+
+\(\def\upvarkappa{\unicode{x03F0}}\)
+
+\(\def\uplambda{\unicode{x03BB}}\)
+
+\(\def\upmu{\unicode{x03BC}}\)
+
+\(\def\upnu{\unicode{x03BD}}\)
+
+\(\def\upxi{\unicode{x03BE}}\)
+
+\(\def\upomicron{\unicode{x03BF}}\)
+
+\(\def\uppi{\unicode{x03C0}}\)
+
+\(\def\upvarpi{\unicode{x03D6}}\)
+
+\(\def\uprho{\unicode{x03C1}}\)
+
+\(\def\upvarrho{\unicode{x03F1}}\)
+
+\(\def\upsigma{\unicode{x03C3}}\)
+
+\(\def\upvarsigma{\unicode{x03C2}}\)
+
+\(\def\uptau{\unicode{x03C4}}\)
+
+\(\def\upupsilon{\unicode{x03C5}}\)
+
+\(\def\upphi{\unicode{x03D5}}\)
+
+\(\def\upvarphi{\unicode{x03C6}}\)
+
+\(\def\upchi{\unicode{x03C7}}\)
+
+\(\def\uppsi{\unicode{x03C8}}\)
+
+\(\def\upomega{\unicode{x03C9}}\)
+
+\(\def\italpha{\unicode{x1D6FC}}\)
+
+\(\def\itbeta{\unicode{x1D6FD}}\)
+
+\(\def\itvarbeta{\unicode{x03D0}}\)
+
+\(\def\itgamma{\unicode{x1D6FE}}\)
+
+\(\def\itdigamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\itdelta{\unicode{x1D6FF}}\)
+
+\(\def\itepsilon{\unicode{x1D716}}\)
+
+\(\def\itvarepsilon{\unicode{x1D700}}\)
+
+\(\def\itzeta{\unicode{x1D701}}\)
+
+\(\def\iteta{\unicode{x1D702}}\)
+
+\(\def\ittheta{\unicode{x1D703}}\)
+
+\(\def\itvartheta{\unicode{x1D717}}\)
+
+\(\def\itiota{\unicode{x1D704}}\)
+
+\(\def\itkappa{\unicode{x1D705}}\)
+
+\(\def\itvarkappa{\unicode{x1D718}}\)
+
+\(\def\itlambda{\unicode{x1D706}}\)
+
+\(\def\itmu{\unicode{x1D707}}\)
+
+\(\def\itnu{\unicode{x1D708}}\)
+
+\(\def\itxi{\unicode{x1D709}}\)
+
+\(\def\itomicron{\unicode{x1D70A}}\)
+
+\(\def\itpi{\unicode{x1D70B}}\)
+
+\(\def\itvarpi{\unicode{x1D71B}}\)
+
+\(\def\itrho{\unicode{x1D70C}}\)
+
+\(\def\itvarrho{\unicode{x1D71A}}\)
+
+\(\def\itsigma{\unicode{x1D70E}}\)
+
+\(\def\itvarsigma{\unicode{x1D70D}}\)
+
+\(\def\ittau{\unicode{x1D70F}}\)
+
+\(\def\itupsilon{\unicode{x1D710}}\)
+
+\(\def\itphi{\unicode{x1D719}}\)
+
+\(\def\itvarphi{\unicode{x1D711}}\)
+
+\(\def\itchi{\unicode{x1D712}}\)
+
+\(\def\itpsi{\unicode{x1D713}}\)
+
+\(\def\itomega{\unicode{x1D714}}\)
+
+\(\let \lparen (\)
+
+\(\let \rparen )\)
+
+\(\newcommand {\cuberoot }[1]{\,{}^3\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\fourthroot }[1]{\,{}^4\!\!\sqrt {#1}}\,\)
+
+\(\newcommand {\longdivision }[1]{\mathord {\unicode {x027CC}#1}}\)
+
+\(\newcommand {\mathcomma }{,}\)
+
+\(\newcommand {\mathcolon }{:}\)
+
+\(\newcommand {\mathsemicolon }{;}\)
+
+\(\newcommand {\overbracket }[1]{\mathinner {\overline {\ulcorner {#1}\urcorner }}}\)
+
+\(\newcommand {\underbracket }[1]{\mathinner {\underline {\llcorner {#1}\lrcorner }}}\)
+
+\(\newcommand {\overbar }[1]{\mathord {#1\unicode {x00305}}}\)
+
+\(\newcommand {\ovhook }[1]{\mathord {#1\unicode {x00309}}}\)
+
+\(\newcommand {\ocirc }[1]{\mathord {#1\unicode {x0030A}}}\)
+
+\(\newcommand {\candra }[1]{\mathord {#1\unicode {x00310}}}\)
+
+\(\newcommand {\oturnedcomma }[1]{\mathord {#1\unicode {x00312}}}\)
+
+\(\newcommand {\ocommatopright }[1]{\mathord {#1\unicode {x00315}}}\)
+
+\(\newcommand {\droang }[1]{\mathord {#1\unicode {x0031A}}}\)
+
+\(\newcommand {\leftharpoonaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\rightharpoonaccent }[1]{\mathord {#1\unicode {x020D1}}}\)
+
+\(\newcommand {\vertoverlay }[1]{\mathord {#1\unicode {x020D2}}}\)
+
+\(\newcommand {\leftarrowaccent }[1]{\mathord {#1\unicode {x020D0}}}\)
+
+\(\newcommand {\annuity }[1]{\mathord {#1\unicode {x020E7}}}\)
+
+\(\newcommand {\widebridgeabove }[1]{\mathord {#1\unicode {x020E9}}}\)
+
+\(\newcommand {\asteraccent }[1]{\mathord {#1\unicode {x020F0}}}\)
+
+\(\newcommand {\threeunderdot }[1]{\mathord {#1\unicode {x020E8}}}\)
+
+\(\newcommand {\Bbbsum }{\mathop {\unicode {x2140}}\limits }\)
+
+\(\newcommand {\oiint }{\mathop {\unicode {x222F}}\limits }\)
+
+\(\newcommand {\oiiint }{\mathop {\unicode {x2230}}\limits }\)
+
+\(\newcommand {\intclockwise }{\mathop {\unicode {x2231}}\limits }\)
+
+\(\newcommand {\ointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\ointctrclockwise }{\mathop {\unicode {x2233}}\limits }\)
+
+\(\newcommand {\varointclockwise }{\mathop {\unicode {x2232}}\limits }\)
+
+\(\newcommand {\leftouterjoin }{\mathop {\unicode {x27D5}}\limits }\)
+
+\(\newcommand {\rightouterjoin }{\mathop {\unicode {x27D6}}\limits }\)
+
+\(\newcommand {\fullouterjoin }{\mathop {\unicode {x27D7}}\limits }\)
+
+\(\newcommand {\bigbot }{\mathop {\unicode {x27D8}}\limits }\)
+
+\(\newcommand {\bigtop }{\mathop {\unicode {x27D9}}\limits }\)
+
+\(\newcommand {\xsol }{\mathop {\unicode {x29F8}}\limits }\)
+
+\(\newcommand {\xbsol }{\mathop {\unicode {x29F9}}\limits }\)
+
+\(\newcommand {\bigcupdot }{\mathop {\unicode {x2A03}}\limits }\)
+
+\(\newcommand {\bigsqcap }{\mathop {\unicode {x2A05}}\limits }\)
+
+\(\newcommand {\conjquant }{\mathop {\unicode {x2A07}}\limits }\)
+
+\(\newcommand {\disjquant }{\mathop {\unicode {x2A08}}\limits }\)
+
+\(\newcommand {\bigtimes }{\mathop {\unicode {x2A09}}\limits }\)
+
+\(\newcommand {\modtwosum }{\mathop {\unicode {x2A0A}}\limits }\)
+
+\(\newcommand {\sumint }{\mathop {\unicode {x2A0B}}\limits }\)
+
+\(\newcommand {\intbar }{\mathop {\unicode {x2A0D}}\limits }\)
+
+\(\newcommand {\intBar }{\mathop {\unicode {x2A0E}}\limits }\)
+
+\(\newcommand {\fint }{\mathop {\unicode {x2A0F}}\limits }\)
+
+\(\newcommand {\cirfnint }{\mathop {\unicode {x2A10}}\limits }\)
+
+\(\newcommand {\awint }{\mathop {\unicode {x2A11}}\limits }\)
+
+\(\newcommand {\rppolint }{\mathop {\unicode {x2A12}}\limits }\)
+
+\(\newcommand {\scpolint }{\mathop {\unicode {x2A13}}\limits }\)
+
+\(\newcommand {\npolint }{\mathop {\unicode {x2A14}}\limits }\)
+
+\(\newcommand {\pointint }{\mathop {\unicode {x2A15}}\limits }\)
+
+\(\newcommand {\sqint }{\mathop {\unicode {x2A16}}\limits }\)
+
+\(\newcommand {\intlarhk }{\mathop {\unicode {x2A17}}\limits }\)
+
+\(\newcommand {\intx }{\mathop {\unicode {x2A18}}\limits }\)
+
+\(\newcommand {\intcap }{\mathop {\unicode {x2A19}}\limits }\)
+
+\(\newcommand {\intcup }{\mathop {\unicode {x2A1A}}\limits }\)
+
+\(\newcommand {\upint }{\mathop {\unicode {x2A1B}}\limits }\)
+
+\(\newcommand {\lowint }{\mathop {\unicode {x2A1C}}\limits }\)
+
+\(\newcommand {\bigtriangleleft }{\mathop {\unicode {x2A1E}}\limits }\)
+
+\(\newcommand {\zcmp }{\mathop {\unicode {x2A1F}}\limits }\)
+
+\(\newcommand {\zpipe }{\mathop {\unicode {x2A20}}\limits }\)
+
+\(\newcommand {\zproject }{\mathop {\unicode {x2A21}}\limits }\)
+
+\(\newcommand {\biginterleave }{\mathop {\unicode {x2AFC}}\limits }\)
+
+\(\newcommand {\bigtalloblong }{\mathop {\unicode {x2AFF}}\limits }\)
+
+\(\newcommand {\arabicmaj }{\mathop {\unicode {x1EEF0}}\limits }\)
+
+\(\newcommand {\arabichad }{\mathop {\unicode {x1EEF1}}\limits }\)
+
+\(\newcommand {\nicefrac }[3][]{\mathinner {{}^{#2}\!/\!_{#3}}}\)
+
+\(\require {mhchem}\)
+
+\(\newcommand {\toprule }[1][]{\hline }\)
+
+\(\let \midrule \toprule \)
+
+\(\let \bottomrule \toprule \)
+
+\(\def \LWRbooktabscmidruleparen (#1)#2{}\)
+
+\(\newcommand {\LWRbooktabscmidrulenoparen }[1]{}\)
+
+\(\newcommand {\cmidrule }[1][]{\ifnextchar (\LWRbooktabscmidruleparen \LWRbooktabscmidrulenoparen }\)
+
+\(\newcommand {\morecmidrules }{}\)
+
+\(\newcommand {\specialrule }[3]{\hline }\)
+
+\(\newcommand {\addlinespace }[1][]{}\)
+
+\(\newcommand {\LWRsubmultirow }[2][]{#2}\)
+
+\(\newcommand {\LWRmultirow }[2][]{\LWRsubmultirow }\)
+
+\(\newcommand {\multirow }[2][]{\LWRmultirow }\)
+
+\(\newcommand {\mrowcell }{}\)
+
+\(\newcommand {\mcolrowcell }{}\)
+
+\(\newcommand {\STneed }[1]{}\)
+
+\(\require {physics}\)
+
+\(\newcommand {\LWRphystrig }[2]{\ifblank {#1}{\textrm {#2}}{\textrm {#2}^{#1}}}\)
+
+\(\renewcommand {\sin }[1][]{\LWRphystrig {#1}{sin}}\)
+
+\(\renewcommand {\sinh }[1][]{\LWRphystrig {#1}{sinh}}\)
+
+\(\renewcommand {\arcsin }[1][]{\LWRphystrig {#1}{arcsin}}\)
+
+\(\renewcommand {\asin }[1][]{\LWRphystrig {#1}{asin}}\)
+
+\(\renewcommand {\cos }[1][]{\LWRphystrig {#1}{cos}}\)
+
+\(\renewcommand {\cosh }[1][]{\LWRphystrig {#1}{cosh}}\)
+
+\(\renewcommand {\arccos }[1][]{\LWRphystrig {#1}{arcos}}\)
+
+\(\renewcommand {\acos }[1][]{\LWRphystrig {#1}{acos}}\)
+
+\(\renewcommand {\tan }[1][]{\LWRphystrig {#1}{tan}}\)
+
+\(\renewcommand {\tanh }[1][]{\LWRphystrig {#1}{tanh}}\)
+
+\(\renewcommand {\arctan }[1][]{\LWRphystrig {#1}{arctan}}\)
+
+\(\renewcommand {\atan }[1][]{\LWRphystrig {#1}{atan}}\)
+
+\(\renewcommand {\csc }[1][]{\LWRphystrig {#1}{csc}}\)
+
+\(\renewcommand {\csch }[1][]{\LWRphystrig {#1}{csch}}\)
+
+\(\renewcommand {\arccsc }[1][]{\LWRphystrig {#1}{arccsc}}\)
+
+\(\renewcommand {\acsc }[1][]{\LWRphystrig {#1}{acsc}}\)
+
+\(\renewcommand {\sec }[1][]{\LWRphystrig {#1}{sec}}\)
+
+\(\renewcommand {\sech }[1][]{\LWRphystrig {#1}{sech}}\)
+
+\(\renewcommand {\arcsec }[1][]{\LWRphystrig {#1}{arcsec}}\)
+
+\(\renewcommand {\asec }[1][]{\LWRphystrig {#1}{asec}}\)
+
+\(\renewcommand {\cot }[1][]{\LWRphystrig {#1}{cot}}\)
+
+\(\renewcommand {\coth }[1][]{\LWRphystrig {#1}{coth}}\)
+
+\(\renewcommand {\arccot }[1][]{\LWRphystrig {#1}{arccot}}\)
+
+\(\renewcommand {\acot }[1][]{\LWRphystrig {#1}{acot}}\)
+
+\(\newcommand {\vect }[1]{\boldsymbol {#1}}\)
+
+\(\DeclareMathOperator {\const }{const}\)
+
+\(\DeclareMathOperator {\inv }{inv}\)
+
+\(\newcommand {\Laplasian }{\Delta }\)
+
+\(\newcommand {\emf }{ℰ}\)
+
+\(\newcommand {\tikzmarknode }[2]{#2}\)
+
+\(\newcommand {\tikzmark }[1]{}\)
+
+\(\newcommand {\enquote }[1]{«#1»}\)
+
+\(\newcommand {\allowbreak }{}\)
+
+\(\newcommand {\mitlambda }{\lambda }\)
+
+\(\newcommand {\mitomega }{\omega }\)
+
+\(\newcommand {\mittheta }{\theta }\)
+
+\(\newcommand {\mitphi }{\varphi }\)
+
+\(\newcommand {\tcbhighmath }[1]{\boxed {#1}}\)
+
+\(\DeclareMathOperator {\sh }{sh}\)
+
+\(\DeclareMathOperator {\ch }{ch}\)
+
+\(\DeclareMathOperator {\tg }{tg}\)
+
+\(\DeclareMathOperator {\ctg }{ctg}\)
+
+\(\DeclareMathOperator {\arctg }{arctg}\)
+
+\(\DeclareMathOperator {\arcctg }{arcctg}\)
+
+\(\DeclareMathOperator {\cth }{cth}\)
+
+\(\DeclareMathOperator {\cosec }{cosec}\)
+
+\(\let \symsf \symsfup \)
+
+\(\def\Alpha{\unicode{x0391}}\)
+
+\(\def\Beta{\unicode{x0392}}\)
+
+\(\def\Gamma{\unicode{x0393}}\)
+
+\(\def\Digamma{\unicode{x03DC}}\)
+
+\(\def\Delta{\unicode{x0394}}\)
+
+\(\def\Epsilon{\unicode{x0395}}\)
+
+\(\def\Zeta{\unicode{x0396}}\)
+
+\(\def\Eta{\unicode{x0397}}\)
+
+\(\def\Theta{\unicode{x0398}}\)
+
+\(\def\Vartheta{\unicode{x03F4}}\)
+
+\(\def\Iota{\unicode{x0399}}\)
+
+\(\def\Kappa{\unicode{x039A}}\)
+
+\(\def\Lambda{\unicode{x039B}}\)
+
+\(\def\Mu{\unicode{x039C}}\)
+
+\(\def\Nu{\unicode{x039D}}\)
+
+\(\def\Xi{\unicode{x039E}}\)
+
+\(\def\Omicron{\unicode{x039F}}\)
+
+\(\def\Pi{\unicode{x03A0}}\)
+
+\(\def\Varpi{\unicode{x03D6}}\)
+
+\(\def\Rho{\unicode{x03A1}}\)
+
+\(\def\Sigma{\unicode{x03A3}}\)
+
+\(\def\Tau{\unicode{x03A4}}\)
+
+\(\def\Upsilon{\unicode{x03A5}}\)
+
+\(\def\Phi{\unicode{x03A6}}\)
+
+\(\def\Chi{\unicode{x03A7}}\)
+
+\(\def\Psi{\unicode{x03A8}}\)
+
+\(\def\Omega{\unicode{x03A9}}\)
+
+\(\def\alpha{\unicode{x1D6FC}}\)
+
+\(\def\beta{\unicode{x1D6FD}}\)
+
+\(\def\varbeta{\unicode{x03D0}}\)
+
+\(\def\gamma{\unicode{x1D6FE}}\)
+
+\(\def\digamma{\mathit{\unicode{x03DD}}}\)
+
+\(\def\delta{\unicode{x1D6FF}}\)
+
+\(\def\epsilon{\unicode{x1D716}}\)
+
+\(\def\varepsilon{\unicode{x1D700}}\)
+
+\(\def\zeta{\unicode{x1D701}}\)
+
+\(\def\eta{\unicode{x1D702}}\)
+
+\(\def\theta{\unicode{x1D703}}\)
+
+\(\def\vartheta{\unicode{x1D717}}\)
+
+\(\def\iota{\unicode{x1D704}}\)
+
+\(\def\kappa{\unicode{x1D705}}\)
+
+\(\def\varkappa{\unicode{x1D718}}\)
+
+\(\def\lambda{\unicode{x1D706}}\)
+
+\(\def\mu{\unicode{x1D707}}\)
+
+\(\def\nu{\unicode{x1D708}}\)
+
+\(\def\xi{\unicode{x1D709}}\)
+
+\(\def\omicron{\unicode{x1D70A}}\)
+
+\(\def\pi{\unicode{x1D70B}}\)
+
+\(\def\varpi{\unicode{x1D71B}}\)
+
+\(\def\rho{\unicode{x1D70C}}\)
+
+\(\def\varrho{\unicode{x1D71A}}\)
+
+\(\def\sigma{\unicode{x1D70E}}\)
+\(\def\varsigma{\unicode{x1D70D}}\)
+
+\(\def\tau{\unicode{x1D70F}}\)
+
+\(\def\upsilon{\unicode{x1D710}}\)
+
+\(\def\phi{\unicode{x1D719}}\)
+
+\(\def\varphi{\unicode{x1D711}}\)
+
+\(\def\chi{\unicode{x1D712}}\)
+
+\(\def\psi{\unicode{x1D713}}\)
+
+\(\def\omega{\unicode{x1D714}}\)
+
+</div>
+
+<!--
+...... chapter Інтерференція ......
+-->
+<h3 id="autosec-364"><span class="sectionnumber">4&#x2003;</span>Інтерференція</h3>
+<a id="main-html-autopage-364"></a>
+<a id="main-html-autofile-5"></a>
+
+<a id="Interference-dup4"></a>
+<!--
+...... section Основні поняття і закони ......
+-->
+<h4 id="autosec-365"><span class="sectionnumber">&#xA7;&#x202F;4.1&#x2003;</span>Основні поняття і закони</h4>
+<a id="main-html-autopage-365"></a>
+
+
+<p>
+Інтерференція світла спостерігається при накладенні двох або більше когерентних світлових хвиль і полягає у просторовому перерозподілі енергії результуючої світлової хвилі, що супроводжується посиленням або послабленням її інтенсивності в залежності від співвідношення фаз хвиль, що
+складаються. При цьому виникають стійкі в часі світлі і темні ділянки, що чергуються в просторі, так звані інтерференційні смуги.
+</p>
+
+<p>
+Для двопроменевої інтерференції результуюча інтенсивність дорівнюватиме:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{0}\)</span>
+
+<!--
+
+
+                                                                         𝐼 = 𝐼1 + 𝐼2 + 2√𝐼1 𝐼2 cos 𝛿,                                                                     (4.1)                                                                    --><a id="eq:Intens2"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Intens2} I = I_1 + I_2 + 2\sqrt {I_1I_2}\cos \delta ,
+\end{equation}
+
+</p>
+
+<p>
+де \(I_1\) та \(I_2\) — інтенсивності когерентних світлових хвиль, що накладаються, \(\delta \) — різниця фаз між хвилями.
+</p>
+
+<p>
+В деякій точці простору буде спостерігатись максимум чи мінімум інтенсивності. Це залежить від різниці фаз:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{1}\)</span>
+
+<!--
+
+
+                                                       2𝑚𝜋,             умова максимуму інтерференції,
+                                                 𝛿={                                                                                                     (4.2)                                                                  --><a id="eq:InterferenceCondition"></a><!--
+                                                       (2𝑚 + 1) 𝜋,      умова мінімуму інтерференції,
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:InterferenceCondition} \delta = \begin{cases} 2 m \pi , &amp; \quad \text {умова максимуму інтерференції}, \\ \left ( 2m + 1 \right ) \pi , &amp; \quad \text {умова мінімуму інтерференції}, \end
+{cases}
+\end{equation}
+
+</p>
+
+<p>
+де \(m \in \mathbb {Z}\), \(m \) — називають порядком інтерференції.
+</p>
+
+<p>
+Різниця фаз пов’язана з різницею ходу хвиль \(\Delta \) за формулою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{2}\)</span>
+
+<!--
+
+
+                                                                                                                                         𝛿 = 𝑘Δ,                                                                                                                                       (4.3)
+
+-->
+
+<p>
+
+\begin{equation}
+\delta = k \Delta ,
+\end{equation}
+
+</p>
+
+<p>
+де \(k = \frac {2\pi }{\lambda } \) — хвильове число.
+</p>
+
+<p>
+Умови максимуму та мінімуму інтерференції&nbsp;<span class="textup">(<a href="interference.html#eq:InterferenceCondition">4.2</a>)</span> можна переписати для різниці ходу:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{3}\)</span>
+
+<!--
+
+
+                                                 𝑚𝜆,                 умова максимуму інтерференції,
+                                              Δ={        𝜆                                                                                       (4.4)                                                                   --><a id="eq:InterferenceConditionDelta"></a><!--
+                                                 (2𝑚 + 1) ,          умова мінімуму інтерференції.
+                                                             2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:InterferenceConditionDelta} \Delta = \begin{cases} m \lambda , &amp; \quad \text {умова максимуму інтерференції}, \\ (2m + 1)\frac {\lambda }{2}, &amp; \quad \text {умова мінімуму інтерференції}.
+\end {cases}
+\end{equation}
+
+</p>
+
+<p>
+Вигляд інтерференційної картини двох ізотропних когерентних точкових джерел залежить від взаємного розташування лінії, що з’єднує джерела, і площину екрану. Якщо лінія паралельна площині екрану, то спостерігаються смуги. Якщо лінія перпендикулярна площині екрану, то
+спостерігається система кілець (рис.&nbsp;<a href="interference.html#pic:3D_interference">4.1</a>).
+</p>
+
+<figure id="autoid-231" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-66"
+    class="lateximagesource"
+><!--
+Δ = 𝑑 = Δmax = 𝑚max 𝜆
+
+
+
+
+𝑑                       Δ = 0, 𝑚 = 0
+--><img
+   src="main-html-images/image-66.svg"
+   alt="Рис. 4.1. Інтерференційні смуги від двох когерентних ізотропних точкових джерел на сферичному екрані"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.1. Інтерференційні смуги від двох когерентних ізотропних точкових джерел на сферичному екрані
+
+</div>
+
+<a id="pic:3D_interference"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Інтерференційні схеми ......
+-->
+<h5 id="autosec-369">Інтерференційні схеми</h5>
+<a id="main-html-autopage-369"></a>
+
+
+<p>
+Особливості спостереження явищ інтерференції світла від звичайних джерел світла обумовлені тим, що світло, що ними випромінюється, ніколи не буває повністю монохроматичним, а отже, когерентним <sup>1</sup>. Таке світло можна розглядати як хаотичну послідовність окремих цугів
+синусоїдальних хвиль. Тривалість окремого цуга приблизно \(10^{-9}\)&nbsp;с. Будь-який реєструючий прилад (а також око людини) має значно більший час інтегрування сигналу. Тому при накладенні пучків світла від різних джерел фазові співвідношення між світловими коливаннями у
+будь-якій точці за час спостереження встигають багаторазово змінитися випадковим чином. В результаті накладання великого числа коливань з випадковими фазами у виразі <span class="textup">(<a href="interference.html#eq:Intens2">4.1</a>)</span> зникає інтерференційний
+доданок, оскільки усереднюється \(\left \langle \cos \delta \right \rangle = 0\), тобто інтерференції не спостерігається.
+</p>
+
+<p>
+Звідси ясно, що для спостереження інтерференції світла необхідні спеціальні умови: світло від одного і того ж джерела потрібно розділити на два пучки (або кілька пучків) і потім звести їх відповідним чином. Якщо різниця ходу цих пучків від джерела до точки спостереження не перевищує
+довжини окремого цуга, то випадкові зміни амплітуди і фази світлових хвиль у двох пучках відбуваються узгоджено, тобто, зміни будуть скорельовані. Про такі пучки кажуть, що вони повністю або частково когерентні.
+</p>
+
+
+<div class="cb-attention">
+
+<p>
+Інтерференція є мірою когерентності.
+</p>
+
+</div>
+
+<p>
+Проблема отримання когерентних променів від одного джерела випромінювання вирішується двома методами:
+</p>
+<ul class="itemize" style="list-style-type:none">
+
+<li>
+<p>
+<span class="listmarker">•</span> методи поділу хвильового фронту;
+</p>
+
+</li>
+<li>
+
+<p>
+<span class="listmarker">•</span> методи поділу амплітуди.
+</p>
+</li>
+</ul>
+
+<p>
+В <em>методі поділу хвильового фронту</em> інтерферують хвилі, що йдуть від різних ділянок хвильового фронту. На цьому методі побудовано класичні інтерференційні схеми Юнга: дзеркало Ллойда, біпризма Френеля, білінзи, бідзеркала, дослід Юнга тощо.
+</p>
+
+<p>
+В <em>методі поділу амплітуди</em> пучок ділиться на одній або декількох пропускаючих поверхнях, що частково відбивають світло. Амплітуда кожної з інтерферуючих хвиль менша ніж амплітуда вихідної хвилі. Даний метод використовується для спостереження інтерференційної картини
+в тонких плівках з малими коефіцієнтами відбиття, інтерферометрі Майкельсона, інтерферометрі Фабрі-Перо.
+</p>
+
+<figure id="autoid-232" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-67"
+    class="lateximagesource"
+><!--
+     𝑃
+
+
+
+
+𝑆
+
+
+
+𝑆1
+𝑆2
+--><img
+   src="main-html-images/image-67.svg"
+   alt="Рис. 4.2. Схема інтерференції методом поділу амплітуди"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.2. Схема інтерференції методом поділу амплітуди
+
+</div>
+
+<a id="fig:imagesources"></a>
+
+</div>
+
+</figure>
+<div role="note" class="footnotes">
+
+<a id="main-html-autopage-373"></a>
+<p>
+<sup>1</sup>&nbsp;когерентним є випромінювання, яке має однакову частоту і сталу у часі різницю фаз
+</p>
+
+
+</div>
+<!--
+...... subsection Схема Юнга ......
+-->
+<h5 id="autosec-374">Схема Юнга</h5>
+<a id="main-html-autopage-374"></a>
+
+
+<p>
+В інтерференційному досліді Томаса Юнга 1802 р. для розділення променів від одного джерела використовувся екран з двома вузькими щілинами, які грали роль вторинних когерентних джерел світла.
+</p>
+
+<p>
+Площина екрану спостереження паралельна до лінії \(\overline {S_1S_2}\), що з’єднує два джерела (рис.&nbsp;<a href="interference.html#fig:YoungScheme">4.3</a>). Дане розташування прийнято називати <em>схемою Юнга</em>. Знайдемо різницю ходу \(\Delta = r_2 -
+r_1\) між променями, що йдуть від джерел \(S_1\) і \(S_2\) в точку \(P\) з координатою \(y\). Початок координат помістимо в точці \(O\), відносно якої джерела світла \(S_1\) і \(S_2\) розташовані симетрично. Тоді різниця ходу хвиль в точках на екрані буде визначатись формулою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{4}\)</span>
+
+<!--
+
+                                                                            𝑑
+                                                                         Δ=𝑦 .                                                                            (4.5)                                                                   --><a id="eq:Delta_Young_Scheme"></a><!--
+                                                                            𝐿
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Delta_Young_Scheme} \Delta = y \frac {d}{L}.
+\end{equation}
+
+</p>
+
+<p>
+У випадку, коли \(d \ll L \) відношення \(\frac {d}{L} = \alpha _\text {сх}\), де \(\alpha _\text {сх} \) — кут сходження променів, що інтерферують, а різниця ходу дорівнюватиме:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{5}\)</span>
+
+<!--
+
+
+                                                                       Δ = 𝑦𝛼сх .                                                                       (4.5а)                                                                   --><a id="eq:Delta_Young_Scheme'"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Delta_Young_Scheme&apos;} \Delta = y\alpha _\text {сх}. \tag {4.5а}
+\end{equation}
+
+</p>
+
+<p>
+Якщо \(S_1 \) і \(S_2 \) — вузькі нескінченні щілини, то інтерференційна картина на екрані являє собою смуги, паралельні щілинам.
+</p>
+
+<figure id="autoid-233" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-68"
+    class="lateximagesource"
+><!--
+                                         𝑦
+
+
+                                             𝑚 = +4
+
+
+                                     𝑃       𝑚 = +3
+             𝜃
+                     𝑟2
+                               𝛼сх           𝑚 = +2
+    𝑆2
+                                             𝑚 = +1
+                          𝑟1
+                 𝜃                                    𝐼
+𝑑                                            𝑚=0
+                                     𝑂
+
+                                             𝑚 = −1
+         Δ
+    𝑆1
+                                             𝑚 = −2
+
+
+                     𝐿                       𝑚 = −3
+
+
+                                             𝑚 = −4
+--><img
+   src="main-html-images/image-68.svg"
+   alt="Рис. 4.3. Схема Юнга"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.3. Схема Юнга
+
+</div>
+
+<a id="fig:YoungScheme"></a>
+
+</div>
+
+</figure>
+
+<p>
+Положення максимумів інтерференції:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{5}\)</span>
+
+<!--
+
+                                                                                                                                       𝑚𝐿      𝜆
+                                                                                                                              𝑦max =      𝜆=𝑚     .                                                                           (4.6)
+                                                                                                                                        𝑑     𝛼сх
+
+-->
+
+<p>
+
+\begin{equation}
+y_{\max } = \frac {{mL}}{d}\lambda = m\frac \lambda {\alpha _\text {сх}}.
+\end{equation}
+
+</p>
+
+<p>
+Відстань між двома сусідніми максимумами інтенсивності називається відстанню між інтерференційними смугами. З останнього виразу випливає, що відстань між сусідніми максимумами дорівнюватиме:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{6}\)</span>
+
+<!--
+
+                                                                                  𝐿     𝜆
+                                                                           Δ𝑦 =     𝜆=     .                                                                     (4.7)                           --><a id="eq:widthofmax"></a><!--
+                                                                                  𝑑    𝛼сх
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:widthofmax} \Delta y = \frac {L}{d}\lambda = \frac \lambda {\alpha _\text {сх}}.
+\end{equation}
+
+</p>
+
+<p>
+Встановлення скляної платівки на шляху одного з променів приводить до зміни оптичної різниці ходу променів на величину
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{7}\)</span>
+
+<!--
+
+
+                                                                                                                                  Δ′ = 𝑑(𝑛 − 𝑛0 )
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta &apos; = d (n - n_0)
+\end{equation*}
+
+</p>
+
+<p>
+де \(d\) і \(n\) — товщина й показник заломлення платівки; \(n_0\) — показник заломлення середовища, зазвичай повітря.
+</p>
+<!--
+...... subsection Інтерференція в платівках і в тонких плівках ......
+-->
+<h5 id="autosec-378">Інтерференція в платівках і в тонких плівках</h5>
+<a id="main-html-autopage-378"></a>
+
+
+<p>
+Прикладом двопроменевої інтерференції за методом поділу амплітуди хвилі — є інтерференція в платівках та тонких плівках.
+</p>
+
+<figure id="autoid-234" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-69"
+    class="lateximagesource"
+><!--
+           1             2
+
+
+
+
+    𝜖1
+                    𝑛1
+
+
+𝑑    𝜖′2            𝑛2
+
+
+                    𝑛3
+
+
+
+
+               1′            2′
+--><img
+   src="main-html-images/image-69.svg"
+   alt="Рис. 4.4. Інтерференція паралельних променів в платівці"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.4. Інтерференція паралельних променів в платівці
+
+</div>
+
+<a id="pic:unterferece_in_film"></a>
+
+</div>
+
+</figure>
+
+<p>
+При цьому повна оптична різниця ходу променів, що інтерферують, для відбитого світла, та світла, що пройшло (рис.&nbsp;<a href="interference.html#pic:unterferece_in_film">4.4</a>), дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{7}\)</span>
+
+<!--
+
+
+                                                                                   𝜆                          𝜆
+                                                       Δ21 = 2𝑑 ⋅ 𝑛2 cos 𝜖′2 + 𝑝     = 2𝑑√𝑛22 + 𝑛21 sin 𝜖1 + 𝑝 ,                                                  (4.8)                                                                  --><a id="eq:Delta_film"></a><!--
+                                                                                   2                          2
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Delta_film} \Delta _{21} = 2d\cdot n_2\cos \epsilon &apos;_2 + p\frac {\lambda }{2} = 2d\sqrt {n_2^2 + n_1^2\sin \epsilon _1} + p\frac {\lambda }{2},
+\end{equation}
+
+</p>
+
+<p>
+де \(d\) і \(n_2\) — товщина й показник заломлення плівки; \(\epsilon _1\), \(\epsilon &apos;_2\) — кути падіння й заломлення; \(p\) — параметр, що враховує вплив півхвильових стрибків оптичного шляху променів при відбитті на границі від оптично більш щільного середовища;
+\(n_1\) — показник заломлення середовища (матеріалу), з якого падає світло.
+</p>
+
+<p>
+Значення параметра р залежно від співвідношення значень \(n_1\) , \(n_2\) і \(n_3\) наведені в табл.&nbsp;<a href="interference.html#tab:p">4.1</a>.
+</p>
+
+<figure id="autoid-235" class="table ">
+<div class="center">
+
+
+<div class="figurecaption">
+Таблиця&nbsp;4.1
+
+</div>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+<tr>
+<td class="tdp tdleft" style="background:#335883">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>Параметр \(p\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#335883">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>\(n_1 &lt; n_2 &gt; n_3\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#335883">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>\(n_1 &gt; n_2 &lt; n_3\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#335883">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>\(n_1 &lt; n_2 &lt; n_3\)</b></span>
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#335883">
+
+<p>
+<span
+    class="textcolor"
+    style="color:#FFFFFF"
+><b>\(n_1 &gt; n_2 &gt; n_3\)</b></span>
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft" style="background:#D9E8F2">
+
+<p>
+Відбите cвітло
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#D9E8F2">
+
+<p>
+\(-1\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#D9E8F2">
+
+<p>
+\(+1\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#D9E8F2">
+
+<p>
+\(0\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#D9E8F2">
+
+<p>
+\(0\)
+</p>
+</td>
+</tr>
+
+<tr>
+<td class="tdp tdleft" style="background:#F2F7FB">
+
+<p>
+Світло, що пройшло
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#F2F7FB">
+
+<p>
+\(0\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#F2F7FB">
+
+<p>
+\(0\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#F2F7FB">
+
+<p>
+\(+1\)
+</p>
+</td>
+<td class="tdp tdcenter" style="background:#F2F7FB">
+
+<p>
+\(-1\)
+</p>
+</td>
+</tr>
+
+</table>
+
+<a id="tab:p"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Просвітлення оптичних деталей та діелектричні дзеркала ......
+-->
+<h5 id="autosec-384">Просвітлення оптичних деталей та діелектричні дзеркала</h5>
+<a id="main-html-autopage-384"></a>
+
+
+<p>
+При нанесенні на поверхню лінзи з показником заломлення \(n_2\) тонкого прозорого шару діелектрика з \(n_1 &lt; n_2\) можна досягти того, щоб хвилі певної довжини за рахунок інтерференції не відбивались від поверхні лінзи.
+</p>
+
+<figure id="autoid-236" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-70"
+    class="lateximagesource"
+><!--
+           1        2
+    𝜖1
+
+
+𝑑              𝑛1
+     𝜖′2
+               𝑛2
+--><img
+   src="main-html-images/image-70.svg"
+   alt="Рис. 4.5. Просвітлення оптичних деталей"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.5. Просвітлення оптичних деталей
+
+</div>
+
+<a id="pic:unterferece_in_film-dup2"></a>
+
+</div>
+
+</figure>
+
+<p>
+Показник заломлення й товщина плівок для просвітлення оптики, які наносяться на поверхні оптичних деталей, визначають виразами:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{8}\)</span>
+
+
+<!--
+
+
+
+                                                                                                                         𝑛1 = √𝑛2 ,                               (4.9)
+                                                                                                                             2𝑚 + 1 𝜆
+                                                                                                                          𝑑=              ,   𝑚 = 0, 1, 2, … ,   (4.10)
+                                                                                                                             𝑛1 cos 𝜖′2 4
+
+
+-->
+
+
+<p>
+
+\begin{align}
+n_1 &amp; = \sqrt {n_2}, \\ d &amp; = \frac {2m + 1}{n_1\cos \epsilon &apos;_2}\frac {\lambda }{4}, \quad m = 0,1,2,\ldots ,
+\end{align}
+де \(\lambda \) — розрахункова довжина хвилі, зазвичай відповідає середині робочого спектрального діапазону оптичного приладу.
+</p>
+
+<figure id="autoid-237" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-71"
+    class="lateximagesource"
+><!--
+𝑙1   𝑙2   𝑙1   𝑙2   𝑙1   𝑙2   𝑙1   𝑙2
+
+
+
+
+𝑛1   𝑛2   𝑛1   𝑛2   𝑛1   𝑛2   𝑛1   𝑛2
+--><img
+   src="main-html-images/image-71.svg"
+   alt="Рис. 4.6. Діелектричне дзеркало"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.6. Діелектричне дзеркало
+
+</div>
+
+<a id="pic:dielectric_mirror"></a>
+
+</div>
+
+</figure>
+
+<p>
+Явище інтерференції використовується також і для отримання діелектричних дзеркал з високим коефіцієнтом відбиття, для збільшення якого, покриття виготовляють багатошаровими. На поверхню оптичного елементу наносять кілька пар шарів прозорого діелектрика, оптична товщина,
+кожного з яких становить \(\frac \lambda 4 \), тобто \(n_1l_1 = n_2 l_2 = \ldots = \frac \lambda 4 \), причому \(n_2 &lt; n_1 \) (\(l_2 &gt; l_1\)) (рис.&nbsp;<a href="interference.html#pic:dielectric_mirror">4.6</a>).
+</p>
+
+<p>
+При цьому, коефіцієнт відбиття для дзеркала з \(N \) пар шарів дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{10}\)</span>
+
+<!--
+
+
+                                                                                                                                                2𝑁   2
+                                                                                                                                           𝑛
+                                                                                                                                 ⎡1 − ( 2) ⎤
+                                                                                                                               𝑅=⎢           ⎥ .
+                                                                                                                                        𝑛1
+                                                                                                                                 ⎢           ⎥                                                                                                                                   (4.11)
+                                                                                                                                 ⎢ 1 + 𝑛2 2𝑁 ⎥
+                                                                                                                                 ⎣    (    ) ⎦
+                                                                                                                                           𝑛1
+
+-->
+
+<p>
+
+\begin{equation}
+R = \left [ \frac {1 - \left ( \frac {n_2}{n_1}\right )^{2N} }{1 + \left ( \frac {n_2}{n_1}\right )^{2N}} \right ]^2.
+\end{equation}
+
+</p>
+
+<p>
+Багатошарові дзеркала використовуються, наприклад, в лазерних резонаторах з \(R &gt; 0,99 \).
+</p>
+<!--
+...... subsection Інтерференція на клині ......
+-->
+<h5 id="autosec-391">Інтерференція на клині</h5>
+<a id="main-html-autopage-391"></a>
+
+
+<p>
+Паралельні пучки світла при падінні на клин (платівку змінної товщини) відбиваючись (або проходячи) будуть інтерферувати. В окремих місцях клина будуть спостерігатись максимуми, в залежності від товщини платівки \(d_m\) в точці падіння. На поверхні платівки буде спостерігатися картина
+інтерференції (рис.&nbsp;<a href="interference.html#pic:klin_interference">4.7</a>). Для її спостереження очі повинні бути акомодовані на поверхню платівки.
+</p>
+
+<p>
+З урахуванням невеликого кута клину \(\theta \), умова максимуму інтерференції для \(m\)-ї та \(m + k\)-ї інтерференційних смуг має вигляд:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{11}\)</span>
+
+
+<!--
+
+
+
+                                                                                                                                           2𝑑𝑚 𝑛2 = 𝑚𝜆,
+                                                                                                                                   2𝑑𝑚+𝑘 𝑛2 = (𝑚 + 𝑘)𝜆.
+
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+2d_m n_2 = m\lambda , \\ 2d_{m + k}n_2 = (m + k)\lambda .
+\end{align*}
+Віднімемо друге рівняння від першого \(\Delta d = d_{m + k} - d_m \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{11}\)</span>
+
+<!--
+
+                                                                                                                                               𝑘𝜆
+                                                                                                                                        Δ𝑑 =       .
+                                                                                                                                               2𝑛2
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta d = \frac {k\lambda }{2n_2}.
+\end{equation*}
+
+</p>
+
+<p>
+З геометрії рис.&nbsp;<a href="interference.html#pic:klin_interference">4.7</a> \(\Delta d = l_k \sin \theta \), що при малих кутах \(\sin \theta \approx \theta \) дає \(\Delta d \approx l_k \theta \), отже
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{11}\)</span>
+
+<!--
+
+                                                                                                       𝑘𝜆
+                                                                                               𝑙𝑘 =         ,                                                                                             (4.12)                      --><a id="eq:Klin_interference"></a><!--
+                                                                                                      2𝑛2 𝜃
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:Klin_interference} l_k = \frac {k\lambda }{2n_2\theta },
+\end{equation}
+
+</p>
+
+<p>
+де \(k\) — число інтерференційних смуг, \(\lambda \) — довжина хвилі світла, \(l_k\) — відрізок в інтерференційній картині, в якому вкладається \(k\) смуг, \(n_2\) — показник заломлення матеріалу клина, \(\theta \) — кут при вершині клину.
+</p>
+
+<figure id="autoid-238" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-72"
+    class="lateximagesource"
+><!--
+𝑙𝑘
+
+
+
+
+     𝜃
+--><img
+   src="main-html-images/image-72.svg"
+   alt="Рис. 4.7. Інтерференція на клині"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.7. Інтерференція на клині
+
+</div>
+
+<a id="pic:klin_interference"></a>
+
+</div>
+
+</figure>
+<!--
+...... subsection Кільця Ньютона ......
+-->
+<h5 id="autosec-395">Кільця Ньютона</h5>
+<a id="main-html-autopage-395"></a>
+
+
+<p>
+Кільця Ньютона утворюються при інтерференції світлових хвиль, відбитих від границь тонкого прошарку між опуклою поверхнею лінзи і плоскою скляною платівкою (рис.&nbsp;<a href="interference.html#pic:Newton_rings">4.8</a>). Спостереження ведеться у відбитому світлі.
+Прошарок може бути або повітряний, або заповнений рідиною з показником заломлення \(n_2\) (в загальному випадку).
+</p>
+
+<figure id="autoid-239" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-73"
+    class="lateximagesource"
+><!--
+1   2           𝑅
+
+
+
+
+        1′ 2′
+
+
+                    𝑑
+
+
+
+          𝑟𝑚
+--><img
+   src="main-html-images/image-73.svg"
+   alt="Рис. 4.8. Утворення кілець Ньютона. (Картина кілець наведена праворуч має місце у відбитому світлі)"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.8. Утворення кілець Ньютона.<br />
+(Картина кілець наведена праворуч має місце у відбитому світлі)
+
+</div>
+
+<a id="pic:Newton_rings"></a>
+
+</div>
+
+</figure>
+
+<p>
+Нехай на систему згори падає монохроматичний паралельний пучок променів (рис.&nbsp;<a href="interference.html#pic:Newton_rings">4.8</a> ). Промінь відбивається від верхнього краю платівки (промінь \(1\) на рис.), а інша частина (промінь 2) від нижнього краю лінзи.
+</p>
+
+<p>
+В першому наближені, якщо знехтувати невеликим нахилом променів у прошарку, оптична різниця ходу з <span class="textup">(<a href="interference.html#eq:Delta_film">4.8</a>)</span> дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{12}\)</span>
+
+<!--
+
+
+                                                                                                                                       Δ = 2𝑑𝑛2 ,                                                                                                                 (4.13)
+
+-->
+
+<p>
+
+\begin{equation}
+\Delta =2dn_2,
+\end{equation}
+
+</p>
+
+<p>
+де \(d\)&nbsp;— товщина повітряного прошарку на відстані \(r_m\) від центру лінзи.
+</p>
+
+<p>
+Якщо форма лінзи близька до сферичної з радіусом кривизни \(R \gg r_m\), то з геометричних міркувань \(r^2_m = 2Rd \). Звідки, радіуси світлих темних кілець у відбитому світлі:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{13}\)</span>
+
+<!--
+
+                                                                                                   𝑅                  𝑅
+                                                                                           2 =
+                                                                                          𝑟тем        𝜆𝑚,    2
+                                                                                                            𝑟світ =      (𝜆𝑚 − 𝜆/2).                                                                              (4.14)                     --><a id="rdark"></a><!--
+                                                                                                   𝑛2                 𝑛2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {rdark} r_\text {тем}^2=\frac {R}{n_2}\lambda m, \quad r_\text {світ}^2=\frac {R}{n_2}(\lambda m-\lambda /2).
+\end{equation}
+
+</p>
+
+<p>
+Радіуси світлих темних кілець у світлі, що пройшло:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{14}\)</span>
+
+<!--
+
+                                                                                                   𝑅                         𝑅
+                                                                                          2
+                                                                                         𝑟світ =      (𝜆𝑚 − 𝜆/2),      2 =
+                                                                                                                      𝑟тем      𝜆𝑚.                                                                              (4.15)                    --><a id="rdark2"></a><!--
+                                                                                                   𝑛2                        𝑛2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {rdark2} r_\text {світ}^2=\frac {R}{n_2}(\lambda m-\lambda /2), \quad r_\text {тем}^2=\frac {R}{n_2}\lambda m.
+\end{equation}
+
+</p>
+<!--
+...... subsection Багатопроменева інтерференція ......
+-->
+<h5 id="autosec-399">Багатопроменева інтерференція</h5>
+<a id="main-html-autopage-399"></a>
+
+
+<p>
+При падінні світла на прозору плоско-паралельну платівку на її поверхні відбуваються багаторазові відбивання, внаслідок чого з кожного боку платівки виходить ряд променів із спадною амплітудою, які потрібно враховувати при розгляді інтерференційної картини. Ці паралельні промені
+інтерферують між собою, наприклад, у фокальній площині лінзи за платівкою. Інтерференційні смуги при цьому є смугами рівного нахилу. Картина у відбитому світлі є доповнюючою до картини у світлі, що проходить. Це означає , що положення темних і світлих смуг міняються місцями.
+</p>
+
+<figure id="autoid-240" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-74"
+    class="lateximagesource"
+><!--
+                         8
+                       2𝑅
+                       𝑇
+                               5′
+5
+
+
+
+
+       𝑅7
+     𝑇2         8
+            𝑇𝑅
+                         6
+                       2𝑅
+             𝑇𝑅 7      𝑇
+                               4′
+4
+
+
+
+
+       𝑅5
+     𝑇2         6
+            𝑇𝑅
+                         4
+                       2𝑅
+             𝑇𝑅 5      𝑇
+                               3′
+3
+
+
+
+
+       𝑅3
+     𝑇2         4
+            𝑇𝑅
+                         2
+                       2𝑅
+             𝑇𝑅 3      𝑇
+                               2′
+2
+
+
+
+
+       𝑅
+     𝑇2         2
+            𝑇𝑅
+                           2
+             𝑇𝑅        𝑇       1′
+1
+
+
+
+
+      𝑅
+            𝑇
+                 𝜖′2
+𝜖1
+
+
+
+
+            𝑑
+--><img
+   src="main-html-images/image-74.svg"
+   alt="Рис. 4.9. Багатопроменева інтерференція в плоскопаралельній платівці"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.9. Багатопроменева інтерференція в плоскопаралельній платівці
+
+</div>
+
+<a id="pic:unterferece_in_film-dup3"></a>
+
+</div>
+
+</figure>
+
+<p>
+Розглянемо плоскопаралельну прозору платівку з показником заломлення \(n_2\), що знаходиться в середовищі з показником заломлення \(n_1 = n_3\), і припустимо, що на цю платівку під кутом \(\epsilon _1\) падає плоска хвиля монохроматичного світла.
+</p>
+
+<p>
+На основі закону збереження енергії можна стверджувати, що інтенсивність падаючої хвилі дорівнює сумі інтенсивності відбитої хвилі та хвилі, що пройшла \(I_0 = I_R + I_T\). Для інтенсивностей зручно ввести <em>енергетичні коефіцієнти</em> відбиття \(R \) та проходження \(T \),
+тобто \(I_R = R I_0 \), \(I_T = T I_0 \), звідки можна бачити, що \(R + T = 1\).
+</p>
+
+<p>
+Знайдемо інтенсивності променів \(1&apos;\), \(2&apos; \), \(3&apos;\), &#x2026;, що пройшли крізь платівку:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{15}\)</span>
+
+<!--
+
+
+                                                                                                            𝐼1′ = 𝑇 2 𝐼0 ,   𝐼2′ = 𝑇 2 𝑅2 𝐼0 ,       𝐼3′ = 𝑇 2 𝑅4 𝐼0 ,   …,   𝐼𝑛′ = 𝑇 2 𝑅2𝑛 𝐼0 ,   ….
+
+-->
+
+<p>
+
+\begin{equation*}
+I_{1&apos;}= T^2 I_0 , \quad I_{2&apos;} = T^2R^2 I_0, \quad I_{3&apos;} = T^2R^4 I_0 , \quad \ldots ,\quad I_{n&apos;} = T^2R^{2n} I_0, \quad \ldots .
+\end{equation*}
+
+</p>
+
+<p>
+Відповідні дійсні амплітуди \(E = \sqrt {I} \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{15}\)</span>
+
+<!--
+
+
+                                                                                                              𝐸1′ = 𝑇𝐸0 ,     𝐸2′ = 𝑇𝑅𝐸0 ,           𝐸3′ = 𝑇𝑅2 𝐸0 ,      …,   𝐸𝑛′ = 𝑇𝑅𝑛 𝐸0 ,       ….
+
+-->
+
+<p>
+
+\begin{equation*}
+E_{1&apos;} = T E_0 , \quad E_{2&apos;} = TR E_0, \quad E_{3&apos;} = TR^2 E_0 , \quad \ldots , \quad E_{n&apos;} = TR^{n} E_0, \quad \ldots .
+\end{equation*}
+
+</p>
+
+<p>
+Кожний жмуток світла затримується по фазі відносно попереднього на величину:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{15}\)</span>
+
+<!--
+
+                                                                                                   2𝜋
+                                                                                              𝛿=      ⋅ 2𝑑𝑛2 cos 𝜖′2 .                                                                                       (4.16)                 --><a id="eq:delta_manyrays"></a><!--
+                                                                                                    𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:delta_manyrays} \delta = \frac {2\pi }\lambda \cdot 2dn_2\cos \epsilon &apos;_2.
+\end{equation}
+
+</p>
+
+<p>
+де \(d \) — відстань між площинами інтерферометра, що відбивають. З урахуванням фазової затримки амплітуда результуючого коливання для хвилі, що пройшла, описується геометричною прогресією:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{16}\)</span>
+
+<!--
+
+                                                                                                                                                                                      𝐸0 (1 − 𝑅)
+                                                                                                                𝐸 = 𝐸0 (1 − 𝑅)(1 + 𝑅𝑒−𝑖𝛿 + 𝑅2 𝑒−2𝑖𝛿 + 𝑅3 𝑒−3𝑖𝛿 + …) =                            .
+                                                                                                                                                                                      1 − 𝑅𝑒−𝑖𝛿
+
+-->
+
+<p>
+
+\begin{equation*}
+E = E_0(1-R)(1 + R e^{-i\delta } + R^2 e^{-2i\delta } + R^3 e^{-3i\delta } + \ldots ) = \frac {E_0(1-R)}{1 - R e^{-i\delta }}.
+\end{equation*}
+
+</p>
+
+<p>
+Так як інтенсивність \(I \sim EE^*\). Отже, для інтенсивності світла, що пройшло, маємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{16}\)</span>
+
+<!--
+
+
+                                                                                         𝐸02 (1 − 𝑅)2                        (1 − 𝑅)2
+                                                                            𝐼𝑇 =                              = 𝐼0                               .                                                               (4.17)                 --><a id="eq:I_traversed"></a><!--
+                                                                                   (1 − 𝑅𝑒−𝑖𝛿 )(1 − 𝑅𝑒+𝑖𝛿 )          (1 − 𝑅)2 + 4𝑅 sin2 ( )
+                                                                                                                                           𝛿
+                                                                                                                                            2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:I_traversed} I_T = \frac {E_0^2 (1-R)^2}{(1 - R e^{-i\delta })(1 - R e^{+i\delta })} = I_0 \frac {(1-R)^2}{(1-R)^2 + 4R\sin ^2\left ( \frac {\delta }{2}\right ) }.
+\end{equation}
+
+</p>
+
+<p>
+де \(I_0\) — інтенсивність падаючого світла.
+</p>
+
+<p>
+Для отримання інтенсивності світла, що відбилось, можна скористатись законом збереження \(I_R = I_0 - I_R\).
+</p>
+
+<p>
+Умова інтерференційних максимумів для світла, що пройшло :
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{17}\)</span>
+
+<!--
+
+
+                                                                                   𝛿 = 2𝑚𝜋,     або     2𝑑𝑛2 cos 𝜖′2 = 𝑚𝜆,                                                                              (4.18)                 --><a id="eq:delta=max_manyrays"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:delta=max_manyrays} \delta = 2m\pi ,\quad \text {або}\quad 2 dn_2\cos \epsilon &apos;_2 = m\lambda ,
+\end{equation}
+
+</p>
+
+<p>
+при цьому \(I_{\max } = I_0\).
+</p>
+
+<p>
+Умова інтерференційних мінімумів:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{18}\)</span>
+
+<!--
+
+                                                                                                                                                                                  1
+                                                                                                                             𝛿 = (2𝑚 + 1)𝜋,           або   2𝑑𝑛2 cos 𝜖′2 = (𝑚 +     ) 𝜆,                                                                                       (4.19)
+                                                                                                                                                                                  2
+
+-->
+
+<p>
+
+\begin{equation}
+\delta = (2m+1)\pi ,\quad \text {або}\quad 2 dn_2\cos \epsilon &apos;_2 = \left (m + \frac 12\right )\lambda ,
+\end{equation}
+
+</p>
+
+<p>
+при цьому інтенсивність в мінімумі дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{19}\)</span>
+
+<!--
+
+
+                                                                                                               1−𝑅 2
+                                                                                                 𝐼min = 𝐼0 (       ) ,                                                                                            (4.20)                 --><a id="eq:manyrays_I"></a><!--
+                                                                                                               1+𝑅
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:manyrays_I} I_{\min } = I_0 \left ( \frac {1-R}{1+R} \right )^2,
+\end{equation}
+
+</p>
+
+<p>
+якщо коефіцієнт відбивання \(R \approx 1\) близький до одиниці, то \(I_{\min } \approx 0\).
+</p>
+
+<figure id="autoid-241" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-75"
+    class="lateximagesource"
+><!--
+                                             𝑅 = 0.8
+        1
+                                             𝑅 = 0.4
+                                             𝑅 = 0.1
+       0.8
+
+
+𝐼/𝐼0   0.6
+
+
+       0.4
+
+
+       0.2
+
+
+        0
+             −3   −2   −1     0    +1   +2      +3
+                            𝛿/2𝜋
+--><img
+   src="main-html-images/image-75.svg"
+   alt="Рис. 4.10. Розподіл інтенсивності в інтерференційній картині для світла, що пройшло, в залежності від /(2) для різних R"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.10. Розподіл інтенсивності в інтерференційній картині для світла, що пройшло, в залежності від \(\delta /(2\pi )\) для різних \(R\)
+
+</div>
+
+<a id="pic:plot_manyrays"></a>
+
+</div>
+
+</figure>
+
+<p>
+За умови \((1-R)^2 + 4R\sin ^2\left ( \frac \delta 2\right ) = 2(1-R)^2\) з формули <span class="textup">(<a href="interference.html#eq:I_traversed">4.17</a>)</span> випливає, що інтенсивність світла дорівнює половині максимальної, тобто \(I =
+\frac 12 I_0\). Звідки різниця фаз, за якої виконується ця умова, дорівнює:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{20}\)</span>
+
+<!--
+
+                                                                                                          1−𝑅
+                                                                                       𝛿 = 2𝜋𝑚 + arcsin         .                                                              (4.21)                  --><a id="eq:manyrays_I_ddelta"></a><!--
+                                                                                                          𝜋√𝑅
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:manyrays_I_ddelta} \delta = 2\pi m + \arcsin \frac {1-R}{\pi \sqrt {R}}.
+\end{equation}
+
+</p>
+
+<p>
+якщо коефіцієнт відбивання \(R \approx 1\), то \(\arcsin \frac {1-R}{\pi \sqrt {R}} \approx \frac {1-R}{\pi \sqrt {R}} \) і \(\delta = 2\pi m + \frac {1-R}{\pi \sqrt {R}}\). Очевидно, при малих \(R \) інтерференційні смуги широкі, різкість
+інтерференційної картини низька. При збільшенні \(R \) смуги звужуються, а різкість зростає (рис.&nbsp;<a href="interference.html#pic:plot_manyrays">4.10</a>)
+</p>
+
+<p>
+Явище багатопроменевої інтерференції використовується в в спектроскопії: в <a href="https://www.youtube.com/watch?v=BT675FhuvuA&amp;ab_channel=toc1955" target="_blank" >інтерферометрі Фабрі-Перо</a> (еталон Фабрі-Перо), <a
+href="https://uk.upwiki.one/wiki/Lummer%E2%80%93Gehrcke_interferometer" target="_blank" >платівці Люмера-Герке</a>.
+</p>
+<!--
+...... subsection Часова когерентність ......
+-->
+<h5 id="autosec-406">Часова когерентність</h5>
+<a id="main-html-autopage-406"></a>
+
+
+<p>
+Для оцінки контрастності інтерференційної картини в деякій точці інтерференційного поля вводять параметр видності \(V\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{21}\)</span>
+
+<!--
+
+                                                                                                          𝐼max − 𝐼min
+                                                                                                    𝑉=                ,                                                                                                   (4.22)                      --><a id="eq:vis_par"></a><!--
+                                                                                                          𝐼max + 𝐼min
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:vis_par} V = \frac {I_{\max } - I_{\min }}{I_{\max } + I_{\min }},
+\end{equation}
+
+</p>
+
+<p>
+де \(I_{\max }\), \(I_{\min }\) — максимальна та мінімальна інтенсивність світла (освітлення інтерференційних смуг) поблизу обраної точки поля. Видність \(V\) може змінюватися від \(0\) до \(1\). Значення \(1\) відповідає найбільш контрастній інтерференційній картині, \(0\) — повному її
+зникненню.
+</p>
+
+<p>
+Збільшення ширини спектра випромінювання інтерферуючого світла призводить до погіршення видності інтерференційної картини. Якщо ширина спектрального інтервалу становить \(\Delta \lambda \), то при спостереженні інтерференції за допомогою схеми Юнга максимум \(m + 1\)-го
+порядку для довжини хвилі \(\lambda \) може співпасти з максимумом \(m\)-го порядку для довжини хвилі \(\lambda + \Delta \lambda \). При цьому різниця ходу хвиль однакова:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{22}\)</span>
+
+<!--
+
+
+                                                                                                                                   𝑚(𝜆 + Δ𝜆) = (𝑚 + 1)𝜆,                                                                                                                                 (4.23)
+
+-->
+
+<p>
+
+\begin{equation}
+m (\lambda + \Delta \lambda ) = (m + 1)\lambda ,
+\end{equation}
+
+</p>
+
+<p>
+звідки максимальний порядок, при якому буде спостерігатись така умова
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{23}\)</span>
+
+<!--
+
+                                                                                                            𝜆
+                                                                                                   𝑚max =      .                      --><a id="eq:max_interf_resol"></a><!--
+                                                                                                            Δ𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\label {eq:max_interf_resol} m_{\max } = \frac {\lambda }{\Delta \lambda } .
+\end{equation*}
+
+</p>
+
+<p>
+Ця формула дає оцінку максимально можливого порядку інтерференції для квазімонохроматичного світла.
+</p>
+
+<p>
+Пов’язавши порядок інтерференції із різницею ходу променів що інтерферують <span class="textup">(<a href="interference.html#eq:InterferenceConditionDelta">4.4</a>)</span> (\(\Delta = m\lambda \)), отримаємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{23}\)</span>
+
+<!--
+
+
+                                                                                                          𝜆2
+                                                                                        Δmax = 𝑚max 𝜆 =      = ℓког .                                                                                        (4.24)                      --><a id="eq:coherence_length"></a><!--
+                                                                                                          Δ𝜆
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:coherence_length} \Delta _{\max } = m_{\max }\lambda = \frac {\lambda ^2}{\Delta \lambda } = \ell _\text {ког}.
+\end{equation}
+
+</p>
+
+<p>
+Величина \(\ell _\text {ког} \) називається довжиною когерентності.
+</p>
+
+<p>
+Як було зазначено вище, атоми випромінюють світло протягом певного проміжку часу \(\tau _\text {ког}\), який називається часом когерентності. При цьому випромінюється цуг довжиною \(\ell \) (рис.&nbsp;<a href="interference.html#pic:cug">4.11</a>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{24}\)</span>
+
+<!--
+
+
+                                                                                                      ℓ = 𝑐𝜏ког .                                                                                                     (4.25)                      --><a id="eq:cug_length"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:cug_length} \ell = c\tau _\text {ког}.
+\end{equation}
+
+</p>
+
+<figure id="autoid-242" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-76"
+    class="lateximagesource"
+><!--
+            𝐤
+
+
+
+
+ℓ = 𝑐𝜏ког
+--><img
+   src="main-html-images/image-76.svg"
+   alt="Рис. 4.11. Цуг хвилі"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.11. Цуг хвилі
+
+</div>
+
+<a id="pic:cug"></a>
+
+</div>
+
+</figure>
+
+<p>
+Довжина когерентності дорівнює довжині цуга: \(\ell _\text {ког} = \ell \). Дійсно, якщо різниця ходу променів, що інтерферують, виявиться більшою довжини цуга, то такі промені інтерферувати не будуть (вони перестають бути когерентними). Отже, довжина когерентності \(\ell
+_\text {ког} \) та довжина цуга хвиль \(\ell \) мають дорівнювати одна одній. Отже, прирівнюючи <span class="textup">(<a href="interference.html#eq:coherence_length">4.24</a>)</span> до <span class="textup">(<a
+href="interference.html#eq:cug_length">4.25</a>)</span>, отримаємо:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{25}\)</span>
+
+<!--
+
+
+                                                                                                                                  𝜆2
+                                                                                                                                     = 𝑐𝜏ког .
+                                                                                                                                  Δ𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\lambda ^2}{\Delta \lambda } = c\tau _\text {ког}.
+\end{equation*}
+
+</p>
+
+<p>
+Використовуючи відомі співвідношення (\(\nu = \frac {c}{\lambda }\), \(\delta \nu = \frac {c\delta \lambda }{\lambda ^2}\)), отримаємо зв’язок:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{25}\)</span>
+
+<!--
+
+
+                                                                                                                                 𝛿𝜈 ⋅ 𝜏ког = 1,
+
+-->
+
+<p>
+
+\begin{equation*}
+\delta \nu \cdot \tau _\text {ког} = 1,
+\end{equation*}
+
+</p>
+
+<p>
+тобто, немонохроматичність та час когерентності випромінювання взаємообумовлені.
+</p>
+<!--
+...... subsection Просторова когерентність ......
+-->
+<h5 id="autosec-410">Просторова когерентність</h5>
+<a id="main-html-autopage-410"></a>
+
+
+<p>
+Окрім немонохроматичності, на видність інтерференційної картини впливають розміри джерел.
+</p>
+
+<p>
+Розглянемо утворення інтерференційної картини на екрані методом поділу хвильового фронту від протяжного монохроматичного джерела \(S \), яке має лінійний розмір \(b \). Фронт ділиться за допомогою отворів \(S_1 \) та \(S_2 \), які розташовані на відстані \(D \) один від одного.
+Інтерференційну картину на екрані (рис.&nbsp;<a href="interference.html#pic:space_coherence">4.12</a>) можна розглядати як накладення інтерференційних картин від нескінченної кількості точкових джерел, на які можна уявно розділити поверхню джерела \(S \) (на рис.&nbsp;<a
+href="interference.html#pic:space_coherence">4.12</a>, для прикладу, наведено промені від двох точок). Оскільки хвилі від цих точок приходитимуть з різними значеннями різниці ходу, то інтерференційні картини будуть зміщеними одна відносно одної і, накладаючись, призведуть до
+погіршення видності інтерференції.
+</p>
+
+<figure id="autoid-243" class="figure ">
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-77"
+    class="lateximagesource"
+><!--
+                                   𝑦
+
+
+
+
+                         𝑆1
+
+
+
+
+𝑏   𝑆
+        Ω        𝜔                     𝐼
+
+
+                     𝐷
+
+
+                         𝑆2
+
+            𝐿1                𝐿2
+--><img
+   src="main-html-images/image-77.svg"
+   alt="Рис. 4.12. До пояснення просторової когерентності"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.12. До пояснення просторової когерентності
+
+</div>
+
+<a id="pic:space_coherence"></a>
+
+</div>
+
+</figure>
+
+<figure id="autoid-244" class="figure ">
+<div class="center">
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-415"></a>
+
+<p>
+<span
+    id="lateximage-main-html-78"
+    class="lateximagesource"
+><!--
+𝐼/𝐼0
+
+4
+       𝐼max /𝐼0
+
+
+2
+
+
+       𝐼min /𝐼0
+                  𝑦
+--><img
+   src="main-html-images/image-78.svg"
+   alt="(а) Інтенсивність"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(а) Інтенсивність
+
+</div>
+
+<a id="pic:I(y)_space_coherence"></a>
+
+<a id="sub@pic:I(y)_space_coherence"></a>
+
+</div>
+<div class="minipage" style="vertical-align:top ; justify-content:flex-start ; ">
+
+<a id="main-html-autopage-418"></a>
+
+<p>
+<span
+    id="lateximage-main-html-79"
+    class="lateximagesource"
+><!--
+𝑉
+    1
+
+
+
+
+0.5
+
+
+
+
+               𝑏
+        𝑏max
+--><img
+   src="main-html-images/image-79.svg"
+   alt="(б) Видність"
+   style=""
+   class="lateximage"
+></span>
+</p>
+
+
+<div class="figurecaption">
+(б) Видність
+
+</div>
+
+<a id="pic:V(b)_space_coherence"></a>
+
+<a id="sub@pic:V(b)_space_coherence"></a>
+
+</div>
+
+
+<div class="figurecaption">
+Рис.&nbsp;4.13. Графіки інтенсивності та видності
+
+</div>
+
+</div>
+
+</figure>
+
+<p>
+Сумарна інтенсивність на екрані (від усіх точок джерела \(S \)) буде визначатися за формулою (див. задачу&nbsp;<a href="interference.html#prb:V_ovch_5.1">4.31</a>):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{25}\)</span>
+
+<!--
+
+                                                                                                 𝜋𝑏𝐷         2𝜋𝑦𝐷
+                                                                           𝐼 = 2𝐼0 [1 + sinc (       ) cos (      )] .                                                 (4.26)                 --><a id="eq:I_space_coherence"></a><!--
+                                                                                                 𝜆𝐿1          𝜆𝐿2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:I_space_coherence} I = 2I_0\left [ 1 + \mathrm {sinc}\left ( \frac {\pi bD}{\lambda L_1}\right ) \cos \left ( \frac {2\pi yD}{\lambda L_2}\right ) \right ].
+\end{equation}
+
+</p>
+
+<p>
+Графік функції <span class="textup">(<a href="interference.html#eq:I_space_coherence">4.26</a>)</span> зображений на рис.&nbsp;<a href="interference.html#pic:I(y)_space_coherence">4.13а</a>.
+</p>
+
+<p>
+Використовуючи означення <span class="textup">(<a href="interference.html#eq:vis_par">4.22</a>)</span> з <span class="textup">(<a href="interference.html#eq:I_space_coherence">4.26</a>)</span> можна розрахувати видність як функцію розмірів джерела:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{26}\)</span>
+
+<!--
+
+
+                                                                                   |       𝜋𝑏𝐷 | |         𝜋𝑏Ω |
+                                                                           𝑉 (𝑏) = |sinc (    )| = |sinc (    )| ,                                                     (4.27)                 --><a id="eq:V_space_coherence"></a><!--
+                                                                                   |       𝜆𝐿1 | |          𝜆 |
+
+-->
+
+<p>
+\begin{equation}
+\label {eq:V_space_coherence} V(b) = \left |\mathrm {sinc}\left ( \frac {\pi bD}{\lambda L_1}\right ) \right | = \left |\mathrm {sinc}\left ( \frac {\pi b \Omega }{\lambda }\right ) \right |,
+\end{equation}
+
+</p>
+
+<p>
+де \(\Omega \) — апертура інтерференції (кут між крайніми інтерферуючими променями). Остання рівність була записана з урахуванням малих апертур \(L_1\Omega \approx D \), однак вона застосовна і в загальному випадку.
+</p>
+
+<p>
+Графік \(V(b) \) показано на рис.&nbsp;<a href="interference.html#pic:V(b)_space_coherence">4.13б</a>. Можна бачити, що збільшення розмірів джерела світла \(b \) призводить до погіршення контрастності інтерференційних смуг, а при деякому значенні \(b_{\max } \) до їх
+повного зникнення. Значення \(b_{\max } \) можна визначити, поклавши в <span class="textup">(<a href="interference.html#eq:V_space_coherence">4.27</a>)</span> \(V = 0 \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{27}\)</span>
+
+<!--
+
+                                                                                                                                            𝜆
+                                                                                                                                   𝑏max =     .                                                                    (4.28)                --><a id="eq:b_max"></a><!--
+                                                                                                                                            Ω
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:b_max} b_{\max } = \frac {\lambda }{\Omega }.
+\end{equation}
+
+</p>
+
+<p>
+На графіку&nbsp;<a href="interference.html#pic:I(y)_space_coherence">4.13а</a>, при \(b \to b_{\max } \), \(\frac {I_{\min }}{I_0}, \frac {I_{\max }}{I_0} \to 2 \), а \(I(y) \to 2I_0 = \mathrm {const} \), тобто інтенсивність на екрані у всіх точках
+стає однаковою.
+</p>
+
+<p>
+Отже, з умови першого зникнення інтерференційної картини при \(V=0 \), використовуючи <span class="textup">(<a href="interference.html#eq:V_space_coherence">4.27</a>)</span>, встановлюють максимально допустимий розмір протяжного джерела випромінювання \(b
+\le b_{\max } \) (при \(b &gt; b_{\max } \) приймають \(V \approx 0 \)). Тоді, граничні умови просторової когерентності записуються як
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{28}\)</span>
+
+<!--
+
+
+                                                                                         𝑏 ⋅ Ω ≤ 𝜆,                                                                                         (4.29)                      --><a id="eq:visibility_condition_b"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:visibility_condition_b} b \cdot \Omega \le \lambda ,
+\end{equation}
+
+</p>
+
+<p>
+або, враховуючи, що \(L_1 \omega \approx b \) та \(L_1\Omega \approx D \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{29}\)</span>
+
+<!--
+
+
+                                                                                   𝐷 ⋅ 𝜔 ≤ 𝜆,                                                                                   (4.29\(\prime \))                       --><a id="eq:visibility_condition_D"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:visibility_condition_D} D \cdot \omega \le \lambda , \tag {4.29$\prime $}
+\end{equation}
+
+</p>
+
+<p>
+де \(\omega \) — кутовий розмір джерела світла.
+</p>
+
+<p>
+Тобто, при заданому розмірі \(b \) джерела, з <span class="textup">(<a href="interference.html#eq:visibility_condition_D">4.29\(\prime \)</a>)</span> можна визначити максимальну відстань між щілинами \(S_1 \) та \(S_2 \) при якій інтерференційна картина буде
+видимою:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{29}\)</span>
+
+<!--
+
+                                                                                                      𝜆𝐿1  𝜆
+                                                                                            𝐷max =        = ,                                                                                             (4.30)                   --><a id="eq:d_coherence"></a><!--
+                                                                                                       𝑏   𝜔
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:d_coherence} D_{\max } = \frac {\lambda L_1}{b} = \frac {\lambda }{\omega },
+\end{equation}
+
+</p>
+
+<p>
+де \(D_{\max } \) називається діаметром когерентності.
+</p>
+
+<p>
+Іноді, користуються іншим критерієм — так званою умовою достатньої видності:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{30}\)</span>
+
+<!--
+
+                                                                                                        Ω  𝜆
+                                                                                                𝑏 sin     ≤ .                                                                                                 (4.31)                  --><a id="eq:good_vis"></a><!--
+                                                                                                        2  4
+-->
+
+<p>
+
+\begin{equation}
+\label {eq:good_vis} b\sin \frac \Omega 2 \le \frac {\lambda }{4}.
+\end{equation}
+
+</p>
+<!--
+...... section Приклади розв'язку задач ......
+-->
+<h4 id="autosec-422"><span class="sectionnumber">&#xA7;&#x202F;4.2&#x2003;</span>Приклади розв’язку задач</h4>
+<a id="main-html-autopage-422"></a>
+
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 22.</b> Напрямки поширення двох плоских хвиль однієї й тої ж довжини \(\lambda \) становлять кут \(\phi /2\) з нормаллю до площини екрана, на якому спостерігаються інтерференційні смуги (див. рис.). Показати, що при малих \(\phi \) відстань \(\Delta y\) між
+сусідніми інтерференційними смугами \(\Delta y \approx \lambda /\phi \).
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-80"
+    class="lateximagesource"
+><!--
+                     𝑦
+           𝑦
+
+                         Δ𝑦
+
+               𝑧
+
+
+      𝐤2
+𝐄02
+
+
+               𝜙/2
+                                    𝐼
+
+      𝐤1
+
+𝐄01                      𝐼max ∼ (𝐸01 + 𝐸02 )2
+
+
+
+                         𝐼min ∼ (𝐸01 − 𝐸02 )2
+--><img
+   src="main-html-images/image-80.png"
+   alt="Рисунок 15"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Рівняння 1-ї та 2-ї плоских хвиль:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{31}\)</span>
+
+
+<!--
+
+
+
+                                                                                                                             𝐄1 = 𝐄01 𝑒𝑖(𝜔𝑡−𝑘𝑧 𝑧+𝑘𝑦 𝑦) = 𝐄01 𝑒𝑖(𝜔𝑡−𝑘𝑧 𝑧) 𝑒𝑖𝑘𝑦 𝑦 ,
+                                                                                                                             𝐄2 = 𝐄02 𝑒𝑖(𝜔𝑡−𝑘𝑧 𝑧−𝑘𝑦 𝑦) = 𝐄02 𝑒𝑖(𝜔𝑡−𝑘𝑧 𝑧) 𝑒−𝑖𝑘𝑦 𝑦 .
+
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\vect {E}_1 &amp; = \vect {E}_{0_1} e^{i(\omega t - k_zz + k_yy)} = \vect {E}_{0_1} e^{i(\omega t - k_zz)} e^{ik_yy}, \\ \vect {E}_2 &amp; = \vect {E}_{0_2} e^{i(\omega t - k_zz - k_yy)} = \vect {E}_{0_2}
+e^{i(\omega t - k_zz)} e^{-ik_yy}.
+\end{align*}
+
+</p>
+
+<p>
+Результат інтерференції спостерігається на екрані \(z = 0\). Інтенсивність світла в точках на екрані \(I \sim |\vect {E}_1 + \vect {E}_2|^2\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{31}\)</span>
+
+<!--
+
+
+                                                             𝐼 ∼ ℜ ((𝐄1 + 𝐄2 ) ⋅ (𝐄∗1 + 𝐄∗2 )) = 𝐸021 + 𝐸022 + 2𝐸01 𝐸02 cos(2𝑘𝑦 𝑦),                                                  (4.32)                                           --><a id="eq_interference:I"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {eq_interference:I} I \sim \Re \left ((\vect {E}_1 + \vect {E}_2)\cdot (\vect {E}^*_1 + \vect {E}^*_2)\right ) = E_{0_1}^2 + E_{0_2}^2 + 2 E_{0_1} E_{0_2} \cos (2k_yy),
+\end{equation}
+
+</p>
+
+<p>
+де \(\vect {E}^*_1\) та \(\vect {E}^*_2\) — комплексно-спряжені величини.
+</p>
+
+<p>
+Врахуємо, що \(k_y = k\sin \frac \phi 2\), і при малих кутах \(\sin \frac \phi 2 \approx \frac \phi 2\), формула <span class="textup">(<a href="interference.html#eq_interference:I">4.32</a>)</span> дає вирах:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{32}\)</span>
+
+<!--
+
+
+                                                                                                                                       𝐼 = 𝐼1 + 𝐼2 + 2√𝐼1 𝐼2 cos 𝑘𝜙𝑦,                                                                                                              (4.33)
+
+-->
+
+<p>
+
+\begin{equation}
+I = I_1 + I_2 + 2\sqrt {I_1I_2}\cos k\phi y,
+\end{equation}
+
+</p>
+
+<p>
+де \(I_{1,2} \sim |\vect {E}_{0_{1,2}}|\), відповідно.
+</p>
+
+<p>
+Результат інтерференції залежить від \(\cos k \phi y\). Максимум спостерігатиметься при \(\cos k \phi y = 1\). Звідки можна знайти координати максимумів
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                 𝑘𝜙𝑦 = 2𝜋𝑚.
+
+-->
+
+<p>
+
+\begin{equation*}
+k \phi y = 2\pi m.
+\end{equation*}
+
+</p>
+
+<p>
+Враховуючи, що \(k = \frac {2\pi }{\lambda }\), відстань між сусідніми максимумами \(\Delta y = y_{m + 1} - y_m\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                                          𝜆
+                                                                                                                                                   Δ𝑦 =
+                                                                                                                                                          𝜙
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta y = \frac {\lambda }{\phi }
+\end{equation*}
+
+</p>
+
+<p>
+Чим менше кут сходження \(\phi \) хвиль, що інтерферують, тим видніша інтерференційна картина. Так, для того, щоб \(\Delta y \)&nbsp;мм при \(\lambda = 0,5 \)&nbsp;мкм, необхідно, щоб \(\phi \approx 5 \cdot 10^{-3}\)&nbsp;рад.
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 23.</b> Паралельний пучок білого світла падає під кутом \(45^\circ \) на водяну плівку (\(n_2 = 1,33\)), розлиту на поверхні скла (\(n_3 = 1,61\)). Знайти а) при якій мінімальній товщині плівки відбите світло забарвиться в червоний колір (\(\lambda =
+700\)&nbsp;нм); б) у який колір забарвиться при цьому світло, що проходить.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+а) Скористаємося формулою повної оптичної різниці ходу променів, що інтерферують <span class="textup">(<a href="interference.html#eq:Delta_film">4.8</a>)</span>. При співвідношенні \(n_1 &lt; n_2 &lt; n_3\) з таблиці табл.&nbsp;<a
+href="interference.html#tab:p">4.1</a> знаходимо значення параметра \(p = 0\) у відбитому світлі.
+</p>
+
+<p>
+Для інтерференційного посилення червоного кольору повинна виконуватися умова максимуму:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                      Δ21 = 2𝑑√𝑛22 + 𝑛21 sin 𝜖1 = 𝑚𝜆1 ,
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta _{21} = 2d\sqrt {n_2^2 + n_1^2\sin \epsilon _1} = m\lambda _1,
+\end{equation*}
+
+</p>
+
+<p>
+звідки
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                                      𝑚           𝜆1
+                                                                                                                                           𝑑=                        .
+                                                                                                                                                                  2
+                                                                                                                                                √𝑛2 + 𝑛1 sin 𝜖1
+                                                                                                                                                  2    2
+
+
+-->
+
+<p>
+
+\begin{equation*}
+d = \frac {m}{\sqrt {n_2^2 + n_1^2\sin \epsilon _1}}\frac {\lambda _1}{2}.
+\end{equation*}
+
+</p>
+
+<p>
+Мінімальна товщина плівки при \(m = 1\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                                  1           𝜆1
+                                                                                                                                  𝑑min =                         = 310, 7 нм.
+                                                                                                                                                              2
+                                                                                                                                           √𝑛2 + 𝑛1 sin 𝜖1
+                                                                                                                                             2    2
+
+
+-->
+
+<p>
+
+\begin{equation*}
+d_{\min } = \frac {1}{\sqrt {n_2^2 + n_1^2\sin \epsilon _1}}\frac {\lambda _1}{2} = 310,7\ \text {нм}.
+\end{equation*}
+
+</p>
+
+<p>
+б) При \(n_1 &lt; n_2 &lt; n_3\) у відбитому світлі з таблиці табл.&nbsp;<a href="interference.html#tab:p">4.1</a> знаходимо значення параметра \(p = +1\). Використовуючи умову максимуму:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                                   𝜆
+                                                                                                                                  Δ2′ 1′ = 2𝑑√𝑛22 + 𝑛21 sin 𝜖1 +     = 𝑚𝜆2 ,
+                                                                                                                                                                   2
+-->
+
+<p>
+
+\begin{equation*}
+\Delta _{2&apos;1&apos;} = 2d\sqrt {n_2^2 + n_1^2\sin \epsilon _1} + \frac \lambda 2= m\lambda _2,
+\end{equation*}
+
+</p>
+
+<p>
+звідки
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                4𝑑
+                                                                                                                                       𝜆2 =           𝑛2 + 𝑛21 sin 𝜖1 .
+                                                                                                                                              2𝑚 − 1 √ 2
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda _2 = \frac {4d}{2m-1}\sqrt {n_2^2 + n_1^2\sin \epsilon _1}.
+\end{equation*}
+
+</p>
+
+<p>
+З послідовності значень \(\lambda _2\) при різних \(m\) вибираємо те, що при \(d_{\min } \) належить видимому діапазону спектра (\(m = +1\)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                𝜆2 = 466, 6 нм,
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda _2 = 466,6\ \text {нм},
+\end{equation*}
+
+</p>
+
+<p>
+Тобто, світло, яке проходить, забарвлюється в синій колір.
+</p>
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 24.</b> Інтерференційні смуги рівного нахилу у фокальній площині лінзи одержують при відбитті від плоскопаралельної платівки, яка освітлюється монохроматичним джерелом світла \(S\) (див. рис.). Пряме світло джерела на лінзу не потрапляє. Довжина світлової хвилі
+\(\lambda = 6000\)&nbsp;0.25A, товщина платівки \(d = l,6\)&nbsp;мм; показник заломлення \(n = 1,5\); фокусна відстань лінзи \(f = 40\)&nbsp;см. а) Знайти радіус першого видимого на екрані \(E\) темного інтерференційного кільця, якщо центр кілець темний. б) Яка
+максимально допустима спектральна ширина \(\Delta \lambda \) світла від джерела \(S\), при якій за даних параметрів схеми можна спостерігати інтерференційні кільця?
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-81"
+    class="lateximagesource"
+><!--
+             𝑟
+
+
+
+
+𝑓′
+
+
+
+
+         ✺
+         𝑆
+
+
+
+
+     𝑑
+--><img
+   src="main-html-images/image-81.svg"
+   alt="Рисунок 16"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+а) Різниця ходу між променями, що відбилися від передньої й задньої поверхонь платівки, дорівнює \(2dn\cos \epsilon &apos;_2 + \frac \lambda 2\).
+</p>
+
+<p>
+Оскільки центр кілець темний, то ця величина повинна містити непарне число напівхвиль. Першому темному кільцю відповідає таке збільшення кута заломлення \(\epsilon &apos;_2\), що різниця ходу зменшується на \(\lambda \).
+</p>
+
+<p>
+Це дає \(2dn(1-\cos \epsilon &apos;_2) = \lambda \), або \(4dn\sin ^2\epsilon &apos;_2/2 = \lambda \).
+</p>
+
+<p>
+Для малих кутів \(dn\epsilon ^{\prime 2}_2 = \lambda \). Малі кути падіння й заломлення пов’язані співвідношенням \(\epsilon _1 = n\epsilon &apos;_2\).
+</p>
+
+<p>
+Для радіуса першого темного кільця одержуємо
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                     𝑛𝜆
+                                                                                                                         𝑟1 = 𝑓𝜖1 = 𝑓𝑛𝜖′2 = 𝑓√          = 9, 5 мм.
+                                                                                                                                                     𝑑
+
+-->
+
+<p>
+
+\begin{equation*}
+r_1 = f\epsilon _1 = fn\epsilon &apos;_2 = f\sqrt {\frac {n\lambda }{d}} = 9,5\ \text {мм}.
+\end{equation*}
+
+</p>
+
+<p>
+б) Максимально допустима спектральна ширина \(\Delta \lambda \) визначається максимальною різницею ходу між інтерферуючими променями:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                                     𝜆2
+                                                                                                                                    Δmax = 2𝑑𝑛 ≤        ,
+                                                                                                                                                     Δ𝜆
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta _{\max } = 2dn \le \frac {\lambda ^2}{\Delta \lambda },
+\end{equation*}
+
+</p>
+
+<p>
+звідки
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                          𝜆2
+                                                                                                                                  Δ𝜆 =       = 0, 75 0.25A.
+                                                                                                                                         2𝑑𝑛
+
+-->
+
+<p>
+
+\begin{equation*}
+\Delta \lambda = \frac {\lambda ^2}{2dn} = 0,75\ \text {\AA }.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 25.</b> Кільця Ньютона спостерігаються в монохроматичному світлі. Між платівкою і лінзою повітря. Радіуси сусідніх темних кілець рівні відповідно \(4,0\) і \(4,38\)&nbsp;мм. Радіус кривизни лінзи дорівнює \(6,4\)&nbsp;м. Знайти довжину хвилі світла й порядкові номери
+кілець, якщо в центрі їх спостерігається темна пляма.
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Розглянемо схему, зображену на рис.&nbsp;<a href="interference.html#pic:Newton_rings">4.8</a>. Оскільки в центрі кілець є темна пляма, спостереження ведеться у відбитому світлі. Скористаємося формулою для радіуса темних кілець у відбитому світлі <span class="textup">(<a
+href="interference.html#rdark">4.14</a>)</span>. Визначимо довжину хвилі світла, використовуючи вираз радіусів двох сусідніх кілець:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                        2         𝑅          2            𝑅
+                                                                                                                       𝑟тем   =      𝜆𝑚,    𝑟тем     =       𝜆(𝑚 + 1),
+                                                                                                                            𝑚     𝑛2             𝑚+1      𝑛2
+
+-->
+
+<p>
+
+\begin{equation*}
+r^2_{\text {тем }_m} = \frac {R}{n_2}\lambda m, \quad r^2_{\text {тем }_{m + 1}}=\frac {R}{n_2}\lambda (m + 1),
+\end{equation*}
+
+</p>
+
+<p>
+звідки
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                    𝑛2 2         2
+                                                                                                                              𝜆=      (𝑟      − 𝑟тем   ),
+                                                                                                                                    𝑅 тем 𝑚+1        𝑚
+
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda = \frac {n_2}{R} \left ( r^2_{\text {тем }_{m + 1}} - r^2_{\text {тем }_m} \right ),
+\end{equation*}
+
+</p>
+
+<p>
+Оскільки \(n_2 = 1\), \(\lambda = 0,5\)&nbsp;мкм.
+</p>
+
+<p>
+Визначимо номери кілець із формули <span class="textup">(<a href="interference.html#rdark">4.14</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                              2
+                                                                                                                                             𝑟тем 𝑚
+                                                                                                                                      𝑚=            𝑛 .
+                                                                                                                                              𝑅𝜆 2
+
+-->
+
+<p>
+
+\begin{equation*}
+m = \frac {r^2_{\text {тем }_m}}{R\lambda }n_2.
+\end{equation*}
+
+</p>
+
+<p>
+Підставляючи данні умови, отримаємо \(m = 6\), \(m + 1 = 7\).
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 26.</b> Вертикальна мильна плівка (\(n_2 = 1,33\)), що утворює клин внаслідок стікання рідини, освітлюється нормально падаючим білим світлом. При спостереженні інтерференційної картини у відбитому світлі через зелений світлофільтр (\(5461\)&nbsp;0.25A) виміряна
+відстань між п’ятьома смугами склала \(2,0\)&nbsp;см. а) Визначити кут клина в кутових секундах. б) Як зміниться ширина інтерференційної смуги \(\Delta y\), якщо спостереження вести через червоний світлофільтр (\(7200\)&nbsp;0.25A)?
+</p>
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Мильна плівка при стіканні рідини під дією гравітації представляє собою клин, який потовщується згори до низу, а тому виникнення інтерференційних смуг в мильній плівці можна моделювати інтерференцією на клині і використовувати формулу <span class="textup">(<a
+href="interference.html#eq:Klin_interference">4.12</a>)</span>.
+</p>
+
+<p>
+а) Кут клина визначаємо з формули <span class="textup">(<a href="interference.html#eq:Klin_interference">4.12</a>)</span>:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                              𝑘𝜆
+                                                                                                                        𝜃=          = 5, 13 ⋅ 10−5 рад = 10, 57″ .
+                                                                                                                             2𝑙𝑘 𝑛2
+
+-->
+
+<p>
+
+\begin{equation*}
+\theta = \frac {k\lambda }{2l_kn_2} = 5,13\cdot 10^{-5}\ \text {рад} = 10,57&apos;&apos;.
+\end{equation*}
+
+</p>
+
+<p>
+б) При \(k = 1\), \(l_k = \Delta y\) і формула <span class="textup">(<a href="interference.html#eq:Klin_interference">4.12</a>)</span> набуває вигляду:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+
+                                                                                                                                         𝜆 = 2Δ𝑦𝑛2 𝜃,
+
+-->
+
+<p>
+
+\begin{equation*}
+\lambda = 2\Delta y n_2\theta ,
+\end{equation*}
+
+</p>
+
+<p>
+звідси
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                  Δ𝑦черв   𝜆черв
+                                                                                                                                         =       = 1, 32.
+                                                                                                                                  Δ𝑦зел    𝜆зел
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\Delta y_\text {черв}}{\Delta y_\text {зел}} = \frac {\lambda _\text {черв}}{\lambda _\text {зел}} = 1,32.
+\end{equation*}
+
+</p>
+
+</div>
+
+
+<div class="cb-example">
+
+<p>
+<b>Приклад 27.</b> Зоряний інтерферометр Майкельсона складається з двох розташованих під кутом дзеркал, розділених довгою базою \(B\) (див. рис.). Дзеркала направляють світло від далекої зірки в точку, розташовану точно посередині між ними, де виникає інтерференційна картина на
+даній довжині хвилі. Поясніть, як саме визначають діаметри зірок, якщо відстані до них відомі. Знайдіть мінімальне значення бази, якщо найбільший кутовий розмір зірки \(\omega = 10^{-8}\).
+</p>
+<div class="center">
+
+<p>
+<span
+    id="lateximage-main-html-82"
+    class="lateximagesource"
+><!--
+𝐵
+--><img
+   src="main-html-images/image-82.svg"
+   alt="Рисунок 17"
+   style=""
+   class="lateximage"
+></span>
+</p>
+</div>
+
+</div>
+
+
+<div class="cb-solution">
+
+<p>
+<b>Розв’язок.</b>
+</p>
+
+<p>
+Для спостереження інтерференційної картини від зірки деякого кутового розміру \(\omega \) відстань \(B\) між дзеркалами бази інтерферометра має дорівнювати, або бути меншою за діаметр когерентності, який визначається з <span class="textup">(<a
+href="interference.html#eq:d_coherence">4.30</a>)</span>, тобто \(B \le D_{\max } \).
+</p>
+
+<p>
+Для визначення розміру зірки базу збільшують до зникнення когерентності (до зникнення інтерференційної картини), тобто до \(B \approx D_{\max } \):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{4.}{33}\)</span>
+
+<!--
+
+                                                                                                                                𝜆   0, 5 мкм
+                                                                                                                           𝐵=     =          = 50 м.
+                                                                                                                                𝜔   10−8 рад
+
+-->
+
+<p>
+
+\begin{equation*}
+B = \frac {\lambda }{\omega } = \frac {0,5\ \text {мкм}}{10^{-8}\ \text {рад}} = 50 \ \text {м}.
+\end{equation*}
+
+</p>
+
+<p>
+Якщо кутовий розмір даної зірки максимальний, то з іншими зірками потрібно працювати на більшій базі.
+</p>
+
+<p>
+<em>Примітка</em>: За допомогою зоряного інтерферометра виміряно кутовий розмір зорі Бетельгейзе (\(\alpha \) Оріона), який склав \(0,047&apos;&apos;\).
+</p>
+</div>
+<!--
+...... section Задачі для самостійного розв’язку ......
+-->
+<h4 id="autosec-432"><span class="sectionnumber">&#xA7;&#x202F;4.3&#x2003;</span>Задачі для самостійного розв’язку</h4>
+<a id="main-html-autopage-432"></a>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-245"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.1.</span></span> <a id="autoid-246" ></a ><a id="LWR-ht-problem:4.{1}"></a>Що характеризує просторова когерентність? Які обмеження накладаються на розміри джерела
+монохроматичного світла?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-247"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.2.</span></span> <a id="autoid-248" ></a ><a id="LWR-ht-problem:4.{2}"></a>Що характеризує часова когерентність?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-249"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.3.</span></span> <a id="autoid-250" ></a ><a id="LWR-ht-problem:4.{3}"></a>Як визначається допустима немонохроматичність світла, при якій ще можливе спостереження
+інтерференційної картини?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-251"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.4.</span></span> <a id="autoid-252" ></a ><a id="LWR-ht-problem:4.{4}"></a>Що характеризує ступінь когерентності?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-253"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.5.</span></span> <a id="autoid-254" ></a ><a id="LWR-ht-problem:4.{5}"></a>Що таке смуги рівного нахилу й рівної товщини? Де вони локалізуються?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-255"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.6.</span></span> <a id="autoid-256" ></a ><a id="LWR-ht-problem:4.{6}"></a>Що називається шириною інтерференційної смуги у двопроменевих і багатопроменевий інтерференційних
+картинах?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-257"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.7.</span></span> <a id="autoid-258" ></a ><a id="LWR-ht-problem:4.{7}"></a>Який принцип дії покриття для просвітлення оптичних деталей?
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-259"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.8.</span></span> <a id="autoid-260" ></a ><a id="LWR-ht-problem:4.{8}"></a>Однолінзовий об’єктив оптоелектронного перетворювача працює в спектральному діапазоні \(0,9
+\ldots 1,3\) мкм. Показник заломлення скла марки ЛК6, з якого зроблена лінза, у середині робочого діапазону дорівнює \(1,461\). Визначити: а) параметри покриття для просвітлення; б) коефіцієнт пропускання об’єктива до й після просвітління; в) ступінь зменшення втрат на відбиття. <a
+href="answers.html#LWR-ht-solution:4.{8}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-261"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.9.</span></span> <a id="autoid-262" ></a ><a id="LWR-ht-problem:4.{9}"></a>В напівпровідникових лазерах з вертикальним резонатором, застосовують брегівські дзеркала, які
+виготовляють в одному технологічному циклі епітаксійного вирощування лазерного чипа (див. рис.). Розрахувати повну товщину та коефіцієнт відбивання для довжини хвилі випромінювання \(1 \) мкм для верхнього дзеркала такого лазера, виготовленого з \(20 \)-ти пар шарів <span
+      id="lateximage-main-html-83"
+      class="lateximagesource"
+><!--
+GaAs/AlGaAs
+--><img
+    src="main-html-images/90B200FBB1D8C829081F340CC2A14C9E.svg"
+    alt="\ce{GaAs/AlGaAs}"
+    style=""
+    class="lateximage"
+></span>, показники заломлення для яких відповідно дорівнюють \(n_1= 3,3 \) та \(n_2=2,9 \).
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-84"
+      class="lateximagesource"
+><!--
+      Верхнє дзеркало           Шари оксидів
+(коефіцієнт відбивання 99,0%)
+
+      Порожнина резонатора
+                                Активна область
+
+
+      Нижнє дзеркало
+(коефіцієнт відбивання 99,9%)
+--><img
+      src="main-html-images/image-84.svg"
+      alt="Рисунок 18"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:4.{9}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-263"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.10.</span></span> <a id="autoid-264" ></a ><a id="LWR-ht-problem:4.{10}"></a>Лінза виготовлена із скла марки ТК 23 (\(n_2 = 1,6 \)) (важкий крон), яка працює у видимому
+діапазоні спектру. Визначте показник заломлення і найменшу товщину одношарового покриття для просвітлення цієї лінзи, взявши середню довжину хвилі для видимого діапазону рівною \(0,55 \)&nbsp;мкм. Порівняйте пропускання лінзи до і після просвітлення. У скільки разів знизяться
+при цьому втрати на відбиття? <a href="answers.html#LWR-ht-solution:4.{10}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-265"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.11.</span></span> <a id="autoid-266" ></a ><a id="LWR-ht-problem:4.{11}"></a>Складаються дві монохроматичні хвилі жовтогарячого кольору (\(\lambda = 0,6\)&nbsp;мкм), що
+йдуть в одному напрямку. Параметри хвиль у точці додавання: \(E_{0_1} = 4\)&nbsp;В/м; \(E_{0_2} = 3\)&nbsp;В/м; \(\phi _1 = 0\); \(\phi _2 = \pi /2\). Визначити параметри результуючої хвилі, записати вираз для її світлового вектора, побудувати векторну діаграму
+складання амплітуд. <a href="answers.html#LWR-ht-solution:4.{11}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-267"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.12.</span></span> <a id="autoid-268" ></a ><a id="LWR-ht-problem:4.{12}"></a>Визначити амплітуду й інтенсивність результуючої світлової хвилі, отриманої в результаті додавання
+однаково напрямлених світлових когерентних хвиль: \(E_m = E_{0_1}\cos (\omega t - (m - 1) \delta )\), де \(E_{0_1}\) — амплітуда хвиль, що складаються; \(m\) — номер хвилі, що складається; \(\delta \) — різниця фаз між сусідніми доданками. Розглянути два випадки: а)
+\(m = 1, 2, 3, \ldots , N\); б) \(m = 1, 2, 3, \ldots \). <a href="answers.html#LWR-ht-solution:4.{12}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-269"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.13.</span></span> <a id="autoid-270" ></a ><a id="LWR-ht-problem:4.{13}"></a>У схемі біпризми Френеля відстань між уявними зображеннями джерела світла дорівнює
+\(0,5\)&nbsp;мм, відстань до екрана \(5\)&nbsp;м. У зеленому світлі ширина інтерференційних смуг виявилася рівна \(5\)&nbsp;мм. Знайти довжину хвилі зеленого кольору. <a href="answers.html#LWR-ht-solution:4.{13}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-271"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.14.</span></span> <a id="autoid-272" ></a ><a id="LWR-ht-problem:4.{14}"></a>Інтерферометр Релея освітлюють монохроматичним світлом з довжиною хвилі \(589\)&nbsp;нм. На
+шляху обох променів інтерферометра поставлені прозорі кювети довжиною \(0,02\)&nbsp;м. Після заміни в одній з них повітря хлором інтерференційна картина змістилася на \(20\) смуг. Визначити показник заломлення хлору, якщо для повітря він дорівнює \(1,000276\). <a
+href="answers.html#LWR-ht-solution:4.{14}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-273"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.15.</span></span> <a id="autoid-274" ></a ><a id="LWR-ht-problem:4.{15}"></a>На мильну плівку (\(n = 1,33\)) падає біле світло під кутом \(45^\circ \). а) При якій найменшій
+товщині плівки відбиті промені, будуть пофарбовані в жовтий (\(600\)&nbsp;нм), фіолетовий (\(420\)&nbsp;нм) колір? б) Як зміниться товщина плівки, якщо її помістити між двома скельцями? <a href="answers.html#LWR-ht-solution:4.{15}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-275"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.16.</span></span> <a id="autoid-276" ></a ><a id="LWR-ht-problem:4.{16}"></a>Пучок паралельних променів (\(\lambda = 0,6\)&nbsp;мкм) падає під кутом \(30^\circ \) на
+мильну плівку (\(n = 1,33 \)). При якій найменшій товщині плівки: а) відбиті промені будуть максимально ослаблені, максимально підсилені інтерференцією? б) те ж саме, для променів, що проходять. <a href="answers.html#LWR-ht-solution:4.{16}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-277"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.17.</span></span> <a id="autoid-278" ></a ><a id="LWR-ht-problem:4.{17}"></a>Кільця Ньютона утворюються між лінзою з радіусом кривизни \(8,6 \)&nbsp;м і платівкою при
+освітленні нормально падаючим пучком монохроматичного світла. Вимірами встановлено, що діаметр четвертого темного кільця дорівнює \(9 \)&nbsp;мм. Визначити довжину хвилі світла, якщо центр кілець: а) темний; б) світлий. <a
+href="answers.html#LWR-ht-solution:4.{17}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-279"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.18.</span></span> <a id="autoid-280" ></a ><a id="LWR-ht-problem:4.{18}"></a>Знайти відстань між третім і шістнадцятим кільцями Ньютона, якщо відстань між другими й двадцятим
+темними кільцями дорівнює \(4,8 \)&nbsp;мм. Центр кілець — темний. <a href="answers.html#LWR-ht-solution:4.{18}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-281"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.19.</span></span> <a id="autoid-282" ></a ><a id="LWR-ht-problem:4.{19}"></a>Установка для спостереження кілець Ньютона у відбитому світлі освітлюється монохроматичним
+світлом. Після того як простір між лінзою й скляною платівкою заповнили рідиною, радіуси темних кілець зменшилися в \(1,25 \)&nbsp;рази. Визначити показник заломлення рідини. <a href="answers.html#LWR-ht-solution:4.{19}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-283"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.20.</span></span> <a id="autoid-284" ></a ><a id="LWR-ht-problem:4.{20}"></a>В одне із плечей інтерферометра Майкельсона, освітлюваного монохроматичним світлом (\(589
+\)&nbsp;нм), поміщена кювету з робочою довжиною \(14 \)&nbsp;см. Після заповнення кювети аміаком інтерференційна картина змістилася в поле зорової труби на \(180 \) смуг. Визначити показник заломлення аміаку.
+</p>
+
+<p>
+<em>Вказівка</em>: урахувати подвійне проходження кювети променем. <a href="answers.html#LWR-ht-solution:4.{20}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-285"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.21.</span></span> <a id="autoid-286" ></a ><a id="LWR-ht-problem:4.{21}"></a>Кільця Ньютона отримуються за допомогою плоскоопуклої лінзи з радіусом кривизни \(R_1 \),
+покладеної на ввігнуту сферичну поверхню пробного скла з радіусом кривизни \(R_2 &gt; R_1 \). Освітлення монохроматичне з довжиною хвилі \(\lambda \), кільця спостерігаються у відбитому світла. Визначити радіус \(m \)-го кільця: а) світлого; б) темного. <a
+href="answers.html#LWR-ht-solution:4.{21}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-287"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.22.</span></span> <a id="autoid-288" ></a ><a id="LWR-ht-problem:4.{22}"></a>В установці для спостереження кілець Ньютона лінза може пересуватись в напрямку,
+перпендикулярному до платівки. Описати, що відбуватиметься з кільцями Ньютона при віддаленні й наближенні лінзи до платіки.
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-289"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.23.</span></span> <a id="autoid-290" ></a ><a id="LWR-ht-problem:4.{23}"></a>Скляний клин (\(n = 1,55 \)) з кутом при вершині \(2&apos; \) освітлюється нормально падаючим
+монохроматичним світлом. Визначити довжину хвилі світла, якщо спостережувані інтерференційні смуги мають ширину \(0,3 \)&nbsp;мм. <a href="answers.html#LWR-ht-solution:4.{23}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-291"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.24.</span></span> <a id="autoid-292" ></a ><a id="LWR-ht-problem:4.{24}"></a>На скляний клин з кутом при вершині \(20&apos;&apos; \) нормально падає монохроматичне світло
+(\(0,582 \)&nbsp;мкм). У спостережуваній інтерференційній картині в \(1 \)&nbsp;см укладається п’ять смуг. Визначити показник заломлення скла. <a href="answers.html#LWR-ht-solution:4.{24}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-293"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.25.</span></span> <a id="autoid-294" ></a ><a id="LWR-ht-problem:4.{25}"></a>Знайти різницю довжин хвиль \(D\)-ліній <span
+      id="lateximage-main-html-85"
+      class="lateximagesource"
+><!--
+Na
+--><img
+    src="main-html-images/ACD186AD593922B6B515521E454EBEE3.svg"
+    alt="\ce{Na}"
+    style=""
+    class="lateximage"
+></span>, якщо відомо, що різкість інтерференційної картини, спостережуваної в інтерферометрі із двома променями, мінімальна в \(490 \)-й, \(1470 \)-й і т. д., а максимальна в \(1 \)-й, \(980 \)-й і т. д. смуг. Середня довжина хвилі \(D\)-Ліній \(\lambda = 5893\)&nbsp;0.25A. <a
+href="answers.html#LWR-ht-solution:4.{25}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-295"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.26.</span></span> <a id="autoid-296" ></a ><a id="LWR-ht-problem:4.{26}"></a>Інтерференційні смуги рівного нахилу у фокальній площині лінзи одержують при відбитті від
+плоскопараллельної платівки, яка освітлюється монохроматичним джерелом світла \(S\), розміщеним посередині між лінзою і платівкою на відстані \(f\) від лінзи. Пряме світло джерела на лінзу не потрапляє. Довжина світлової хвилі \(\lambda = 6000 \)&nbsp;0.25A, товщина платівки \(d
+= l,6 \)&nbsp;мм; показник заломлення \(n = 1,5 \); фокусна відстань лінзи \(f = 40 \)&nbsp;см, діаметр лінзи \(D = 8 \)&nbsp;см. Скільки темних кілець можна спостерігати на екрані? <a href="answers.html#LWR-ht-solution:4.{26}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-297"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.27.</span></span> <a id="autoid-298" ></a ><a id="LWR-ht-problem:4.{27}"></a>Якою має бути мінімальна товщина платівки в попередній задачі, щоб можна було отримати принаймні
+одне темне кільце? <a href="answers.html#LWR-ht-solution:4.{27}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-299"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.28.</span></span> <a id="autoid-300" ></a ><a id="LWR-ht-problem:4.{28}"></a>З лінзи з фокусною відстанню \(f = 50 \)&nbsp;см вирізали центральну частину шириною \(a \).
+Обидві половини зсунули впритул. З одного боку лінзи розташували точкове джерело монохроматичного світла з довжиною хвилі \(\lambda =6000 \)&nbsp;0.25A. З іншого боку лінзи розташували екран, на якому спостерігають інтерференційні смуги, відстань між сусідніми світлими
+смугами \(\Delta x = 0,5 \)&nbsp;мм і не змінюється при пересуванні екрана вздовж оптичної осі. Знайти \(a\). <a href="answers.html#LWR-ht-solution:4.{28}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-301"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.29.</span></span> <a id="autoid-302" ></a ><a id="LWR-ht-problem:4.{29}"></a>Знайти відносний зсув \(\Delta l/ l \) інтерференційних смуг, отриманих за допомогою платівки
+Люмера-Герке, при зміні температури на 1°C. Товщина платіки \(h = 2 \)&nbsp;см, показник заломлення \(n = 1,5 \), температурний коефіцієнт лінійного розширення скла \(a = 8,5\cdot 10^{-6} \) К\(^{-1}\), довжина хвилі світла \(\lambda = 500 \)&nbsp;нм. Залежністю
+показника заломлення від температури знехтувати <a href="answers.html#LWR-ht-solution:4.{29}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-303"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.30.</span></span> <a id="autoid-304" ></a ><a id="LWR-ht-problem:4.{30}"></a>В одне із плечей інтерферометра Майкельсона замість відбиваючого дзеркала поміщена непоглинаюча
+платівка з напівпрозорою передньою й дзеркальною задньою стінкою (рис.). Товщина платівки \(d = 2 \)&nbsp;мм, показник заломлення \(n = 5 \), спектр падаючого випромінювання простирається від \(0 \) до \(110 \)&nbsp;ГГц. При переміщенні дзеркала в другому плечі детектор
+реєструє ряд піків інтенсивності випромінювання. Яка відстань між піками в одиницях довжини переміщення дзеркала?
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-86"
+      class="lateximagesource"
+><!--
+𝑑
+--><img
+      src="main-html-images/image-86.svg"
+      alt="Рисунок 19"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<em>Вказівка</em>: Врахувати довжину когерентності. <a href="answers.html#LWR-ht-solution:4.{30}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-305"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.31.</span></span> <a id="autoid-306" ></a ><a id="LWR-ht-problem:4.{31}"></a><a id="prb:V_ovch_5.1"></a>Визначити видність \(V\) інтерференційної картини в експерименті
+Юнга при використанні джерела світла, розмірами якого \(b \) неможливо знехтувати. Відстань від джерела до екрану з щілинами \(L \), відстань між щілинами \(d \). Середня довжина хвиль \(\lambda \). <a href="answers.html#LWR-ht-solution:4.{31}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-307"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.32.</span></span> <a id="autoid-308" ></a ><a id="LWR-ht-problem:4.{32}"></a>На екран з двома вузькими паралельними щілинами падає світло променів Сонця. При якій відстані \(D
+\) між щілинами можуть спостерігатися інтеференційні смуги за екраном? Кутовий діаметр Сонця \(\alpha \approx 0.01 \)&nbsp;рад. <a href="answers.html#LWR-ht-solution:4.{32}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-309"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.33.</span></span> <a id="autoid-310" ></a ><a id="LWR-ht-problem:4.{33}"></a>Зображення Сонця отримане за допомогою лінзи з фокусною відстанню \(f = 50 \)&nbsp;мм на
+отворі екрану (розмір отвору дорівнює величині зображення). За екраном розміщені дві вузькі паралельні щілини на відстані \(D = 1 \)&nbsp;мм один від одного. При якій відстані \(l \) між екраном та щілинами можуть спостерігатисяінтерференційні смуги? Кутовий діаметр Сонця
+\(\alpha \approx 0.01 \)&nbsp;рад. <a href="answers.html#LWR-ht-solution:4.{33}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-311"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.34.</span></span> <a id="autoid-312" ></a ><a id="LWR-ht-problem:4.{34}"></a>Джерело світла \(S \) розташоване на відстані \(L = 1 \)&nbsp;м від тонкої слюдяної платівки
+завтовшки \(h = 0,1 \)&nbsp;мм з показником заломлення \(n = 1,4 \) (див. рис.). На такій же відстані від платівки розташовано невеликий екран \(E \), орієнтований перпендикулярно відбитим променям, на якому спостерігаються інтенференційні смуги. Кут \(\phi = 60^\circ \)
+Знайти порядок \(m \) інтерференційної смуги в центрі екрана і ширину \(\Delta l \) інтенференційних смуг. Оцінити допустимий розмір \(b \) і допустиму немонохроматичність \(\Delta \lambda \) джерела, при якій ще буде помітним контраст інтерференційної картини.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-87"
+      class="lateximagesource"
+><!--
+𝑆           𝐸
+    ✺
+
+
+
+𝐿       𝜙
+
+
+
+
+ℎ
+--><img
+      src="main-html-images/image-87.svg"
+      alt="Рисунок 20"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+Використовується світло з довжиною хвилі \(\lambda = 560 \)&nbsp;нм. <a href="answers.html#LWR-ht-solution:4.{34}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-313"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.35.</span></span> <a id="autoid-314" ></a ><a id="LWR-ht-problem:4.{35}"></a>За допомогою зорової труби, встановленої на нескінченність, спостерігають інтерференційні смуги в
+тонкій плоскопаралельній скляній платівці завтовшки \(h=0,2 \)&nbsp;мм з показником заломлення \(n = 1,41 \), при цьому кут спостереження � може змінюватись від \(0 \) до \(90^\circ \) (див. рис.). Знайти максимальний \(m_{\max } \) і мінімальний \(m_{\min } \) порядок
+інтерференційних смуг. Оцінити допустиму немонохроматичність \(\Delta \lambda \) джерела, за якої будуть достатньо чітко спостерігатись всі інтерференційні смуги. Який допустимий розмір джерела світла в цьому інтерференційному досліді?
+</p>
+<div class="center">
+
+<p>
+
+
+<a href="_html/ext/pic-d1c62bd54b.svg" target="_blank" ><img
+      src="_html/ext/pic-d1c62bd54b.svg"
+      class="inlineimage"
+      alt="Рисунок 21"
+></a>
+</p>
+</div>
+
+<p>
+Використовується світло з довжиною хвилі \(\lambda = 560 \)&nbsp;нм. <a href="answers.html#LWR-ht-solution:4.{35}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-315"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.36.</span></span> <a id="autoid-316" ></a ><a id="LWR-ht-problem:4.{36}"></a>В інтерференційній схемі (рис.) використовується квазімонохроматичне джерело світла \(S \)
+(\(\lambda = 5\cdot 10^{-5} \)&nbsp;см). Відбиваючі дзеркала розташовані симетрично відносно джерела \(S \) і екрана \(E \), на якому спостерігається інтерференція. Знайти: 1) ширину інтерференційної смуги \(\Delta x \) на екрані \(E \); 2) область локалізації смуг на екрані; 3)
+максимальний і мінімальний порядок інтерференції й число спостережуваних смуг, 4) ступінь монохроматичности інтерференційних смуг. Оцінити допустиму немонохроматичність , при якій число спостережуваних смуг максимально; 5) припустимий розмір джерела \(b \). Параметри схеми:
+\(L = 1 \)&nbsp;м, \(2d = 2,5 \)&nbsp;см, \(D = 10 \)&nbsp;см.
+</p>
+<div class="center">
+
+<p>
+<span
+      id="lateximage-main-html-88"
+      class="lateximagesource"
+><!--
+             𝑦
+
+
+         𝐷
+
+
+                 𝐸
+✺   2𝑑
+
+
+
+
+         𝐿
+--><img
+      src="main-html-images/image-88.svg"
+      alt="Рисунок 22"
+      style=""
+      class="lateximage"
+></span>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:4.{36}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-317"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.37.</span></span> <a id="autoid-318" ></a ><a id="LWR-ht-problem:4.{37}"></a>Паралельний пучок світла від далеко розташованого джерела з довжиною хвилі \(\lambda = 500
+\)&nbsp;нм падає на біпризму із заломлюючим кутом \(\theta = 10^{-2} \) рад і шириною \(D = 2 \)&nbsp;см, виконану зі скла з показником заломлення \(n = 1,5 \) (рис.). Визначити 1) на якій відстані \(L \) від біпризми потрібно розташувати екран, щоб на ньому можна було
+спостерігати максимально можливе число інтерференційних смуг; 2) оцінити припустиму немонохроматичність \(\Delta \lambda \) світла, необхідну для спостереження всіх смуг. 3) Оцінити припустимий кутовий розмір \(\psi \) джерела в цьому інтерференційному досліді.
+</p>
+<div class="center">
+
+<p>
+
+
+<a href="_html/ext/pic-07e766302a.svg" target="_blank" ><img
+      src="_html/ext/pic-07e766302a.svg"
+      class="inlineimage"
+      alt="Рисунок 23"
+></a>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:4.{37}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-319"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.38.</span></span> <a id="autoid-320" ></a ><a id="LWR-ht-problem:4.{38}"></a>З тонкої лінзи діаметром \(D = 2,5 \)&nbsp;см з фокусною відстанню \(f = 50 \)&nbsp;см
+вирізана центральна смужка шириною \(a = 0,5 \)&nbsp;см, після чого обидві половини лінзи зсунуті (білінза). Джерело світла \(S \) з довжиною хвилі \(\lambda = 500 \)&nbsp;нм розташовується на осі системи у фокальній площині лінзи (рис.). На якій відстані \(L \) від білінзи
+потрібно розташувати екран, щоб на ньому можна було спостерігати максимально можливе число інтерференційних смуг? Визначити ширину \(\Delta x \) інтерференційних смуг і їхнє число. 2) Оцінити припустиму немонохроматичність \(\Delta \lambda \) джерела світла в цьому
+інтерференційному експерименті, необхідну для спостереження всіх смуг. 3) Оцінити припустимий розмір \(b \) джерела світла.
+</p>
+<div class="center">
+
+<p>
+
+
+<a href="_html/ext/pic-2d2022c4e2.svg" target="_blank" ><img
+      src="_html/ext/pic-2d2022c4e2.svg"
+      class="inlineimage"
+      alt="Рисунок 24"
+></a>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:4.{38}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-321"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.39.</span></span> <a id="autoid-322" ></a ><a id="LWR-ht-problem:4.{39}"></a>Біпризма освітлюється монохроматичним світлом з довжиною хвилі \(\lambda = 500 \)&nbsp;нм
+від далеко розташованого протяжного джерела з кутовим розміром \(\omega = 10^{-3}\)&nbsp;рад. Заломлюючий кут біпризми \(\theta = 5\cdot 10^{-3} \)&nbsp;рад, показник заломлення \(n = 1,5 \). Визначити видимість інтерференційних смуг, спостережуваних на екрані,
+залежно від відстані \(L \) між екраном і біпризмою (див. рис.). При яких значеннях \(L \) інтерференційні смуги розмиваються? Розмір біпризми вважати досить великим. Джерело можна вважати рівномірно випромінюючою смужкою, що паралельна ребру біпризми.
+</p>
+<div class="center">
+
+<p>
+
+
+<a href="_html/ext/pic-261c250049.svg" target="_blank" ><img
+      src="_html/ext/pic-261c250049.svg"
+      class="inlineimage"
+      alt="Рисунок 25"
+></a>
+</p>
+</div>
+
+<p>
+<a href="answers.html#LWR-ht-solution:4.{39}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+<div class="theorembodyproblemX">
+
+<ul class="list" style="list-style-type:none">
+
+
+<a id="autoid-323"></a>
+<li>
+<p>
+<span class="listmarker"> <span class="theoremheaderplain"> 4.40.</span></span> <a id="autoid-324" ></a ><a id="LWR-ht-problem:4.{40}"></a>При освітленні еталона Фабрі-Перо розбіжним пучком монохроматичного світла з довжиною \(\lambda
+= 500 \) у фокальній площині лінзи виникає багатопроменева інтерференційна картина — система концентричних тонких світлих кілець. Товщина еталона дорівнює \(d \). Визначити, як залежить від порядку інтерференції \(m \): а) розташування кілець (по їх номеру від центра); б) кутова
+ширина відстаней між кільцями.
+</p>
+
+<p>
+<em>Вказівка</em>. Оцінити знаки похідної \(\frac {dk}{dm} = \frac {dk}{d\epsilon &apos;_2} \frac {d\epsilon &apos;_2}{dm}\) й збільшення \(\Delta \epsilon &apos;_2\) при \(\Delta m = 1 \) (\(k \) — порядковий номер кільця від центра картини). <a
+href="answers.html#LWR-ht-solution:4.{40}">[відповідь]</a>
+</p>
+
+
+</li>
+
+</ul>
+
+</div>
+
+</section>
+
+</main>
+
+
+<nav class="botnavigation"><a href="main-html.html" class="linkhome" >
+Головна</a></nav>
+
+</div><!-- grid -->
+<script src="assets/book.js" defer></script>
+</body>
+</html>
